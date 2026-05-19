@@ -36,6 +36,16 @@ class DishRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.name' => ['nullable', 'string', 'max:180'],
+            'translations.en.slug' => ['nullable', 'string', 'max:200'],
+            'translations.en.description' => ['nullable', 'string', 'max:1200'],
+            'translations.en.content' => ['nullable', 'string'],
+            'translations.en.ingredients' => ['nullable', 'string', 'max:1600'],
+            'translations.en.meta_title' => ['nullable', 'string', 'max:255'],
+            'translations.en.meta_description' => ['nullable', 'string', 'max:500'],
+            'translations.en.meta_keywords' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

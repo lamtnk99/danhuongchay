@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\HasLocalizedContent;
 
 class Promotion extends Model
 {
     use HasFactory;
+    use HasLocalizedContent;
 
     protected $fillable = [
         'title',
@@ -53,5 +56,10 @@ class Promotion extends Model
             ->where(function (Builder $query): void {
                 $query->whereNull('ends_at')->orWhere('ends_at', '>=', now());
             });
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(PromotionTranslation::class);
     }
 }

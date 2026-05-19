@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use App\Support\GeneratesSlugs;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Page extends Model
 {
     use GeneratesSlugs;
     use HasFactory;
+    use HasLocalizedContent;
 
     protected string $slugSource = 'title';
 
@@ -36,6 +39,11 @@ class Page extends Model
     public function getRouteKeyName(): string
     {
         return 'slug';
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(PageTranslation::class);
     }
 
     public function scopeActive(Builder $query): Builder

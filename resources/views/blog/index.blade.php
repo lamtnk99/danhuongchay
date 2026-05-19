@@ -3,11 +3,9 @@
 @section('content')
     <section class="subpage-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
-            <p class="eyebrow">Blog</p>
-            <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">Ăn chay, sức khỏe và sống xanh</h1>
-            <p class="mt-6 text-lg leading-8 text-stone-700">
-                Những bài viết giúp bạn hiểu hơn về món chay, dinh dưỡng thực vật và cách sống gần thiên nhiên.
-            </p>
+            <p class="eyebrow">{{ __('site.nav.blog') }}</p>
+            <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ __('site.blog.title') }}</h1>
+            <p class="mt-6 text-lg leading-8 text-stone-700">{{ __('site.blog.description') }}</p>
         </div>
     </section>
 

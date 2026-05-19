@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\HasLocalizedContent;
 
 class Banner extends Model
 {
     use HasFactory;
+    use HasLocalizedContent;
 
     protected $fillable = [
         'title',
@@ -33,5 +36,10 @@ class Banner extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(BannerTranslation::class);
     }
 }

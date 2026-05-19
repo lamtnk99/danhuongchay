@@ -29,19 +29,20 @@ class CategoryController extends Controller
 
     public function create(): View
     {
-        return view('admin.categories.create', ['category' => new Category]);
+        return view('admin.categories.create', ['category' => new Category(['is_active' => true])]);
     }
 
     public function store(CategoryRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->uploads->uploadImage($request->file('image'), 'categories');
         }
 
-        Category::create($data);
+        $category = Category::create($data);
+        $this->syncEnglishTranslation($request, $category);
 
         return redirect()->route('admin.categories.index')->with('success', 'Đã thêm danh mục.');
     }
@@ -53,7 +54,7 @@ class CategoryController extends Controller
 
     public function update(CategoryRequest $request, Category $category): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
@@ -63,6 +64,7 @@ class CategoryController extends Controller
         }
 
         $category->update($data);
+        $this->syncEnglishTranslation($request, $category);
 
         return redirect()->route('admin.categories.index')->with('success', 'Đã cập nhật danh mục.');
     }
@@ -77,5 +79,16 @@ class CategoryController extends Controller
         $category->delete();
 
         return back()->with('success', 'Đã xóa danh mục.');
+    }
+
+    private function syncEnglishTranslation(CategoryRequest $request, Category $category): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $category->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

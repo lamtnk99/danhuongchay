@@ -263,3 +263,57 @@ Mot so event dang co:
 - `click_catering_reservation`: click CTA dat tiec chay.
 
 Co che tracking nam trong `resources/js/app.js` va dung cac attribute `data-track-*`, nen co the gan them vao nut moi ma khong can viet lai JS.
+
+## Song ngu Viet / Anh
+
+Website da co nen tang song ngu:
+
+- Tieng Viet giu route cu, vi du `/`, `/thuc-don`, `/mon-an/{slug}`.
+- Tieng Anh dung prefix `/en`, vi du `/en`, `/en/menu`, `/en/dishes/{english-slug}`, `/en/blog/{english-slug}`.
+- Middleware `locale` tu set ngon ngu theo route.
+- Text giao dien nam trong `resources/lang/vi/site.php` va `resources/lang/en/site.php`.
+- Noi dung dong co bang dich:
+  - `category_translations`
+  - `dish_translations`
+  - `post_translations`
+  - `page_translations`
+- Seeder ban dich mau: `EnglishTranslationSeeder`.
+- Admin co tab `Tieng Viet` / `English` trong form danh muc, mon an, bai viet va trang tinh.
+- Nut `Copy tu tieng Viet` chi copy noi dung goc sang tab English de admin sua nhanh, khong goi API dich tu dong.
+- Admin co trang `/admin/translations/settings` de cau hinh DeepL API Free/Pro.
+- Khi bat DeepL, tab English co nut `Dich bang DeepL`; ket qua chi do vao form de review, chua tu luu database.
+- He thong kiem tra quota DeepL, bao loi ro khi key sai, het quota hoac bi gioi han tan suat.
+
+Sau khi pull code moi tren host, chay:
+
+```bash
+php artisan migrate
+php artisan db:seed --class=EnglishTranslationSeeder
+npm run build
+php artisan optimize:clear
+```
+
+Ghi chu: DeepL API Free co quota mien phi theo thang. Nen review lai cac ban dich seed mau va ban dich DeepL truoc khi chay production chinh thuc.
+
+### Lay DeepL API key
+
+1. Vao https://www.deepl.com/pro-api va chon goi `DeepL API Free`.
+2. Tao tai khoan DeepL va hoan tat buoc kich hoat theo yeu cau cua DeepL.
+3. Vao khu vuc account/API Keys de copy Authentication Key. Key API Free thuong co duoi `:fx`.
+4. Vao admin `/admin/translations/settings`, dan key vao `DeepL API key`, chon `DeepL API Free`, bat `Dich tu dong`, roi bam `Luu cai dat`.
+5. Bam `Kiem tra ket noi` hoac `Kiem tra quota` truoc khi dung nut `Dich bang DeepL` trong form noi dung.
+
+Neu gap loi local `cURL error 60: SSL certificate problem`, PHP/cURL dang thieu CA bundle. Cach dung:
+
+1. Tai file https://curl.se/ca/cacert.pem
+2. Luu vao may, vi du `C:\php\extras\ssl\cacert.pem` hoac thu muc PHP dang dung.
+3. Mo file `php.ini` cua PHP dang chay Laravel va them/sua:
+
+```ini
+curl.cainfo="C:\php\extras\ssl\cacert.pem"
+openssl.cafile="C:\php\extras\ssl\cacert.pem"
+```
+
+4. Restart PHP/server roi chay `php artisan optimize:clear`.
+
+Tam thoi khi dev local co the them `DEEPL_VERIFY_SSL=false` vao `.env`, nhung khong nen dung tren production.

@@ -20,7 +20,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('reservations.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_reservation" data-track-category="reservation" data-track-label="Reservation form" data-facebook-event="SubmitReservation">
+            <form action="{{ localized_route('reservations.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_reservation" data-track-category="reservation" data-track-label="Reservation form" data-facebook-event="SubmitReservation">
                 @csrf
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>

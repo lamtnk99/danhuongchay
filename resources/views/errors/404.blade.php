@@ -10,7 +10,7 @@
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-3">
                 <a href="{{ route('home') }}" class="btn-primary">Về trang chủ</a>
-                <a href="{{ route('menu.index') }}" class="btn-secondary">Xem thực đơn</a>
+                <a href="{{ localized_route('menu.index') }}" class="btn-secondary">{{ __('site.hero.menu') }}</a>
             </div>
         </div>
     </section>

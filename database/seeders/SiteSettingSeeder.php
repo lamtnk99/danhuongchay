@@ -41,6 +41,11 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'schema_opening_hours', 'value' => '09:00 - 14:00 | 16:00 - 21:00', 'group' => 'seo'],
             ['key' => 'og_image', 'value' => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80', 'type' => 'image', 'group' => 'seo'],
             ['key' => 'default_background', 'value' => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=85', 'type' => 'image', 'group' => 'identity'],
+            ['key' => 'translation_enabled', 'value' => '0', 'type' => 'boolean', 'group' => 'translation'],
+            ['key' => 'deepl_api_plan', 'value' => 'free', 'group' => 'translation'],
+            ['key' => 'deepl_source_lang', 'value' => 'VI', 'group' => 'translation'],
+            ['key' => 'deepl_target_lang', 'value' => 'EN-US', 'group' => 'translation'],
+            ['key' => 'translation_monthly_limit_warning', 'value' => '450000', 'type' => 'number', 'group' => 'translation'],
         ];
 
         foreach ($settings as $setting) {

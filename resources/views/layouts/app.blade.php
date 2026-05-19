@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi" data-upload-max-kb="{{ config('uploads.max_image_kb', 10240) }}">
+<html lang="{{ current_locale() }}" data-upload-max-kb="{{ config('uploads.max_image_kb', 10240) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,7 @@
     @endisset
 </head>
 <body class="public-site min-h-screen bg-[#fbfaf5] font-sans text-stone-800 antialiased">
-    <a href="#main-content" class="skip-link">Bỏ qua menu</a>
+    <a href="#main-content" class="skip-link">{{ __('site.skip') }}</a>
 
     @include('partials.header')
 

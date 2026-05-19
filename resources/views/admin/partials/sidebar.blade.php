@@ -29,6 +29,7 @@
         ['label' => 'Liên hệ', 'route' => 'admin.contacts.index', 'active' => 'admin.contacts.*', 'badge' => 'contacts'],
         ['label' => 'Chat online', 'route' => 'admin.chats.index', 'active' => 'admin.chats.*', 'badge' => 'chat'],
         ['label' => 'SEO', 'route' => 'admin.seo.edit', 'active' => 'admin.seo.*'],
+        ['label' => 'Dịch tự động', 'route' => 'admin.translations.settings', 'active' => 'admin.translations.*'],
         ['label' => 'Tài khoản admin', 'route' => 'admin.users.index', 'active' => 'admin.users.*'],
     ];
 @endphp

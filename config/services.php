@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    'deepl' => [
+        // Keep SSL verification enabled in production. Set DEEPL_VERIFY_SSL=false only
+        // as a temporary local workaround when PHP/cURL has no CA bundle configured.
+        'verify_ssl' => env('DEEPL_VERIFY_SSL', true),
+    ],
+
 ];

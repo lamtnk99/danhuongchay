@@ -12,15 +12,24 @@ class MenuController extends Controller
 {
     public function index(Request $request): View
     {
-        $categories = Category::dish()->active()->orderBy('sort_order')->orderBy('id')->get();
+        $categories = Category::dish()
+            ->active()
+            ->with('translations')
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
         $selectedCategory = $request->string('category')->toString();
         $search = $request->string('q')->toString();
 
         $dishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
             ->when($selectedCategory, function ($query) use ($selectedCategory): void {
-                $query->whereHas('category', fn ($categoryQuery) => $categoryQuery->where('slug', $selectedCategory));
+                $query->whereHas('category', function ($categoryQuery) use ($selectedCategory): void {
+                    $categoryQuery->where('slug', $selectedCategory)
+                        ->orWhereHas('translations', fn ($translationQuery) => $translationQuery->where('slug', $selectedCategory));
+                });
             })
             ->search($search)
             ->orderBy('sort_order')
@@ -30,15 +39,15 @@ class MenuController extends Controller
 
         $schemaCategories = Category::dish()
             ->active()
-            ->with(['dishes' => fn ($query) => $query->active()->orderBy('name')])
+            ->with(['translations', 'dishes' => fn ($query) => $query->active()->with('translations')->orderBy('name')])
             ->orderBy('id')
             ->get();
 
         $seo = SeoService::page(
-            'Thực đơn quán chay Hải Phòng | Món chay ngon Đàn Hương Chay',
-            'Khám phá thực đơn quán chay Hải Phòng với món khai vị, món chính, lẩu chay, cơm mì bún chay và đồ uống thanh lành.',
-            'thực đơn chay, quán chay Hải Phòng, món chay ngon, nhà hàng chay Hải Phòng, lẩu chay, cơm chay, đặt bàn quán chay',
-            route('menu.index')
+            is_english() ? 'Vegetarian menu in Hai Phong | Dan Huong Chay' : 'Thực đơn quán chay Hải Phòng | Món chay ngon Đàn Hương Chay',
+            is_english() ? 'Explore Dan Huong Chay vegetarian menu in Hai Phong with appetizers, signature dishes, hot pots, rice, noodles and mindful drinks.' : 'Khám phá thực đơn quán chay Hải Phòng với món khai vị, món chính, lẩu chay, cơm mì bún chay và đồ uống thanh lành.',
+            is_english() ? 'vegetarian menu Hai Phong, vegetarian restaurant Hai Phong, vegan food, vegetarian hot pot, healthy vegetarian food' : 'thực đơn chay, quán chay Hải Phòng, món chay ngon, nhà hàng chay Hải Phòng, lẩu chay, cơm chay, đặt bàn quán chay',
+            localized_route('menu.index')
         );
 
         $schemas = [
@@ -49,13 +58,20 @@ class MenuController extends Controller
         return view('menu.index', compact('categories', 'dishes', 'selectedCategory', 'search', 'seo', 'schemas'));
     }
 
-    public function show(Dish $dish): View
+    public function show(Dish|string $dish): View
     {
-        $dish->load('category');
+        if (! $dish instanceof Dish) {
+            $dish = Dish::query()
+                ->where('slug', $dish)
+                ->orWhereHas('translations', fn ($query) => $query->where('locale', current_locale())->where('slug', $dish))
+                ->firstOrFail();
+        }
+
+        $dish->load(['category.translations', 'translations']);
         abort_unless($dish->is_active, 404);
 
         $relatedDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
             ->where('category_id', $dish->category_id)
             ->whereKeyNot($dish->getKey())
@@ -65,7 +81,7 @@ class MenuController extends Controller
             ->get();
 
         $pairingDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
             ->featured()
             ->whereKeyNot($dish->getKey())
@@ -75,16 +91,16 @@ class MenuController extends Controller
             ->get();
 
         $breadcrumbs = [
-            ['label' => 'Trang chủ', 'url' => route('home')],
-            ['label' => 'Thực đơn', 'url' => route('menu.index')],
-            ['label' => $dish->name],
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.nav.menu'), 'url' => localized_route('menu.index')],
+            ['label' => $dish->localized('name')],
         ];
 
         $seo = SeoService::page(
-            $dish->meta_title ?: "{$dish->name} | Đàn Hương Chay Hải Phòng",
-            $dish->meta_description ?: $dish->description,
-            $dish->meta_keywords ?: "{$dish->name}, món chay ngon Hải Phòng, quán chay Hải Phòng, {$dish->category->name}",
-            route('menu.show', $dish),
+            $dish->localized('meta_title') ?: "{$dish->localized('name')} | Đàn Hương Chay Hải Phòng",
+            $dish->localized('meta_description') ?: $dish->localized('description'),
+            $dish->localized('meta_keywords') ?: "{$dish->localized('name')}, vegetarian restaurant Hai Phong, Dan Huong Chay",
+            localized_route('menu.show', ['slug' => $dish->localizedSlug()]),
             $dish->image,
             'article'
         );

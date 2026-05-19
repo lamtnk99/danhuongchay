@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\TestimonialController as AdminTestimonialController;
+use App\Http\Controllers\Admin\TranslationController as AdminTranslationController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BlogController;
@@ -49,6 +50,11 @@ Route::prefix('admin')
         Route::put('/identity', [AdminSettingController::class, 'updateIdentity'])->name('identity.update');
         Route::get('/seo', [AdminSettingController::class, 'seo'])->name('seo.edit');
         Route::put('/seo', [AdminSettingController::class, 'updateSeo'])->name('seo.update');
+        Route::get('/translations/settings', [AdminTranslationController::class, 'settings'])->name('translations.settings');
+        Route::put('/translations/settings', [AdminTranslationController::class, 'updateSettings'])->name('translations.settings.update');
+        Route::get('/translations/deepl/usage', [AdminTranslationController::class, 'usage'])->middleware('throttle:20,1')->name('translations.deepl.usage');
+        Route::post('/translations/deepl/test', [AdminTranslationController::class, 'test'])->middleware('throttle:10,1')->name('translations.deepl.test');
+        Route::post('/translations/deepl', [AdminTranslationController::class, 'translate'])->middleware('throttle:20,1')->name('translations.deepl.translate');
 
         Route::patch('/banners/{banner}/toggle', [AdminBannerController::class, 'toggle'])->name('banners.toggle');
         Route::resource('banners', AdminBannerController::class)->except('show');
@@ -105,3 +111,27 @@ Route::get('/robots.txt', function () {
         ['Content-Type' => 'text/plain']
     );
 })->name('robots');
+
+Route::prefix('en')
+    ->as('localized.')
+    ->middleware('locale:en')
+    ->group(function (): void {
+        Route::get('/', HomeController::class)->name('home');
+        Route::get('/vegetarian-restaurant-hai-phong', [LocalSeoController::class, 'vegetarianRestaurantHaiPhong'])->name('local.vegetarian-restaurant-hai-phong');
+        Route::get('/vegetarian-catering-hai-phong', [LocalSeoController::class, 'vegetarianCateringHaiPhong'])->name('local.vegetarian-catering-hai-phong');
+        Route::get('/about', [PageController::class, 'about'])->name('about');
+        Route::get('/space', GalleryController::class)->name('gallery.index');
+        Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');
+
+        Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
+        Route::get('/dishes/{slug}', [MenuController::class, 'show'])->name('menu.show');
+
+        Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+        Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
+
+        Route::get('/reservation', [ReservationController::class, 'create'])->name('reservations.create');
+        Route::post('/reservation', [ReservationController::class, 'store'])->name('reservations.store');
+
+        Route::get('/contact', [ContactController::class, 'create'])->name('contact');
+        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    });

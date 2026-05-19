@@ -45,7 +45,8 @@ class PostController extends Controller
             $data['thumbnail'] = $this->uploads->uploadImage($request->file('thumbnail'), 'posts');
         }
 
-        Post::create($data);
+        $post = Post::create($data);
+        $this->syncEnglishTranslation($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã thêm bài viết.');
     }
@@ -68,6 +69,7 @@ class PostController extends Controller
         }
 
         $post->update($data);
+        $this->syncEnglishTranslation($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã cập nhật bài viết.');
     }
@@ -83,11 +85,22 @@ class PostController extends Controller
     private function normalizedData(PostRequest $request): array
     {
         return collect($request->validated())
-            ->except(['thumbnail'])
+            ->except(['thumbnail', 'translations'])
             ->merge([
                 'is_featured' => $request->boolean('is_featured'),
                 'is_active' => $request->boolean('is_active'),
             ])
             ->all();
+    }
+
+    private function syncEnglishTranslation(PostRequest $request, Post $post): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $post->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

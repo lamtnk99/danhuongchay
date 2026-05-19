@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Support\Str;
 
 class GalleryImage extends Model
 {
     use HasFactory;
+    use HasLocalizedContent;
 
     protected $fillable = [
         'title',
@@ -51,5 +54,10 @@ class GalleryImage extends Model
     public function scopeFeatured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(GalleryImageTranslation::class);
     }
 }

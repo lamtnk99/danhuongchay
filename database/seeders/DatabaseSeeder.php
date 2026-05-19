@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             TestimonialSeeder::class,
             PromotionSeeder::class,
             DanHuongHaiPhongMenuSeeder::class,
+            EnglishTranslationSeeder::class,
+            MarketingEnglishTranslationSeeder::class,
         ]);
     }
 }

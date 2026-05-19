@@ -48,7 +48,8 @@ class DishController extends Controller
 
         $data['gallery'] = $this->uploads->uploadMultipleImages($request->file('gallery', []), 'dishes');
 
-        Dish::create($data);
+        $dish = Dish::create($data);
+        $this->syncEnglishTranslation($request, $dish);
 
         return redirect()->route('admin.dishes.index')->with('success', 'Đã thêm món ăn.');
     }
@@ -81,6 +82,7 @@ class DishController extends Controller
         $data['gallery'] = $gallery;
 
         $dish->update($data);
+        $this->syncEnglishTranslation($request, $dish);
 
         return redirect()->route('admin.dishes.index')->with('success', 'Đã cập nhật món ăn.');
     }
@@ -97,7 +99,7 @@ class DishController extends Controller
     private function normalizedData(DishRequest $request): array
     {
         return collect($request->validated())
-            ->except(['image', 'gallery', 'remove_gallery'])
+            ->except(['image', 'gallery', 'remove_gallery', 'translations'])
             ->merge([
                 'is_featured' => $request->boolean('is_featured'),
                 'is_active' => $request->boolean('is_active'),
@@ -105,5 +107,16 @@ class DishController extends Controller
                 'sale_price' => $request->filled('sale_price') ? (int) $request->input('sale_price') : null,
             ])
             ->all();
+    }
+
+    private function syncEnglishTranslation(DishRequest $request, Dish $dish): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $dish->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

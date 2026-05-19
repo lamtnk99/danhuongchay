@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\GeneratesSlugs;
+use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,7 @@ class Category extends Model
 {
     use GeneratesSlugs;
     use HasFactory;
+    use HasLocalizedContent;
 
     protected $fillable = [
         'name',
@@ -41,6 +43,11 @@ class Category extends Model
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(CategoryTranslation::class);
     }
 
     public function scopeDish(Builder $query): Builder

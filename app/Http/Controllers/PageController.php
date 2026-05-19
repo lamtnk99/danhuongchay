@@ -11,8 +11,13 @@ class PageController extends Controller
 {
     public function about(): View
     {
-        $page = Page::active()->where('slug', 'gioi-thieu')->first();
+        $page = Page::active()
+            ->with('translations')
+            ->where('slug', 'gioi-thieu')
+            ->first();
+
         $galleryImages = GalleryImage::query()
+            ->with('translations')
             ->active()
             ->featured()
             ->orderBy('sort_order')
@@ -21,10 +26,10 @@ class PageController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            $page?->meta_title ?: 'Giới thiệu quán chay Hải Phòng | Câu chuyện Đàn Hương Chay',
-            $page?->meta_description ?: 'Tìm hiểu câu chuyện thương hiệu Đàn Hương Chay, triết lý ẩm thực chay fusion, không gian quán và cam kết nguyên liệu sạch tại Hải Phòng.',
-            $page?->meta_keywords ?: 'giới thiệu quán chay Hải Phòng, nhà hàng chay Hải Phòng, triết lý ăn chay, ẩm thực chay fusion, Đàn Hương Chay',
-            route('about'),
+            $page?->localized('meta_title') ?: (is_english() ? 'About Dan Huong Chay | Vegetarian restaurant in Hai Phong' : 'Giới thiệu quán chay Hải Phòng | Câu chuyện Đàn Hương Chay'),
+            $page?->localized('meta_description') ?: (is_english() ? 'Learn about Dan Huong Chay, our vegetarian fusion philosophy, peaceful restaurant space and commitment to clean ingredients in Hai Phong.' : 'Tìm hiểu câu chuyện thương hiệu Đàn Hương Chay, triết lý ẩm thực chay fusion, không gian quán và cam kết nguyên liệu sạch tại Hải Phòng.'),
+            $page?->localized('meta_keywords') ?: (is_english() ? 'about Dan Huong Chay, vegetarian restaurant Hai Phong, vegetarian fusion cuisine' : 'giới thiệu quán chay Hải Phòng, nhà hàng chay Hải Phòng, triết lý ăn chay, ẩm thực chay fusion, Đàn Hương Chay'),
+            localized_route('about'),
             $page?->image
         );
 
@@ -35,15 +40,23 @@ class PageController extends Controller
         return view('about', compact('seo', 'schemas', 'page', 'galleryImages'));
     }
 
-    public function show(Page $page): View
+    public function show(Page|string $page): View
     {
+        if (! $page instanceof Page) {
+            $page = Page::query()
+                ->where('slug', $page)
+                ->orWhereHas('translations', fn ($query) => $query->where('locale', current_locale())->where('slug', $page))
+                ->firstOrFail();
+        }
+
         abort_unless($page->is_active, 404);
+        $page->load('translations');
 
         $seo = SeoService::page(
-            $page->meta_title ?: $page->title,
-            $page->meta_description,
-            $page->meta_keywords ?: "{$page->title}, quán chay Hải Phòng, Đàn Hương Chay",
-            route('pages.show', $page),
+            $page->localized('meta_title') ?: $page->localized('title'),
+            $page->localized('meta_description'),
+            $page->localized('meta_keywords') ?: "{$page->localized('title')}, Dan Huong Chay",
+            localized_route('pages.show', ['slug' => $page->localizedSlug()]),
             $page->image
         );
 

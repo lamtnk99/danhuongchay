@@ -32,14 +32,15 @@ class PageController extends Controller
 
     public function store(PageRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
             $data['image'] = $this->uploads->uploadImage($request->file('image'), 'pages');
         }
 
-        Page::create($data);
+        $page = Page::create($data);
+        $this->syncEnglishTranslation($request, $page);
 
         return redirect()->route('admin.pages.index')->with('success', 'Đã thêm trang tĩnh.');
     }
@@ -51,7 +52,7 @@ class PageController extends Controller
 
     public function update(PageRequest $request, Page $page): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
@@ -61,6 +62,7 @@ class PageController extends Controller
         }
 
         $page->update($data);
+        $this->syncEnglishTranslation($request, $page);
 
         return redirect()->route('admin.pages.index')->with('success', 'Đã cập nhật trang tĩnh.');
     }
@@ -71,5 +73,16 @@ class PageController extends Controller
         $page->delete();
 
         return back()->with('success', 'Đã xóa trang tĩnh.');
+    }
+
+    private function syncEnglishTranslation(PageRequest $request, Page $page): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $page->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

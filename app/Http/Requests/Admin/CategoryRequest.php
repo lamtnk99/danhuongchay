@@ -26,6 +26,13 @@ class CategoryRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.name' => ['nullable', 'string', 'max:160'],
+            'translations.en.slug' => ['nullable', 'string', 'max:180'],
+            'translations.en.description' => ['nullable', 'string', 'max:1000'],
+            'translations.en.meta_title' => ['nullable', 'string', 'max:255'],
+            'translations.en.meta_description' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

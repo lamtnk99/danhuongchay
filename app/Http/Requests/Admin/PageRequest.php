@@ -26,6 +26,14 @@ class PageRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.title' => ['nullable', 'string', 'max:220'],
+            'translations.en.slug' => ['nullable', 'string', 'max:240'],
+            'translations.en.content' => ['nullable', 'string'],
+            'translations.en.meta_title' => ['nullable', 'string', 'max:255'],
+            'translations.en.meta_description' => ['nullable', 'string', 'max:500'],
+            'translations.en.meta_keywords' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

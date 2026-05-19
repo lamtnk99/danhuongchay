@@ -48,6 +48,165 @@ if (stickyHeader) {
     window.addEventListener('scroll', updateHeaderShadow, { passive: true });
 }
 
+document.querySelectorAll('[data-admin-tabs]').forEach((tabs) => {
+    const buttons = Array.from(tabs.querySelectorAll('[data-admin-tab]'));
+    const panels = Array.from(tabs.querySelectorAll('[data-admin-tab-panel]'));
+
+    buttons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const target = button.dataset.adminTab;
+
+            buttons.forEach((item) => item.classList.toggle('is-active', item === button));
+            panels.forEach((panel) => {
+                const isActive = panel.dataset.adminTabPanel === target;
+                panel.hidden = !isActive;
+                panel.classList.toggle('is-active', isActive);
+            });
+        });
+    });
+
+    tabs.querySelectorAll('[data-copy-translation]').forEach((copyButton) => {
+        copyButton.addEventListener('click', () => {
+            tabs.querySelectorAll('[data-copy-field]').forEach((target) => {
+                const source = tabs.querySelector(`[name="${target.dataset.copyField}"]`);
+
+                if (source && !target.value) {
+                    target.value = source.value || source.textContent || '';
+                    target.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+        });
+    });
+});
+
+const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+
+const setDeepLStatus = (element, message, type = 'info') => {
+    if (!element) {
+        return;
+    }
+
+    element.hidden = false;
+    element.classList.remove('hidden', 'border-red-200', 'bg-red-50', 'text-red-800', 'border-emerald-200', 'bg-emerald-50', 'text-emerald-800', 'border-slate-200', 'bg-slate-50', 'text-slate-700');
+
+    const classes = {
+        error: ['border-red-200', 'bg-red-50', 'text-red-800'],
+        success: ['border-emerald-200', 'bg-emerald-50', 'text-emerald-800'],
+        info: ['border-slate-200', 'bg-slate-50', 'text-slate-700'],
+    };
+
+    element.classList.add(...(classes[type] || classes.info));
+    element.textContent = message;
+};
+
+const postJson = async (url, payload = {}) => {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken,
+        },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.ok === false) {
+        throw new Error(data.message || 'Không xử lý được yêu cầu.');
+    }
+
+    return data;
+};
+
+document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
+    button.addEventListener('click', async () => {
+        const tabs = button.closest('[data-admin-tabs]');
+        const status = tabs?.querySelector('[data-deepl-inline-status]');
+        const url = button.dataset.deeplUrl;
+        const fields = {};
+
+        tabs?.querySelectorAll('[data-copy-field]').forEach((target) => {
+            const fieldName = target.name.match(/\[([^\]]+)\]$/)?.[1];
+
+            if (!fieldName || fieldName === 'slug') {
+                return;
+            }
+
+            const source = tabs.querySelector(`[name="${target.dataset.copyField}"]`);
+            const value = source?.value || source?.textContent || '';
+
+            if (value.trim()) {
+                fields[fieldName] = value;
+            }
+        });
+
+        if (!url || Object.keys(fields).length === 0) {
+            setDeepLStatus(status, 'Không có nội dung tiếng Việt để dịch.', 'error');
+            return;
+        }
+
+        button.disabled = true;
+        setDeepLStatus(status, 'Đang gửi nội dung sang DeepL...', 'info');
+
+        try {
+            const data = await postJson(url, { fields });
+
+            Object.entries(data.translations || {}).forEach(([fieldName, value]) => {
+                const target = tabs.querySelector(`[name$="[${fieldName}]"][data-copy-field]`);
+
+                if (target) {
+                    target.value = value || '';
+                    target.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+
+            const usageText = data.usage?.character_limit
+                ? ` Đã dùng ${Number(data.usage.character_count).toLocaleString('vi-VN')} / ${Number(data.usage.character_limit).toLocaleString('vi-VN')} ký tự.`
+                : '';
+
+            setDeepLStatus(status, `Đã dịch xong và đổ vào form English.${usageText}`, 'success');
+        } catch (error) {
+            setDeepLStatus(status, error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+    });
+});
+
+document.querySelectorAll('[data-deepl-test-url], [data-deepl-usage-url]').forEach((button) => {
+    button.addEventListener('click', async () => {
+        const status = document.querySelector('[data-deepl-status]');
+        const isUsage = Boolean(button.dataset.deeplUsageUrl);
+        const url = button.dataset.deeplUsageUrl || button.dataset.deeplTestUrl;
+
+        button.disabled = true;
+        setDeepLStatus(status, isUsage ? 'Đang kiểm tra quota DeepL...' : 'Đang kiểm tra kết nối DeepL...', 'info');
+
+        try {
+            const data = isUsage
+                ? await fetch(url, { headers: { Accept: 'application/json' } }).then(async (response) => {
+                    const json = await response.json().catch(() => ({}));
+                    if (!response.ok || json.ok === false) throw new Error(json.message || 'Không đọc được quota.');
+                    return json;
+                })
+                : await postJson(url);
+
+            const usage = data.usage;
+            const usageText = usage?.character_limit
+                ? ` Đã dùng ${Number(usage.character_count).toLocaleString('vi-VN')} / ${Number(usage.character_limit).toLocaleString('vi-VN')} ký tự.`
+                : '';
+            const sampleText = data.sample ? ` Mẫu: ${data.sample}` : '';
+
+            setDeepLStatus(status, `${data.message || 'Kiểm tra DeepL thành công.'}${usageText}${sampleText}`, 'success');
+        } catch (error) {
+            setDeepLStatus(status, error.message, 'error');
+        } finally {
+            button.disabled = false;
+        }
+    });
+});
+
 const trackConversion = (eventName, params = {}) => {
     const payload = {
         page_path: window.location.pathname,
