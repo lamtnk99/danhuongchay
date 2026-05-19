@@ -198,6 +198,29 @@ class ExampleTest extends TestCase
         Carbon::setTestNow();
     }
 
+    public function test_reservation_respects_split_slots_and_last_booking_time(): void
+    {
+        SiteSetting::set('reservation_time_slots', '09:00-14:00,16:00-21:00', 'text', 'general');
+        SiteSetting::set('reservation_last_booking_time', '20:30', 'text', 'general');
+        SiteSetting::set('reservation_last_order_buffer_minutes', '30', 'text', 'general');
+
+        $payload = [
+            'name' => 'Khách kiểm tra khung giờ',
+            'phone' => '0987654321',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'guests' => 2,
+        ];
+
+        $this->post(route('reservations.store'), $payload + ['reservation_time' => '15:00'])
+            ->assertSessionHasErrors('reservation_time');
+
+        $this->post(route('reservations.store'), $payload + ['reservation_time' => '20:45'])
+            ->assertSessionHasErrors('reservation_time');
+
+        $this->post(route('reservations.store'), $payload + ['reservation_time' => '20:30'])
+            ->assertSessionHasNoErrors();
+    }
+
     public function test_uploaded_images_are_resized_and_converted_to_webp(): void
     {
         Storage::fake('public');

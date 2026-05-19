@@ -1,0 +1,646 @@
+{
+  "1": [
+    {
+      "file": "/images/menu-hai-phong/page-01-01.webp",
+      "source": "3000x2000",
+      "output": "1800x1200",
+      "bytes": 481134,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-01-02.webp",
+      "source": "1200x1569",
+      "output": "1200x1569",
+      "bytes": 170982,
+      "rawIndex": 1
+    }
+  ],
+  "2": [
+    {
+      "file": "/images/menu-hai-phong/page-02-01.webp",
+      "source": "960x1280",
+      "output": "960x1280",
+      "bytes": 247752,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-02-02.webp",
+      "source": "1305x725",
+      "output": "1305x725",
+      "bytes": 36242,
+      "rawIndex": 1
+    }
+  ],
+  "3": [
+    {
+      "file": "/images/menu-hai-phong/page-03-01.webp",
+      "source": "1920x2560",
+      "output": "1350x1800",
+      "bytes": 434390,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-03-02.webp",
+      "source": "1920x2560",
+      "output": "1350x1800",
+      "bytes": 514542,
+      "rawIndex": 1
+    }
+  ],
+  "4": [
+    {
+      "file": "/images/menu-hai-phong/page-04-01.webp",
+      "source": "2551x3825",
+      "output": "1200x1800",
+      "bytes": 283926,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-04-02.webp",
+      "source": "1536x2048",
+      "output": "1350x1800",
+      "bytes": 216966,
+      "rawIndex": 2
+    }
+  ],
+  "5": [
+    {
+      "file": "/images/menu-hai-phong/page-05-01.webp",
+      "source": "3280x4918",
+      "output": "1200x1800",
+      "bytes": 267950,
+      "rawIndex": 0
+    }
+  ],
+  "6": [
+    {
+      "file": "/images/menu-hai-phong/page-06-01.webp",
+      "source": "1822x2732",
+      "output": "1200x1800",
+      "bytes": 254874,
+      "rawIndex": 0
+    }
+  ],
+  "7": [
+    {
+      "file": "/images/menu-hai-phong/page-07-01.webp",
+      "source": "3651x2738",
+      "output": "1800x1350",
+      "bytes": 535510,
+      "rawIndex": 0
+    }
+  ],
+  "8": [
+    {
+      "file": "/images/menu-hai-phong/page-08-01.webp",
+      "source": "1800x1207",
+      "output": "1800x1207",
+      "bytes": 416120,
+      "rawIndex": 0
+    }
+  ],
+  "9": [
+    {
+      "file": "/images/menu-hai-phong/page-09-01.webp",
+      "source": "1581x1186",
+      "output": "1581x1186",
+      "bytes": 385608,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-09-02.webp",
+      "source": "1400x1400",
+      "output": "1400x1400",
+      "bytes": 324152,
+      "rawIndex": 1
+    }
+  ],
+  "10": [
+    {
+      "file": "/images/menu-hai-phong/page-10-01.webp",
+      "source": "2522x1682",
+      "output": "1800x1200",
+      "bytes": 440076,
+      "rawIndex": 0
+    }
+  ],
+  "11": [
+    {
+      "file": "/images/menu-hai-phong/page-11-01.webp",
+      "source": "1822x2732",
+      "output": "1200x1800",
+      "bytes": 227990,
+      "rawIndex": 0
+    }
+  ],
+  "12": [
+    {
+      "file": "/images/menu-hai-phong/page-12-01.webp",
+      "source": "1537x1023",
+      "output": "1537x1023",
+      "bytes": 289994,
+      "rawIndex": 0
+    }
+  ],
+  "13": [
+    {
+      "file": "/images/menu-hai-phong/page-13-01.webp",
+      "source": "1537x1023",
+      "output": "1537x1023",
+      "bytes": 249698,
+      "rawIndex": 0
+    }
+  ],
+  "14": [
+    {
+      "file": "/images/menu-hai-phong/page-14-01.webp",
+      "source": "2048x1366",
+      "output": "1800x1201",
+      "bytes": 181110,
+      "rawIndex": 0
+    }
+  ],
+  "15": [
+    {
+      "file": "/images/menu-hai-phong/page-15-01.webp",
+      "source": "2117x2823",
+      "output": "1350x1800",
+      "bytes": 359898,
+      "rawIndex": 0
+    }
+  ],
+  "16": [
+    {
+      "file": "/images/menu-hai-phong/page-16-01.webp",
+      "source": "2045x1535",
+      "output": "1800x1351",
+      "bytes": 366598,
+      "rawIndex": 0
+    }
+  ],
+  "17": [
+    {
+      "file": "/images/menu-hai-phong/page-17-01.webp",
+      "source": "4918x3927",
+      "output": "1800x1437",
+      "bytes": 702622,
+      "rawIndex": 0
+    }
+  ],
+  "18": [
+    {
+      "file": "/images/menu-hai-phong/page-18-01.webp",
+      "source": "1920x2560",
+      "output": "1350x1800",
+      "bytes": 525640,
+      "rawIndex": 0
+    }
+  ],
+  "19": [
+    {
+      "file": "/images/menu-hai-phong/page-19-01.webp",
+      "source": "956x1276",
+      "output": "956x1276",
+      "bytes": 176196,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-19-02.webp",
+      "source": "865x725",
+      "output": "865x725",
+      "bytes": 24620,
+      "rawIndex": 1
+    }
+  ],
+  "20": [
+    {
+      "file": "/images/menu-hai-phong/page-20-01.webp",
+      "source": "2804x1869",
+      "output": "1800x1200",
+      "bytes": 493164,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-20-02.webp",
+      "source": "997x1011",
+      "output": "997x1011",
+      "bytes": 24076,
+      "rawIndex": 1
+    }
+  ],
+  "21": [
+    {
+      "file": "/images/menu-hai-phong/page-21-01.webp",
+      "source": "3280x4918",
+      "output": "1200x1800",
+      "bytes": 217062,
+      "rawIndex": 0
+    }
+  ],
+  "22": [
+    {
+      "file": "/images/menu-hai-phong/page-22-01.webp",
+      "source": "1746x1164",
+      "output": "1746x1164",
+      "bytes": 415856,
+      "rawIndex": 0
+    }
+  ],
+  "23": [
+    {
+      "file": "/images/menu-hai-phong/page-23-01.webp",
+      "source": "1640x2458",
+      "output": "1201x1800",
+      "bytes": 332008,
+      "rawIndex": 0
+    }
+  ],
+  "24": [
+    {
+      "file": "/images/menu-hai-phong/page-24-01.webp",
+      "source": "1706x1138",
+      "output": "1706x1138",
+      "bytes": 337142,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-24-02.webp",
+      "source": "1400x1400",
+      "output": "1400x1400",
+      "bytes": 324152,
+      "rawIndex": 1
+    }
+  ],
+  "25": [
+    {
+      "file": "/images/menu-hai-phong/page-25-01.webp",
+      "source": "1708x2560",
+      "output": "1201x1800",
+      "bytes": 408408,
+      "rawIndex": 0
+    }
+  ],
+  "26": [
+    {
+      "file": "/images/menu-hai-phong/page-26-01.webp",
+      "source": "2551x3825",
+      "output": "1200x1800",
+      "bytes": 247102,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-26-02.webp",
+      "source": "1728x2304",
+      "output": "1350x1800",
+      "bytes": 480468,
+      "rawIndex": 2
+    }
+  ],
+  "27": [
+    {
+      "file": "/images/menu-hai-phong/page-27-01.webp",
+      "source": "833x1255",
+      "output": "833x1255",
+      "bytes": 295592,
+      "rawIndex": 168
+    },
+    {
+      "file": "/images/menu-hai-phong/page-27-02.webp",
+      "source": "820x820",
+      "output": "820x820",
+      "bytes": 221666,
+      "rawIndex": 169
+    },
+    {
+      "file": "/images/menu-hai-phong/page-27-03.webp",
+      "source": "800x800",
+      "output": "800x800",
+      "bytes": 96750,
+      "rawIndex": 170
+    },
+    {
+      "file": "/images/menu-hai-phong/page-27-04.webp",
+      "source": "1556x1037",
+      "output": "1556x1037",
+      "bytes": 191672,
+      "rawIndex": 171
+    }
+  ],
+  "28": [
+    {
+      "file": "/images/menu-hai-phong/page-28-01.webp",
+      "source": "2465x3286",
+      "output": "1350x1800",
+      "bytes": 432542,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-28-02.webp",
+      "source": "798x809",
+      "output": "798x809",
+      "bytes": 32210,
+      "rawIndex": 1
+    }
+  ],
+  "29": [
+    {
+      "file": "/images/menu-hai-phong/page-29-01.webp",
+      "source": "3062x2041",
+      "output": "1800x1200",
+      "bytes": 305186,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-29-02.webp",
+      "source": "1858x1239",
+      "output": "1800x1200",
+      "bytes": 230228,
+      "rawIndex": 1
+    }
+  ],
+  "30": [
+    {
+      "file": "/images/menu-hai-phong/page-30-01.webp",
+      "source": "1080x1080",
+      "output": "1080x1080",
+      "bytes": 135856,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-30-02.webp",
+      "source": "1920x2560",
+      "output": "1350x1800",
+      "bytes": 606376,
+      "rawIndex": 9
+    },
+    {
+      "file": "/images/menu-hai-phong/page-30-03.webp",
+      "source": "1200x1200",
+      "output": "1200x1200",
+      "bytes": 229036,
+      "rawIndex": 10
+    }
+  ],
+  "31": [
+    {
+      "file": "/images/menu-hai-phong/page-31-01.webp",
+      "source": "1798x1349",
+      "output": "1798x1349",
+      "bytes": 646656,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-31-02.webp",
+      "source": "1400x1400",
+      "output": "1400x1400",
+      "bytes": 324152,
+      "rawIndex": 1
+    }
+  ],
+  "32": [
+    {
+      "file": "/images/menu-hai-phong/page-32-01.webp",
+      "source": "1458x2186",
+      "output": "1201x1800",
+      "bytes": 225166,
+      "rawIndex": 0
+    }
+  ],
+  "33": [
+    {
+      "file": "/images/menu-hai-phong/page-33-01.webp",
+      "source": "2732x2147",
+      "output": "1800x1415",
+      "bytes": 364556,
+      "rawIndex": 0
+    }
+  ],
+  "34": [
+    {
+      "file": "/images/menu-hai-phong/page-34-01.webp",
+      "source": "1822x2732",
+      "output": "1200x1800",
+      "bytes": 304692,
+      "rawIndex": 0
+    }
+  ],
+  "35": [
+    {
+      "file": "/images/menu-hai-phong/page-35-01.webp",
+      "source": "2187x3279",
+      "output": "1201x1800",
+      "bytes": 266104,
+      "rawIndex": 0
+    }
+  ],
+  "36": [
+    {
+      "file": "/images/menu-hai-phong/page-36-01.webp",
+      "source": "2856x2142",
+      "output": "1800x1350",
+      "bytes": 389444,
+      "rawIndex": 0
+    }
+  ],
+  "37": [
+    {
+      "file": "/images/menu-hai-phong/page-37-01.webp",
+      "source": "1920x2560",
+      "output": "1350x1800",
+      "bytes": 499670,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-37-02.webp",
+      "source": "1400x1400",
+      "output": "1400x1400",
+      "bytes": 324152,
+      "rawIndex": 1
+    }
+  ],
+  "38": [
+    {
+      "file": "/images/menu-hai-phong/page-38-01.webp",
+      "source": "1344x1792",
+      "output": "1344x1792",
+      "bytes": 364834,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-38-02.webp",
+      "source": "1368x796",
+      "output": "1368x796",
+      "bytes": 40392,
+      "rawIndex": 25
+    }
+  ],
+  "39": [
+    {
+      "file": "/images/menu-hai-phong/page-39-01.webp",
+      "source": "2551x3825",
+      "output": "1200x1800",
+      "bytes": 228792,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-39-02.webp",
+      "source": "2187x3279",
+      "output": "1201x1800",
+      "bytes": 249014,
+      "rawIndex": 1
+    }
+  ],
+  "40": [
+    {
+      "file": "/images/menu-hai-phong/page-40-01.webp",
+      "source": "2738x3651",
+      "output": "1350x1800",
+      "bytes": 371150,
+      "rawIndex": 0
+    }
+  ],
+  "41": [
+    {
+      "file": "/images/menu-hai-phong/page-41-01.webp",
+      "source": "2127x1748",
+      "output": "1800x1479",
+      "bytes": 215302,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-41-02.webp",
+      "source": "1696x1131",
+      "output": "1696x1131",
+      "bytes": 239672,
+      "rawIndex": 1
+    },
+    {
+      "file": "/images/menu-hai-phong/page-41-03.webp",
+      "source": "1696x1131",
+      "output": "1696x1131",
+      "bytes": 113620,
+      "rawIndex": 2
+    },
+    {
+      "file": "/images/menu-hai-phong/page-41-04.webp",
+      "source": "834x794",
+      "output": "834x794",
+      "bytes": 23990,
+      "rawIndex": 3
+    }
+  ],
+  "42": [
+    {
+      "file": "/images/menu-hai-phong/page-42-01.webp",
+      "source": "2048x1365",
+      "output": "1800x1200",
+      "bytes": 219160,
+      "rawIndex": 30
+    },
+    {
+      "file": "/images/menu-hai-phong/page-42-02.webp",
+      "source": "824x693",
+      "output": "824x693",
+      "bytes": 31474,
+      "rawIndex": 31
+    }
+  ],
+  "43": [
+    {
+      "file": "/images/menu-hai-phong/page-43-01.webp",
+      "source": "1536x1024",
+      "output": "1536x1024",
+      "bytes": 159264,
+      "rawIndex": 0
+    }
+  ],
+  "44": [
+    {
+      "file": "/images/menu-hai-phong/page-44-01.webp",
+      "source": "1536x1024",
+      "output": "1536x1024",
+      "bytes": 325326,
+      "rawIndex": 0
+    }
+  ],
+  "45": [
+    {
+      "file": "/images/menu-hai-phong/page-45-01.webp",
+      "source": "3744x2496",
+      "output": "1800x1200",
+      "bytes": 288432,
+      "rawIndex": 0
+    }
+  ],
+  "46": [
+    {
+      "file": "/images/menu-hai-phong/page-46-01.webp",
+      "source": "2804x1869",
+      "output": "1800x1200",
+      "bytes": 129848,
+      "rawIndex": 0
+    },
+    {
+      "file": "/images/menu-hai-phong/page-46-02.webp",
+      "source": "1203x453",
+      "output": "1203x453",
+      "bytes": 23982,
+      "rawIndex": 1
+    }
+  ],
+  "47": [
+    {
+      "file": "/images/menu-hai-phong/page-47-01.webp",
+      "source": "1549x1033",
+      "output": "1549x1033",
+      "bytes": 38482,
+      "rawIndex": 157
+    },
+    {
+      "file": "/images/menu-hai-phong/page-47-02.webp",
+      "source": "775x1162",
+      "output": "775x1162",
+      "bytes": 63476,
+      "rawIndex": 159
+    },
+    {
+      "file": "/images/menu-hai-phong/page-47-03.webp",
+      "source": "1549x1033",
+      "output": "1549x1033",
+      "bytes": 52622,
+      "rawIndex": 161
+    },
+    {
+      "file": "/images/menu-hai-phong/page-47-04.webp",
+      "source": "775x1162",
+      "output": "775x1162",
+      "bytes": 66726,
+      "rawIndex": 163
+    }
+  ],
+  "48": [
+    {
+      "file": "/images/menu-hai-phong/page-48-01.webp",
+      "source": "1229x820",
+      "output": "1229x820",
+      "bytes": 52000,
+      "rawIndex": 1
+    },
+    {
+      "file": "/images/menu-hai-phong/page-48-02.webp",
+      "source": "1225x1633",
+      "output": "1225x1633",
+      "bytes": 241060,
+      "rawIndex": 2
+    }
+  ],
+  "49": [
+    {
+      "file": "/images/menu-hai-phong/page-49-01.webp",
+      "source": "903x1354",
+      "output": "903x1354",
+      "bytes": 249748,
+      "rawIndex": 1
+    }
+  ]
+}

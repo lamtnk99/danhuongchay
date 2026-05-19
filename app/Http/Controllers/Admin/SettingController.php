@@ -80,6 +80,9 @@ class SettingController extends Controller
             'email' => 'Email',
             'address' => 'Địa chỉ',
             'opening_hours' => 'Giờ mở cửa',
+            'reservation_time_slots' => 'Khung giờ nhận đặt bàn',
+            'reservation_last_booking_time' => 'Giờ nhận đặt bàn muộn nhất',
+            'reservation_last_order_buffer_minutes' => 'Số phút ngừng nhận trước giờ đóng bếp',
             'facebook_url' => 'Link Facebook',
             'zalo_url' => 'Link Zalo',
             'tiktok_url' => 'Link TikTok',
@@ -124,7 +127,12 @@ class SettingController extends Controller
     private function rulesFor(array $keys): array
     {
         return collect($keys)
-            ->mapWithKeys(fn ($label, $key): array => [$key => ['nullable', 'string']])
+            ->mapWithKeys(function ($label, $key): array {
+                return match ($key) {
+                    'reservation_last_order_buffer_minutes' => [$key => ['nullable', 'integer', 'min:0', 'max:240']],
+                    default => [$key => ['nullable', 'string']],
+                };
+            })
             ->all();
     }
 

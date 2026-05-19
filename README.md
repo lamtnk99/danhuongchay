@@ -227,3 +227,39 @@ Form liên hệ lưu vào bảng `contacts`.
 Form đặt bàn lưu vào bảng `reservations` với `status = pending`.
 
 Cả hai form đều dùng Form Request để validate và hiển thị thông báo thành công sau khi submit.
+
+## SEO local va conversion tracking moi
+
+Route SEO local moi:
+
+- `/quan-chay-hai-phong`: landing page cho tu khoa quan chay Hai Phong.
+- `/dat-tiec-chay-hai-phong`: landing page dat tiec chay / mam cung chay.
+- `/mam-cung-chay-hai-phong`: redirect ve `/dat-tiec-chay-hai-phong`.
+
+Schema moi:
+
+- `FAQPage` cho cac landing page SEO local.
+- `MenuItem` cho trang chi tiet mon an.
+
+Conversion tracking:
+
+Admin co the dan Google Analytics code va Facebook Pixel code trong `/admin/seo`. Frontend se tu gui event neu `gtag` hoac `fbq` da ton tai tren trang.
+
+Mot so event dang co:
+
+- `click_call`: click goi dien.
+- `click_zalo`: click Zalo.
+- `click_messenger`: click Messenger/Facebook.
+- `open_chat`: mo widget chat.
+- `start_chat`: bat dau chat.
+- `click_dish_card`: click vao card mon.
+- `view_dish`: xem trang chi tiet mon.
+- `click_dish_reservation`: click dat ban tu trang mon.
+- `click_dish_catering`: click dat tiec/mam chay tu trang mon.
+- `submit_reservation`: bam gui form dat ban.
+- `reservation_success`: dat ban thanh cong sau redirect.
+- `submit_contact`: bam gui form lien he.
+- `contact_success`: lien he thanh cong sau redirect.
+- `click_catering_reservation`: click CTA dat tiec chay.
+
+Co che tracking nam trong `resources/js/app.js` va dung cac attribute `data-track-*`, nen co the gan them vao nut moi ma khong can viet lai JS.

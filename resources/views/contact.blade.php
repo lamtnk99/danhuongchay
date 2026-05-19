@@ -57,12 +57,13 @@
 
             <div class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8">
                 @if (session('success'))
+                    <span class="sr-only" data-track-view="contact_success" data-track-category="lead" data-track-label="Contact form success" data-facebook-event="Lead"></span>
                     <div class="mb-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                <form action="{{ route('contact.store') }}" method="POST" class="grid gap-5" data-submit-loading>
+                <form action="{{ route('contact.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_contact" data-track-category="lead" data-track-label="Contact form" data-facebook-event="Lead">
                     @csrf
                     <div>
                         <label for="name" class="form-label">Họ tên</label>

@@ -24,7 +24,7 @@
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a href="{{ $hero?->button_link ?: route('menu.index') }}" class="btn-primary">{{ $hero?->button_text ?: 'Xem thực đơn' }}</a>
                     <a href="{{ route('reservations.create') }}" class="btn-secondary">Đặt bàn</a>
-                    <a href="{{ route('contact') }}" class="btn-ghost">Liên hệ</a>
+                    <a href="{{ route('local.vegetarian-catering-hai-phong') }}" class="btn-ghost" data-track-event="click_catering_cta" data-track-label="Hero đặt mâm cỗ">Đặt mâm cỗ</a>
                 </div>
             </div>
         </div>
@@ -218,6 +218,22 @@
             @foreach ($latestPosts as $post)
                 @include('partials.post-card', ['post' => $post])
             @endforeach
+        </div>
+    </section>
+
+    <section class="section-block pt-0">
+        <div class="rounded-[2rem] border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8 lg:flex lg:items-center lg:justify-between lg:gap-10">
+            <div class="max-w-3xl">
+                <p class="eyebrow">Quán chay Hải Phòng</p>
+                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">Tìm một bữa chay ngon, sạch và dễ đặt bàn tại Hải Phòng?</h2>
+                <p class="mt-4 leading-8 text-stone-700">
+                    Xem trang tổng hợp dành riêng cho khách đang tìm quán chay Hải Phòng, có thông tin địa chỉ, món nổi bật, FAQ, đặt bàn, tiệc chay và mâm cúng chay.
+                </p>
+            </div>
+            <div class="mt-6 flex shrink-0 flex-wrap gap-3 lg:mt-0">
+                <a href="{{ route('local.vegetarian-restaurant-hai-phong') }}" class="btn-primary justify-center">Xem gợi ý quán chay</a>
+                <a href="{{ route('local.vegetarian-catering-hai-phong') }}" class="btn-secondary justify-center" data-track-event="click_catering_cta" data-track-category="catering" data-track-label="Home local SEO block" data-facebook-event="ClickCatering">Đặt tiệc/mâm chay</a>
+            </div>
         </div>
     </section>
 @endsection

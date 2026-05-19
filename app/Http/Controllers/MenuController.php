@@ -35,9 +35,9 @@ class MenuController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            'Thực đơn chay | Đàn Hương Chay',
-            'Khám phá thực đơn Đàn Hương Chay với món khai vị, món chính, lẩu chay, cơm mì bún chay và đồ uống thanh lành.',
-            'thực đơn chay, món chay ngon, lẩu chay, cơm chay, Đàn Hương Chay',
+            'Thực đơn quán chay Hải Phòng | Món chay ngon Đàn Hương Chay',
+            'Khám phá thực đơn quán chay Hải Phòng với món khai vị, món chính, lẩu chay, cơm mì bún chay và đồ uống thanh lành.',
+            'thực đơn chay, quán chay Hải Phòng, món chay ngon, nhà hàng chay Hải Phòng, lẩu chay, cơm chay, đặt bàn quán chay',
             route('menu.index')
         );
 
@@ -59,7 +59,18 @@ class MenuController extends Controller
             ->active()
             ->where('category_id', $dish->category_id)
             ->whereKeyNot($dish->getKey())
-            ->latest()
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->limit(3)
+            ->get();
+
+        $pairingDishes = Dish::query()
+            ->with('category')
+            ->active()
+            ->featured()
+            ->whereKeyNot($dish->getKey())
+            ->where('category_id', '!=', $dish->category_id)
+            ->orderBy('sort_order')
             ->limit(3)
             ->get();
 
@@ -70,9 +81,9 @@ class MenuController extends Controller
         ];
 
         $seo = SeoService::page(
-            $dish->meta_title ?: "{$dish->name} | Đàn Hương Chay",
+            $dish->meta_title ?: "{$dish->name} | Đàn Hương Chay Hải Phòng",
             $dish->meta_description ?: $dish->description,
-            $dish->meta_keywords ?: "{$dish->name}, món chay, {$dish->category->name}, Đàn Hương Chay",
+            $dish->meta_keywords ?: "{$dish->name}, món chay ngon Hải Phòng, quán chay Hải Phòng, {$dish->category->name}",
             route('menu.show', $dish),
             $dish->image,
             'article'
@@ -80,9 +91,10 @@ class MenuController extends Controller
 
         $schemas = [
             SeoService::restaurantSchema(),
+            SeoService::dishSchema($dish),
             SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
-        return view('menu.show', compact('dish', 'relatedDishes', 'breadcrumbs', 'seo', 'schemas'));
+        return view('menu.show', compact('dish', 'relatedDishes', 'pairingDishes', 'breadcrumbs', 'seo', 'schemas'));
     }
 }

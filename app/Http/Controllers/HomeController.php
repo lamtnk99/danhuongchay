@@ -58,9 +58,9 @@ class HomeController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            setting('default_meta_title', 'Đàn Hương Chay | Ẩm thực chay thanh lành'),
-            setting('default_meta_description', 'Đàn Hương Chay phục vụ món chay Việt hiện đại, nguyên liệu sạch, không gian thanh tịnh và dịch vụ đặt bàn tiện lợi.'),
-            setting('default_meta_keywords', 'Đàn Hương Chay, quán chay, nhà hàng chay, món chay ngon, ẩm thực chay'),
+            setting('default_meta_title', 'Đàn Hương Chay - Hải Phòng | Quán chay ngon, món chay fusion, đặt bàn'),
+            setting('default_meta_description', 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với món chay ngon, thực đơn đa dạng, không gian an yên và đặt bàn tiện lợi.'),
+            setting('default_meta_keywords', 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy'),
             route('home')
         );
 

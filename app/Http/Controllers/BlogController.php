@@ -17,9 +17,9 @@ class BlogController extends Controller
             ->paginate(6);
 
         $seo = SeoService::page(
-            'Blog ăn chay và sống xanh | Đàn Hương Chay',
-            'Bài viết về ăn chay, sức khỏe, dinh dưỡng thực vật và phong cách sống xanh từ Đàn Hương Chay.',
-            'blog ăn chay, sống xanh, sức khỏe, dinh dưỡng chay',
+            'Blog quán chay Hải Phòng | Ăn chay, sống xanh, dinh dưỡng',
+            'Bài viết thực tế về quán chay Hải Phòng, nhà hàng chay, món chay ngon, ăn chay healthy, thực đơn chay và phong cách sống xanh.',
+            'blog quán chay Hải Phòng, ăn chay, sống xanh, dinh dưỡng chay, món chay ngon, nhà hàng chay Hải Phòng',
             route('blog.index')
         );
 
@@ -54,7 +54,7 @@ class BlogController extends Controller
         $seo = SeoService::page(
             $post->meta_title ?: "{$post->title} | Đàn Hương Chay",
             $post->meta_description ?: $post->excerpt,
-            $post->meta_keywords ?: "{$post->title}, ăn chay, sống xanh, Đàn Hương Chay",
+            $post->meta_keywords ?: "{$post->title}, quán chay Hải Phòng, món chay ngon, ăn chay, sống xanh",
             route('blog.show', $post),
             $post->thumbnail,
             'article'

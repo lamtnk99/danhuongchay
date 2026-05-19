@@ -48,10 +48,61 @@ if (stickyHeader) {
     window.addEventListener('scroll', updateHeaderShadow, { passive: true });
 }
 
+const trackConversion = (eventName, params = {}) => {
+    const payload = {
+        page_path: window.location.pathname,
+        page_title: document.title,
+        ...params,
+    };
+
+    if (typeof window.gtag === 'function') {
+        window.gtag('event', eventName, payload);
+    }
+
+    if (typeof window.fbq === 'function') {
+        const facebookEvent = payload.facebook_event || eventName;
+        window.fbq('trackCustom', facebookEvent, payload);
+    }
+
+    window.dispatchEvent(new CustomEvent('danhuong:conversion', {
+        detail: { eventName, payload },
+    }));
+};
+
+document.querySelectorAll('[data-track-event]').forEach((element) => {
+    element.addEventListener('click', () => {
+        trackConversion(element.dataset.trackEvent, {
+            event_category: element.dataset.trackCategory || 'engagement',
+            event_label: element.dataset.trackLabel || element.textContent.trim(),
+            link_url: element.href || null,
+            facebook_event: element.dataset.facebookEvent || undefined,
+        });
+    });
+});
+
+document.querySelectorAll('[data-track-view]').forEach((element) => {
+    trackConversion(element.dataset.trackView, {
+        event_category: element.dataset.trackCategory || 'view',
+        event_label: element.dataset.trackLabel || document.title,
+        item_name: element.dataset.itemName || undefined,
+        value: element.dataset.value ? Number(element.dataset.value) : undefined,
+        currency: element.dataset.currency || undefined,
+        facebook_event: element.dataset.facebookEvent || undefined,
+    });
+});
+
 document.querySelectorAll('form[data-submit-loading]').forEach((form) => {
     form.addEventListener('submit', () => {
         if (!form.checkValidity()) {
             return;
+        }
+
+        if (form.dataset.trackSubmit) {
+            trackConversion(form.dataset.trackSubmit, {
+                event_category: form.dataset.trackCategory || 'form',
+                event_label: form.dataset.trackLabel || form.getAttribute('action') || 'submit',
+                facebook_event: form.dataset.facebookEvent || undefined,
+            });
         }
 
         const submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
@@ -410,8 +461,19 @@ if (chatWidget) {
         panel.classList.toggle('hidden', expanded);
 
         if (!expanded && chatSessionId) {
+            trackConversion('open_chat', {
+                event_category: 'chat',
+                event_label: 'Open chat widget',
+                facebook_event: 'OpenChat',
+            });
             loadMessages();
             startPolling();
+        } else if (!expanded) {
+            trackConversion('open_chat', {
+                event_category: 'chat',
+                event_label: 'Open chat widget',
+                facebook_event: 'OpenChat',
+            });
         }
     });
 
@@ -433,6 +495,11 @@ if (chatWidget) {
 
             chatSessionId = data.session_id;
             window.sessionStorage.setItem('danhuong_chat_session_id', chatSessionId);
+            trackConversion('start_chat', {
+                event_category: 'chat',
+                event_label: 'Visitor started chat',
+                facebook_event: 'StartChat',
+            });
             renderMessages(data.messages);
             startForm.classList.add('hidden');
             sendForm.classList.remove('hidden');

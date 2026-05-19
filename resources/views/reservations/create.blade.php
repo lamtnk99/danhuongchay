@@ -14,12 +14,13 @@
     <section class="section-block">
         <div class="mx-auto max-w-3xl rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8">
             @if (session('success'))
+                <span class="sr-only" data-track-view="reservation_success" data-track-category="reservation" data-track-label="Reservation form success" data-facebook-event="SubmitReservation"></span>
                 <div class="mb-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <form action="{{ route('reservations.store') }}" method="POST" class="grid gap-5" data-submit-loading>
+            <form action="{{ route('reservations.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_reservation" data-track-category="reservation" data-track-label="Reservation form" data-facebook-event="SubmitReservation">
                 @csrf
                 <div class="grid gap-5 md:grid-cols-2">
                     <div>
@@ -43,7 +44,7 @@
                 <div class="grid gap-5 md:grid-cols-3">
                     <div>
                         <label for="reservation_date" class="form-label">Ngày đặt</label>
-                        <input id="reservation_date" type="date" name="reservation_date" value="{{ old('reservation_date') }}" min="{{ now()->toDateString() }}" class="form-input" autocomplete="off" data-reservation-date required>
+                        <input id="reservation_date" type="date" name="reservation_date" value="{{ old('reservation_date') }}" min="{{ now()->toDateString() }}" class="form-input" autocomplete="off" required>
                         @error('reservation_date') <p class="form-error">{{ $message }}</p> @enderror
                     </div>
                     <div>
@@ -51,20 +52,29 @@
                         <input
                             id="reservation_time"
                             type="time"
+                            list="reservation-time-options"
                             name="reservation_time"
                             value="{{ old('reservation_time') }}"
                             min="{{ $openingHours->opensAt }}"
                             max="{{ $openingHours->closesAt }}"
                             step="900"
                             class="form-input"
-                            data-reservation-time
-                            data-opens-at="{{ $openingHours->opensAt }}"
-                            data-closes-at="{{ $openingHours->closesAt }}"
-                            data-today="{{ now()->toDateString() }}"
                             required
                         >
+                        <datalist id="reservation-time-options">
+                            @foreach ($openingHours->bookableSlots() as $slot)
+                                @php
+                                    $cursor = \Carbon\Carbon::createFromFormat('H:i', $slot['start']);
+                                    $end = \Carbon\Carbon::createFromFormat('H:i', $slot['end']);
+                                @endphp
+                                @while ($cursor->lte($end))
+                                    <option value="{{ $cursor->format('H:i') }}"></option>
+                                    @php($cursor->addMinutes(15))
+                                @endwhile
+                            @endforeach
+                        </datalist>
                         <p class="mt-2 text-sm font-medium text-stone-600" data-reservation-time-hint>
-                            Quán nhận đặt bàn trong khung {{ $openingHours->opensAt }} - {{ $openingHours->closesAt }}.
+                            {{ $openingHours->message() }}
                         </p>
                         @error('reservation_time') <p class="form-error">{{ $message }}</p> @enderror
                     </div>

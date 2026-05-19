@@ -12,6 +12,14 @@
     </section>
 
     <section class="section-block">
+        <div class="mb-8 rounded-3xl border border-emerald-900/10 bg-emerald-50/70 p-5 text-stone-700 sm:p-6">
+            <p class="font-semibold text-emerald-950">Bạn đang tìm quán chay Hải Phòng để đặt bàn?</p>
+            <p class="mt-2 leading-7">
+                Xem trang tổng hợp về Đàn Hương Chay, món nổi bật, địa chỉ, khung giờ phục vụ và FAQ trước khi chọn món.
+                <a href="{{ route('local.vegetarian-restaurant-hai-phong') }}" class="font-semibold text-emerald-800 hover:text-emerald-950">Xem quán chay Hải Phòng</a>.
+            </p>
+        </div>
+
         <form action="{{ route('menu.index') }}" method="GET" class="menu-search-form mb-8 grid gap-4 rounded-2xl border border-emerald-900/10 bg-white p-4 shadow-sm md:grid-cols-[1fr_auto]">
             <label class="sr-only" for="q">Tìm món ăn</label>
             <input

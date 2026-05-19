@@ -12,6 +12,7 @@
             (object) ['title' => 'Giới thiệu', 'url' => route('about'), 'open_new_tab' => false],
             (object) ['title' => 'Thực đơn', 'url' => route('menu.index'), 'open_new_tab' => false],
             (object) ['title' => 'Blog', 'url' => route('blog.index'), 'open_new_tab' => false],
+            (object) ['title' => 'Đặt tiệc', 'url' => route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
             (object) ['title' => 'Đặt bàn', 'url' => route('reservations.create'), 'open_new_tab' => false],
             (object) ['title' => 'Liên hệ', 'url' => route('contact'), 'open_new_tab' => false],
         ]);

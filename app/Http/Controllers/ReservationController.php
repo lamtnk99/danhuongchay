@@ -14,9 +14,9 @@ class ReservationController extends Controller
     public function create(): View
     {
         $seo = SeoService::page(
-            'Đặt bàn tại Đàn Hương Chay',
-            'Đặt bàn trước tại Đàn Hương Chay để thưởng thức bữa chay thanh lành trong không gian yên tĩnh.',
-            'đặt bàn quán chay, đặt bàn Đàn Hương Chay, nhà hàng chay',
+            'Đặt bàn quán chay Hải Phòng | Đàn Hương Chay',
+            'Đặt bàn trước tại Đàn Hương Chay để thưởng thức món chay ngon, không gian an yên và khung giờ phục vụ linh hoạt tại Hải Phòng.',
+            'đặt bàn quán chay, đặt bàn Hải Phòng, nhà hàng chay Hải Phòng, tiệc chay, mâm cúng chay',
             route('reservations.create')
         );
 

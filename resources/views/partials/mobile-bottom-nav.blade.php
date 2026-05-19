@@ -13,6 +13,12 @@
             'icon' => 'menu',
         ],
         [
+            'label' => 'Đặt tiệc',
+            'url' => route('local.vegetarian-catering-hai-phong'),
+            'active' => request()->routeIs('local.vegetarian-catering-hai-phong'),
+            'icon' => 'catering',
+        ],
+        [
             'label' => 'Đặt bàn',
             'url' => route('reservations.create'),
             'active' => request()->routeIs('reservations.*'),
@@ -44,6 +50,11 @@
                 @case('calendar')
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M7 2a1 1 0 0 1 1 1v1h8V3a1 1 0 1 1 2 0v1h1.5A2.5 2.5 0 0 1 22 6.5v12A2.5 2.5 0 0 1 19.5 21h-15A2.5 2.5 0 0 1 2 18.5v-12A2.5 2.5 0 0 1 4.5 4H6V3a1 1 0 0 1 1-1Zm13 8H4v8.5c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V10Z" />
+                    </svg>
+                    @break
+                @case('catering')
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M12 3.5c3.9 0 7.2 2.8 7.9 6.5h.6a1 1 0 1 1 0 2h-17a1 1 0 1 1 0-2h.6C4.8 6.3 8.1 3.5 12 3.5Zm0 2c-2.8 0-5.1 1.9-5.8 4.5h11.6C17.1 7.4 14.8 5.5 12 5.5ZM5 14h14a1 1 0 0 1 .9 1.4l-1.6 3.2A2.5 2.5 0 0 1 16.1 20H7.9a2.5 2.5 0 0 1-2.2-1.4l-1.6-3.2A1 1 0 0 1 5 14Z" />
                     </svg>
                     @break
                 @default

@@ -14,6 +14,8 @@ class SitemapController extends Controller
     {
         $staticUrls = collect([
             ['loc' => route('home'), 'priority' => '1.0', 'changefreq' => 'weekly', 'lastmod' => now()],
+            ['loc' => route('local.vegetarian-restaurant-hai-phong'), 'priority' => '0.95', 'changefreq' => 'weekly', 'lastmod' => now()],
+            ['loc' => route('local.vegetarian-catering-hai-phong'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => now()],
             ['loc' => route('about'), 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => now()],
             ['loc' => route('gallery.index'), 'priority' => '0.8', 'changefreq' => 'monthly', 'lastmod' => now()],
             ['loc' => route('menu.index'), 'priority' => '0.9', 'changefreq' => 'weekly', 'lastmod' => now()],

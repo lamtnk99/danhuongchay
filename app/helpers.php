@@ -26,6 +26,10 @@ if (! function_exists('media_url')) {
             return $path;
         }
 
+        if (str_starts_with($path, '/')) {
+            return $path;
+        }
+
         return Storage::disk('public')->url($path);
     }
 }

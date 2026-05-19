@@ -1,8 +1,8 @@
 @php
     $seo = $seo ?? [];
-    $title = $seo['title'] ?? 'Đàn Hương Chay | Ẩm thực chay thanh lành';
-    $description = $seo['description'] ?? 'Đàn Hương Chay phục vụ món chay Việt hiện đại, nguyên liệu sạch và không gian thanh tịnh.';
-    $keywords = $seo['keywords'] ?? 'Đàn Hương Chay, quán chay, nhà hàng chay, món chay ngon';
+    $title = $seo['title'] ?? 'Đàn Hương Chay - Hải Phòng | Quán chay ngon, món chay fusion, đặt bàn';
+    $description = $seo['description'] ?? 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với món chay ngon, thực đơn đa dạng, không gian an yên và đặt bàn tiện lợi.';
+    $keywords = $seo['keywords'] ?? 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy';
     $canonical = $seo['canonical'] ?? url()->current();
     $image = $seo['image'] ?? \App\Services\SeoService::defaultImage();
     $type = $seo['type'] ?? 'website';

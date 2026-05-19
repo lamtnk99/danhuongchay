@@ -9,15 +9,19 @@ class PromotionSeeder extends Seeder
 {
     public function run(): void
     {
+        Promotion::query()
+            ->whereIn('placement', ['home', 'popup'])
+            ->delete();
+
         $promotions = [
             [
-                'title' => 'Combo An Lành cho 2 người',
-                'subtitle' => 'Gợi ý bữa tối thanh nhẹ',
-                'description' => 'Combo gồm gỏi cuốn nấm, cơm gạo lứt hạt sen, đậu hũ sốt nấm và trà thảo mộc. Phù hợp cho bữa chay nhẹ nhàng trong tuần.',
-                'badge' => 'Ưu đãi tuần này',
+                'title' => 'Lẩu Nấm Thập Tam Hương',
+                'subtitle' => 'Signature mới từ menu Hải Phòng',
+                'description' => 'Nước lẩu 13 vị thảo mộc phương Đông kết hợp hệ sinh thái nấm quý, phù hợp cho nhóm 2-4 người.',
+                'badge' => 'Món signature',
                 'button_text' => 'Xem món ngay',
-                'button_link' => '/thuc-don',
-                'image' => 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=85',
+                'button_link' => '/mon-an/lau-nam-thap-tam-huong',
+                'image' => '/images/menu-hai-phong/page-07-01.webp',
                 'placement' => 'home',
                 'template' => 'split',
                 'accent_color' => '#047857',
@@ -26,43 +30,43 @@ class PromotionSeeder extends Seeder
                 'is_active' => true,
             ],
             [
-                'title' => 'Món mới: Lẩu nấm dưỡng sinh',
-                'subtitle' => 'Đậm vị rau củ theo mùa',
-                'description' => 'Nước dùng ninh từ củ quả, nấm tươi và thảo mộc nhẹ. Phần lẩu dùng được cho 2-3 người.',
-                'badge' => 'Món nổi bật',
+                'title' => 'Mâm Cuốn Đàn Hương',
+                'subtitle' => 'Gợi ý bữa chay nhẹ cho nhóm bạn',
+                'description' => 'Lá lốt cuốn nấm áp chảo, bánh hỏi dẻo và rau xanh dùng cùng mắm hạt đặc trưng.',
+                'badge' => 'Bán chạy',
                 'button_text' => 'Đặt bàn thử món',
                 'button_link' => '/dat-ban',
-                'image' => 'https://images.unsplash.com/photo-1625398407796-82650a8c135f?auto=format&fit=crop&w=1200&q=85',
+                'image' => '/images/menu-hai-phong/page-06-01.webp',
                 'placement' => 'home',
                 'template' => 'split',
-                'accent_color' => '#92400e',
+                'accent_color' => '#0f766e',
                 'sort_order' => 2,
                 'show_once' => false,
                 'is_active' => true,
             ],
             [
-                'title' => 'Set trưa văn phòng giảm 12%',
-                'subtitle' => 'Ưu đãi ngày thường 11h-14h',
-                'description' => 'Áp dụng cho nhóm từ 2 người với set cơm chay theo ngày, tặng thêm trà thanh nhiệt khi đặt bàn online.',
-                'badge' => 'Ưu đãi giờ vàng',
-                'button_text' => 'Đặt bàn nhận ưu đãi',
-                'button_link' => '/dat-ban',
-                'image' => 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1200&q=85',
+                'title' => 'Nấm Đút Lò Phô Mai',
+                'subtitle' => 'Vị Âu béo thơm, dễ chia sẻ',
+                'description' => 'Nấm và bí đỏ phủ Mozzarella kéo sợi, ăn kèm bánh mì nướng giòn.',
+                'badge' => 'Món mới nổi bật',
+                'button_text' => 'Xem thực đơn',
+                'button_link' => '/thuc-don?category=signature-food',
+                'image' => '/images/menu-hai-phong/page-04-01.webp',
                 'placement' => 'home',
                 'template' => 'split',
                 'accent_color' => '#b45309',
-                'sort_order' => 4,
+                'sort_order' => 3,
                 'show_once' => false,
                 'is_active' => true,
             ],
             [
-                'title' => 'Tặng trà thảo mộc cho bàn đặt trước',
-                'subtitle' => 'Thông báo từ Đàn Hương Chay',
-                'description' => 'Khách đặt bàn online trong tuần này được tặng một bình trà thảo mộc cho nhóm từ 2 người.',
+                'title' => 'Trà Nhài Cam Nhãn Tươi',
+                'subtitle' => 'Tặng kèm cho bàn đặt trước',
+                'description' => 'Đặt bàn online trong tuần này, nhóm từ 2 người được tặng phần trà nhài cam nhãn tươi mát.',
                 'badge' => 'Quà nhỏ an lành',
                 'button_text' => 'Đặt bàn',
                 'button_link' => '/dat-ban',
-                'image' => 'https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=1000&q=85',
+                'image' => '/images/menu-hai-phong/page-48-02.webp',
                 'placement' => 'popup',
                 'template' => 'center',
                 'accent_color' => '#0f766e',
@@ -73,10 +77,8 @@ class PromotionSeeder extends Seeder
         ];
 
         foreach ($promotions as $promotion) {
-            Promotion::updateOrCreate(
-                ['title' => $promotion['title'], 'placement' => $promotion['placement']],
-                $promotion
-            );
+            Promotion::create($promotion);
         }
     }
 }
+

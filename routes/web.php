@@ -22,6 +22,7 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\GalleryController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LocalSeoController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ReservationController;
@@ -71,6 +72,9 @@ Route::prefix('admin')
     });
 
 Route::get('/', HomeController::class)->name('home');
+Route::get('/quan-chay-hai-phong', [LocalSeoController::class, 'vegetarianRestaurantHaiPhong'])->name('local.vegetarian-restaurant-hai-phong');
+Route::get('/dat-tiec-chay-hai-phong', [LocalSeoController::class, 'vegetarianCateringHaiPhong'])->name('local.vegetarian-catering-hai-phong');
+Route::redirect('/mam-cung-chay-hai-phong', '/dat-tiec-chay-hai-phong');
 Route::get('/gioi-thieu', [PageController::class, 'about'])->name('about');
 Route::get('/khong-gian', GalleryController::class)->name('gallery.index');
 Route::get('/trang/{page:slug}', [PageController::class, 'show'])->name('pages.show');

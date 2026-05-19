@@ -24,9 +24,9 @@ class SeoService
         string $type = 'website'
     ): array {
         return [
-            'title' => $title ?: setting('default_meta_title', 'Đàn Hương Chay | Ẩm thực chay thanh lành'),
-            'description' => $description ?: setting('default_meta_description', 'Đàn Hương Chay phục vụ món chay Việt hiện đại, nguyên liệu sạch và không gian thanh tịnh.'),
-            'keywords' => $keywords ?: setting('default_meta_keywords', 'Đàn Hương Chay, quán chay, nhà hàng chay, món chay ngon'),
+            'title' => $title ?: setting('default_meta_title', 'Đàn Hương Chay - Hải Phòng | Ẩm thực chay fusion'),
+            'description' => $description ?: setting('default_meta_description', 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với menu sáng tạo, nguyên liệu sạch, không gian an yên và dịch vụ đặt bàn tiện lợi.'),
+            'keywords' => $keywords ?: setting('default_meta_keywords', 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy, ẩm thực chay fusion'),
             'canonical' => $canonical ?: url()->current(),
             'image' => media_url($image, self::defaultImage()),
             'type' => $type,
@@ -41,15 +41,15 @@ class SeoService
             'name' => setting('schema_restaurant_name', setting('restaurant_name', 'Đàn Hương Chay')),
             'image' => self::defaultImage(),
             'url' => url('/'),
-            'telephone' => setting('schema_phone', setting('phone', '+84 912 345 678')),
-            'email' => setting('email', 'hello@danhuongchay.vn'),
+            'telephone' => setting('schema_phone', setting('phone', '+84 947 361 515')),
+            'email' => setting('email', 'info@danhuongchay.com'),
             'priceRange' => setting('schema_price_range', '₫₫'),
             'servesCuisine' => ['Vietnamese', 'Vegetarian', 'Vegan'],
             'address' => [
                 '@type' => 'PostalAddress',
-                'streetAddress' => setting('schema_address', setting('address', '123 Đường An Nhiên, Quận 3, TP. Hồ Chí Minh')),
-                'addressLocality' => 'TP. Hồ Chí Minh',
-                'addressRegion' => 'TP. Hồ Chí Minh',
+                'streetAddress' => setting('schema_address', setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng')),
+                'addressLocality' => 'Hải Phòng',
+                'addressRegion' => 'Hải Phòng',
                 'addressCountry' => 'VN',
             ],
             'openingHoursSpecification' => [
@@ -57,7 +57,13 @@ class SeoService
                     '@type' => 'OpeningHoursSpecification',
                     'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
                     'opens' => '09:00',
-                    'closes' => '21:30',
+                    'closes' => '14:00',
+                ],
+                [
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                    'opens' => '16:00',
+                    'closes' => '21:00',
                 ],
             ],
             'sameAs' => array_values(array_filter([
@@ -99,6 +105,25 @@ class SeoService
         ];
     }
 
+    public static function dishSchema($dish): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'MenuItem',
+            'name' => $dish->name,
+            'description' => $dish->meta_description ?: $dish->description,
+            'image' => media_url($dish->image, self::defaultImage()),
+            'url' => route('menu.show', $dish),
+            'menuAddOn' => $dish->category?->name,
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => (int) ($dish->sale_price ?: $dish->price),
+                'priceCurrency' => 'VND',
+                'availability' => 'https://schema.org/InStock',
+            ],
+        ];
+    }
+
     public static function articleSchema(Post $post): array
     {
         return [
@@ -123,6 +148,28 @@ class SeoService
                 ],
             ],
             'mainEntityOfPage' => route('blog.show', $post),
+        ];
+    }
+
+    /**
+     * @param array<int, array{question: string, answer: string}> $faqs
+     */
+    public static function faqSchema(array $faqs): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'FAQPage',
+            'mainEntity' => collect($faqs)
+                ->map(fn (array $faq): array => [
+                    '@type' => 'Question',
+                    'name' => $faq['question'],
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => $faq['answer'],
+                    ],
+                ])
+                ->values()
+                ->all(),
         ];
     }
 

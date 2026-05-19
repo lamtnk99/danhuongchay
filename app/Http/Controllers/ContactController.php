@@ -13,9 +13,9 @@ class ContactController extends Controller
     public function create(): View
     {
         $seo = SeoService::page(
-            'Liên hệ Đàn Hương Chay | Đặt câu hỏi và tìm đường',
-            'Thông tin liên hệ, địa chỉ, giờ mở cửa và form gửi tin nhắn cho Đàn Hương Chay.',
-            'liên hệ Đàn Hương Chay, địa chỉ quán chay, số điện thoại quán chay',
+            'Liên hệ quán chay Hải Phòng | Đàn Hương Chay',
+            'Thông tin liên hệ, địa chỉ, giờ mở cửa và form gửi tin nhắn cho Đàn Hương Chay tại Hải Phòng.',
+            'liên hệ quán chay Hải Phòng, địa chỉ quán chay, số điện thoại quán chay, nhà hàng chay Hải Phòng',
             route('contact')
         );
 

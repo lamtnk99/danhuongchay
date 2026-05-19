@@ -21,9 +21,9 @@ class PageController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            $page?->meta_title ?: 'Giới thiệu Đàn Hương Chay | Câu chuyện thương hiệu',
-            $page?->meta_description ?: 'Tìm hiểu câu chuyện Đàn Hương Chay, triết lý ẩm thực chay thanh lành, không gian quán và cam kết nguyên liệu sạch.',
-            $page?->meta_keywords ?: 'giới thiệu Đàn Hương Chay, triết lý ăn chay, nhà hàng chay sạch',
+            $page?->meta_title ?: 'Giới thiệu quán chay Hải Phòng | Câu chuyện Đàn Hương Chay',
+            $page?->meta_description ?: 'Tìm hiểu câu chuyện thương hiệu Đàn Hương Chay, triết lý ẩm thực chay fusion, không gian quán và cam kết nguyên liệu sạch tại Hải Phòng.',
+            $page?->meta_keywords ?: 'giới thiệu quán chay Hải Phòng, nhà hàng chay Hải Phòng, triết lý ăn chay, ẩm thực chay fusion, Đàn Hương Chay',
             route('about'),
             $page?->image
         );
@@ -42,7 +42,7 @@ class PageController extends Controller
         $seo = SeoService::page(
             $page->meta_title ?: $page->title,
             $page->meta_description,
-            $page->meta_keywords,
+            $page->meta_keywords ?: "{$page->title}, quán chay Hải Phòng, Đàn Hương Chay",
             route('pages.show', $page),
             $page->image
         );

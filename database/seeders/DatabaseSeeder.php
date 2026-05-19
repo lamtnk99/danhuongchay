@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             GalleryImageSeeder::class,
             TestimonialSeeder::class,
             PromotionSeeder::class,
+            DanHuongHaiPhongMenuSeeder::class,
         ]);
     }
 }
