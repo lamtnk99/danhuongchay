@@ -48,7 +48,7 @@ return new class extends Migration
             $table->foreignId('gallery_image_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 8)->index();
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug', 180);
             $table->text('description')->nullable();
             $table->string('alt_text')->nullable();
             $table->string('meta_title')->nullable();

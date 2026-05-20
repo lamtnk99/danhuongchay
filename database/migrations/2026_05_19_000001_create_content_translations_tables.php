@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 8);
             $table->string('name');
-            $table->string('slug');
+            $table->string('slug', 180);
             $table->text('description')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreignId('dish_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 8);
             $table->string('name');
-            $table->string('slug');
+            $table->string('slug', 180);
             $table->text('description')->nullable();
             $table->longText('content')->nullable();
             $table->text('ingredients')->nullable();
@@ -44,7 +44,7 @@ return new class extends Migration
             $table->foreignId('post_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 8);
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug', 180);
             $table->text('excerpt')->nullable();
             $table->longText('content')->nullable();
             $table->string('meta_title')->nullable();
@@ -60,7 +60,7 @@ return new class extends Migration
             $table->foreignId('page_id')->constrained()->cascadeOnDelete();
             $table->string('locale', 8);
             $table->string('title');
-            $table->string('slug');
+            $table->string('slug', 180);
             $table->longText('content')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_description')->nullable();
