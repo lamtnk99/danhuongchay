@@ -15,10 +15,12 @@
 
             @if ($promotion->image && $promotion->template !== 'minimal')
                 <img
-                    src="{{ media_url($promotion->image) }}"
+                    src="{{ media_variant_url($promotion->image, 'card') }}"
+                    @if (media_srcset($promotion->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($promotion->image, ['thumb', 'card', 'large']) }}" @endif
                     alt="{{ $promotion->title }}"
                     class="promo-popup-image"
                     loading="lazy"
+                    sizes="(max-width: 640px) 100vw, 520px"
                 >
             @endif
 

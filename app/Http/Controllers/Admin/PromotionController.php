@@ -47,7 +47,8 @@ class PromotionController extends Controller
             $data['image'] = $this->uploads->uploadImage($request->file('image'), 'promotions');
         }
 
-        Promotion::create($data);
+        $promotion = Promotion::create($data);
+        $this->syncEnglishTranslation($request, $promotion);
 
         return redirect()->route('admin.promotions.index')->with('success', 'Đã thêm khuyến mãi/quảng cáo.');
     }
@@ -68,6 +69,7 @@ class PromotionController extends Controller
         }
 
         $promotion->update($data);
+        $this->syncEnglishTranslation($request, $promotion);
 
         return redirect()->route('admin.promotions.index')->with('success', 'Đã cập nhật khuyến mãi/quảng cáo.');
     }
@@ -83,12 +85,23 @@ class PromotionController extends Controller
     private function normalizedData(PromotionRequest $request): array
     {
         return collect($request->validated())
-            ->except(['image'])
+            ->except(['image', 'translations'])
             ->merge([
                 'accent_color' => $request->input('accent_color') ?: '#047857',
                 'show_once' => $request->boolean('show_once'),
                 'is_active' => $request->boolean('is_active'),
             ])
             ->all();
+    }
+
+    private function syncEnglishTranslation(PromotionRequest $request, Promotion $promotion): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $promotion->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

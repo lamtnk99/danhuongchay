@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Banner;
 use App\Models\GalleryImage;
+use App\Models\NavigationMenu;
 use App\Models\Promotion;
 use App\Models\SiteSetting;
 use App\Models\Testimonial;
@@ -15,6 +16,7 @@ class MarketingEnglishTranslationSeeder extends Seeder
     public function run(): void
     {
         $this->settings();
+        $this->navigationMenus();
 
         $bannerMap = [
             'Ẩm thực chay thanh lành - Nuôi dưỡng thân tâm' => [
@@ -109,10 +111,43 @@ class MarketingEnglishTranslationSeeder extends Seeder
             'opening_hours_en' => '09:00 - 14:00 | 16:00 - 21:00 daily',
             'footer_description_en' => 'Vegetarian fusion cuisine in Hai Phong, crafted with clean ingredients, gentle flavors and a peaceful dining space.',
             'copyright_en' => '© '.date('Y').' Dan Huong Chay. All rights reserved.',
+            'default_meta_title_en' => 'Dan Huong Chay - Hai Phong | Vegetarian Fusion Restaurant',
+            'default_meta_description_en' => 'Dan Huong Chay serves creative vegetarian fusion cuisine in Hai Phong with clean ingredients, peaceful space, table booking and vegetarian catering.',
+            'default_meta_keywords_en' => 'vegetarian restaurant Hai Phong, vegan food Hai Phong, vegetarian menu, vegetarian catering, healthy vegetarian food',
+            'schema_restaurant_name_en' => 'Dan Huong Chay',
+            'schema_address_en' => 'Villa 01-B4 Hoang Mau - Gia Vien, Hai Phong City',
+            'schema_opening_hours_en' => '09:00 - 14:00 | 16:00 - 21:00',
         ];
 
         foreach ($settings as $key => $value) {
             SiteSetting::set($key, $value, 'text', 'translation');
         }
+    }
+
+    private function navigationMenus(): void
+    {
+        $map = [
+            'Trang chủ' => ['Home', '/en'],
+            'Giới thiệu' => ['About', '/en/about'],
+            'Thực đơn' => ['Menu', '/en/menu'],
+            'Blog' => ['Blog', '/en/blog'],
+            'Đặt bàn' => ['Book table', '/en/reservation'],
+            'Liên hệ' => ['Contact', '/en/contact'],
+            'Không gian' => ['Space', '/en/space'],
+            'Quán chay Hải Phòng' => ['Vegetarian restaurant Hai Phong', '/en/vegetarian-restaurant-hai-phong'],
+            'Đặt tiệc chay' => ['Vegetarian catering', '/en/vegetarian-catering-hai-phong'],
+            'Đặt tiệc' => ['Catering', '/en/vegetarian-catering-hai-phong'],
+            'Chính sách đặt bàn' => ['Reservation policy', '/en/pages/reservation-policy'],
+            'Chính sách bảo mật' => ['Privacy policy', '/en/pages/privacy-policy'],
+        ];
+
+        NavigationMenu::query()->get()->each(function (NavigationMenu $menu) use ($map): void {
+            [$title, $url] = $map[$menu->title] ?? [Str::headline(Str::ascii($menu->title)), null];
+
+            $menu->translations()->updateOrCreate(['locale' => 'en'], [
+                'title' => $title,
+                'url' => $url,
+            ]);
+        });
     }
 }

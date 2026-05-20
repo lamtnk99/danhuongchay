@@ -13,7 +13,13 @@
         <div class="gallery-masonry">
             @forelse ($galleryImages as $image)
                 <article class="gallery-tile">
-                    <img src="{{ media_url($image->image) }}" alt="{{ $image->localized('alt_text', $image->localized('title')) }}" loading="lazy">
+                    <img
+                        src="{{ media_variant_url($image->image, 'card') }}"
+                        @if (media_srcset($image->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($image->image, ['thumb', 'card', 'large']) }}" @endif
+                        alt="{{ $image->localized('alt_text', $image->localized('title')) }}"
+                        loading="lazy"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                    >
                     <div>
                         <h2>{{ $image->localized('title') }}</h2>
                         @if ($image->localized('description'))

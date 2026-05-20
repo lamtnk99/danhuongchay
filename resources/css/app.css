@@ -219,6 +219,70 @@
     background: rgb(255 255 255 / 12%);
 }
 
+.smart-cta {
+    display: grid;
+    gap: 1.25rem;
+    align-items: center;
+    border-radius: 1.5rem;
+    border: 1px solid rgb(6 78 59 / 12%);
+    background:
+        radial-gradient(circle at 94% 12%, rgb(250 204 21 / 16%), transparent 28rem),
+        linear-gradient(135deg, #053f2f 0%, #064e3b 54%, #0f3f31 100%);
+    color: #fff;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    box-shadow: 0 22px 48px rgb(6 78 59 / 18%);
+}
+
+.smart-cta-kicker {
+    color: #fde68a;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.smart-cta h2 {
+    margin-top: 0.45rem;
+    max-width: 44rem;
+    font-size: clamp(1.45rem, 3vw, 2.15rem);
+    line-height: 1.16;
+    font-weight: 800;
+}
+
+.smart-cta p:not(.smart-cta-kicker) {
+    margin-top: 0.85rem;
+    max-width: 46rem;
+    color: rgb(236 253 245 / 82%);
+    line-height: 1.75;
+}
+
+.smart-cta-actions {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.smart-cta .btn-primary {
+    background: #f6f0e4;
+    color: #064e3b;
+    box-shadow: none;
+}
+
+.smart-cta .btn-secondary {
+    border-color: rgb(255 255 255 / 22%);
+    background: rgb(255 255 255 / 10%);
+    color: #fff;
+}
+
+@media (min-width: 768px) {
+    .smart-cta {
+        grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .smart-cta-actions {
+        min-width: 16rem;
+    }
+}
+
 .btn-primary:disabled,
 .btn-secondary:disabled,
 .btn-ghost:disabled,

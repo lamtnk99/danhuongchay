@@ -11,7 +11,7 @@
             <p class="mt-1 text-emerald-800/80">Điền nội dung tiếng Anh để frontend `/en` hiển thị chuẩn SEO. Có thể copy bản tiếng Việt rồi chỉnh lại.</p>
         </div>
         <div class="flex flex-wrap gap-2">
-            <button type="button" class="admin-btn-mini" data-deepl-translate data-deepl-url="{{ route('admin.translations.deepl.translate') }}">Dịch bằng DeepL</button>
+            <button type="button" class="admin-btn-mini" data-deepl-translate data-deepl-url="{{ route('admin.translations.translate') }}">Dịch tự động</button>
             <button type="button" class="admin-btn-mini" data-copy-translation>Copy từ tiếng Việt</button>
         </div>
     </div>

@@ -212,6 +212,24 @@ UPLOAD_MAX_IMAGE_KB=10240
 UPLOAD_RESIZE_WIDTH=1600
 UPLOAD_RESIZE_HEIGHT=1600
 UPLOAD_WEBP_QUALITY=82
+UPLOAD_THUMB_WIDTH=360
+UPLOAD_CARD_WIDTH=720
+UPLOAD_LARGE_WIDTH=1200
+UPLOAD_HERO_VARIANT_WIDTH=1920
+```
+
+Moi anh upload se sinh them cac ban WebP responsive nhu `thumb`, `card`, `large`, `hero` tuy profile upload. Frontend dung `srcset/sizes` de mobile tai anh nho hon, desktop tai anh lon hon.
+
+De tao lai thumbnail cho anh cu:
+
+```bash
+php artisan media:regenerate-responsive-images
+```
+
+Muon ghi de thumbnail da ton tai:
+
+```bash
+php artisan media:regenerate-responsive-images --force
 ```
 
 Neu chay bang PHP CLI / `php artisan serve`, can dam bao PHP cho phep nhan file lon hon 2MB. Chay local co the dung:
@@ -277,31 +295,49 @@ Website da co nen tang song ngu:
   - `dish_translations`
   - `post_translations`
   - `page_translations`
+  - `banner_translations`
+  - `promotion_translations`
+  - `testimonial_translations`
+  - `navigation_menu_translations`
 - Seeder ban dich mau: `EnglishTranslationSeeder`.
-- Admin co tab `Tieng Viet` / `English` trong form danh muc, mon an, bai viet va trang tinh.
+- Admin co tab `Tieng Viet` / `English` trong form danh muc, mon an, bai viet, trang tinh, banner, uu dai/popup, review, menu dieu huong, cai dat website va SEO tong the.
 - Nut `Copy tu tieng Viet` chi copy noi dung goc sang tab English de admin sua nhanh, khong goi API dich tu dong.
-- Admin co trang `/admin/translations/settings` de cau hinh DeepL API Free/Pro.
-- Khi bat DeepL, tab English co nut `Dich bang DeepL`; ket qua chi do vao form de review, chua tu luu database.
-- He thong kiem tra quota DeepL, bao loi ro khi key sai, het quota hoac bi gioi han tan suat.
+- Admin co trang `/admin/translations/settings` de chon provider dich tu dong: DeepL hoac Microsoft Translator.
+- Khi cau hinh provider, tab English co nut `Dich tu dong`; ket qua chi do vao form de review, chua tu luu database.
+- Gallery khong can dich tu dong trong admin vi chu yeu la anh.
+- He thong kiem tra quota khi provider ho tro API usage. Microsoft Translator xem quota trong Azure Portal.
 
 Sau khi pull code moi tren host, chay:
 
 ```bash
 php artisan migrate
 php artisan db:seed --class=EnglishTranslationSeeder
+php artisan db:seed --class=MarketingEnglishTranslationSeeder
 npm run build
 php artisan optimize:clear
 ```
 
-Ghi chu: DeepL API Free co quota mien phi theo thang. Nen review lai cac ban dich seed mau va ban dich DeepL truoc khi chay production chinh thuc.
+Ghi chu: quota DeepL co the thay doi theo loai tai khoan, nen khong hard-code gia dinh theo thang trong web. Admin se doc usage tu DeepL API neu provider ho tro. Nen review lai cac ban dich seed mau va ban dich API truoc khi chay production chinh thuc.
 
 ### Lay DeepL API key
 
 1. Vao https://www.deepl.com/pro-api va chon goi `DeepL API Free`.
 2. Tao tai khoan DeepL va hoan tat buoc kich hoat theo yeu cau cua DeepL.
 3. Vao khu vuc account/API Keys de copy Authentication Key. Key API Free thuong co duoi `:fx`.
-4. Vao admin `/admin/translations/settings`, dan key vao `DeepL API key`, chon `DeepL API Free`, bat `Dich tu dong`, roi bam `Luu cai dat`.
-5. Bam `Kiem tra ket noi` hoac `Kiem tra quota` truoc khi dung nut `Dich bang DeepL` trong form noi dung.
+4. Vao admin `/admin/translations/settings`, chon provider `DeepL API`, dan key vao `DeepL API key`, bat `Dich tu dong`, roi bam `Luu cai dat`.
+5. Bam `Kiem tra ket noi` hoac `Kiem tra quota` truoc khi dung nut `Dich tu dong` trong form noi dung.
+
+### Lay Microsoft Translator key
+
+1. Vao Azure Portal va tao resource `Translator` trong Azure AI services.
+2. Chon pricing tier phu hop, vi du `F0` neu tai khoan/resource cua ban du dieu kien.
+3. Vao muc `Keys and Endpoint`, copy `Key`, `Region` va `Endpoint`.
+4. Vao admin `/admin/translations/settings`, chon provider `Microsoft Translator API`.
+5. Dien:
+   - `Microsoft Translator key`: key trong Azure.
+   - `Azure region`: vi du `southeastasia`, `eastasia`, tuy resource.
+   - `Endpoint`: thuong la `https://api.cognitive.microsofttranslator.com`.
+6. Bam `Luu cai dat`, sau do `Kiem tra ket noi`.
 
 Neu gap loi local `cURL error 60: SSL certificate problem`, PHP/cURL dang thieu CA bundle. Cach dung:
 

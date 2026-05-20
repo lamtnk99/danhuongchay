@@ -24,6 +24,10 @@ class NavigationMenuRequest extends FormRequest
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'open_new_tab' => ['nullable', 'boolean'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.title' => ['nullable', 'string', 'max:120'],
+            'translations.en.url' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

@@ -1,20 +1,21 @@
 <footer class="border-t border-emerald-900/10 bg-emerald-950 text-emerald-50">
     @php
-        if (is_english()) {
+        $footerMenus = \App\Models\NavigationMenu::active()
+            ->location('footer')
+            ->whereNull('parent_id')
+            ->with('translations')
+            ->orderBy('sort_order')
+            ->get();
+
+        if ($footerMenus->isEmpty()) {
             $footerMenus = collect([
                 (object) ['title' => __('site.nav.about'), 'url' => localized_route('about'), 'open_new_tab' => false],
-                (object) ['title' => 'Vegetarian restaurant Hai Phong', 'url' => localized_route('local.vegetarian-restaurant-hai-phong'), 'open_new_tab' => false],
+                (object) ['title' => is_english() ? 'Vegetarian restaurant Hai Phong' : 'Quán chay Hải Phòng', 'url' => localized_route('local.vegetarian-restaurant-hai-phong'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.gallery'), 'url' => localized_route('gallery.index'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.menu'), 'url' => localized_route('menu.index'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.contact'), 'url' => localized_route('contact'), 'open_new_tab' => false],
             ]);
-        } else {
-            $footerMenus = \App\Models\NavigationMenu::active()
-                ->location('footer')
-                ->whereNull('parent_id')
-                ->orderBy('sort_order')
-                ->get();
         }
     @endphp
     <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
@@ -47,9 +48,13 @@
             <p class="font-semibold">{{ __('site.footer.quick_links') }}</p>
             <ul class="mt-4 space-y-2 text-sm text-emerald-50/75">
                 @foreach ($footerMenus as $menu)
+                    @php
+                        $menuUrl = method_exists($menu, 'localized') ? $menu->localized('url', $menu->url) : $menu->url;
+                        $menuTitle = method_exists($menu, 'localized') ? $menu->localized('title', $menu->title) : $menu->title;
+                    @endphp
                     <li>
-                        <a class="hover:text-white" href="{{ str_starts_with($menu->url, 'http') ? $menu->url : url($menu->url) }}" @if ($menu->open_new_tab) target="_blank" rel="noopener" @endif>
-                            {{ $menu->title }}
+                        <a class="hover:text-white" href="{{ str_starts_with($menuUrl, 'http') ? $menuUrl : url($menuUrl) }}" @if ($menu->open_new_tab) target="_blank" rel="noopener" @endif>
+                            {{ $menuTitle }}
                         </a>
                     </li>
                 @endforeach

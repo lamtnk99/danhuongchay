@@ -32,6 +32,32 @@ return [
             'quality' => (int) env('UPLOAD_BRAND_QUALITY', 95),
         ],
     ],
+    'variants' => [
+        'thumb' => [
+            'width' => (int) env('UPLOAD_THUMB_WIDTH', 360),
+            'quality' => (int) env('UPLOAD_THUMB_QUALITY', 82),
+        ],
+        'card' => [
+            'width' => (int) env('UPLOAD_CARD_WIDTH', 720),
+            'quality' => (int) env('UPLOAD_CARD_QUALITY', 84),
+        ],
+        'large' => [
+            'width' => (int) env('UPLOAD_LARGE_WIDTH', 1200),
+            'quality' => (int) env('UPLOAD_LARGE_QUALITY', 88),
+        ],
+        'hero' => [
+            'width' => (int) env('UPLOAD_HERO_VARIANT_WIDTH', 1920),
+            'quality' => (int) env('UPLOAD_HERO_VARIANT_QUALITY', 90),
+        ],
+    ],
+    'variant_profiles' => [
+        'thumb' => ['thumb'],
+        'card' => ['thumb', 'card'],
+        'content' => ['thumb', 'card', 'large'],
+        'hero' => ['thumb', 'card', 'large', 'hero'],
+        'avatar' => ['thumb', 'card'],
+        'brand' => ['thumb', 'card'],
+    ],
     'folder_profiles' => [
         'banners' => 'hero',
         'gallery' => 'hero',

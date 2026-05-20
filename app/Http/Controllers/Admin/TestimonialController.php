@@ -33,14 +33,15 @@ class TestimonialController extends Controller
 
     public function store(TestimonialRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['avatar', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('avatar')) {
             $data['avatar'] = $this->uploads->uploadImage($request->file('avatar'), 'testimonials');
         }
 
-        Testimonial::create($data);
+        $testimonial = Testimonial::create($data);
+        $this->syncEnglishTranslation($request, $testimonial);
 
         return redirect()->route('admin.testimonials.index')->with('success', 'Đã thêm review khách hàng.');
     }
@@ -52,7 +53,7 @@ class TestimonialController extends Controller
 
     public function update(TestimonialRequest $request, Testimonial $testimonial): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['avatar', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('avatar')) {
@@ -62,6 +63,7 @@ class TestimonialController extends Controller
         }
 
         $testimonial->update($data);
+        $this->syncEnglishTranslation($request, $testimonial);
 
         return redirect()->route('admin.testimonials.index')->with('success', 'Đã cập nhật review khách hàng.');
     }
@@ -72,5 +74,16 @@ class TestimonialController extends Controller
         $testimonial->delete();
 
         return back()->with('success', 'Đã xóa review khách hàng.');
+    }
+
+    private function syncEnglishTranslation(TestimonialRequest $request, Testimonial $testimonial): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $testimonial->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

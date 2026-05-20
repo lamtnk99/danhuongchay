@@ -40,6 +40,13 @@ class PromotionRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
             'starts_at' => ['nullable', 'date'],
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.title' => ['nullable', 'string', 'max:180'],
+            'translations.en.subtitle' => ['nullable', 'string', 'max:180'],
+            'translations.en.description' => ['nullable', 'string', 'max:1200'],
+            'translations.en.badge' => ['nullable', 'string', 'max:80'],
+            'translations.en.button_text' => ['nullable', 'string', 'max:80'],
         ];
     }
 

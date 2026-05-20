@@ -41,4 +41,8 @@ return [
         'verify_ssl' => env('DEEPL_VERIFY_SSL', true),
     ],
 
+    'microsoft_translator' => [
+        'verify_ssl' => env('MICROSOFT_TRANSLATOR_VERIFY_SSL', true),
+    ],
+
 ];

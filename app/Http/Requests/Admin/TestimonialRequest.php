@@ -21,6 +21,10 @@ class TestimonialRequest extends FormRequest
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.role' => ['nullable', 'string', 'max:160'],
+            'translations.en.content' => ['nullable', 'string', 'max:1200'],
         ];
     }
 }

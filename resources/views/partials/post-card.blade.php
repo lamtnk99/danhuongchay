@@ -2,7 +2,8 @@
     <a href="{{ localized_route('blog.show', ['slug' => $post->localizedSlug()]) }}" class="block">
         <div class="aspect-[16/10] overflow-hidden bg-emerald-50">
             <img
-                src="{{ media_url($post->thumbnail) }}"
+                src="{{ media_variant_url($post->thumbnail, 'card') }}"
+                @if (media_srcset($post->thumbnail, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($post->thumbnail, ['thumb', 'card', 'large']) }}" @endif
                 alt="{{ $post->localized('title') }}"
                 class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 loading="lazy"

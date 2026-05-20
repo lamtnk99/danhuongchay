@@ -34,6 +34,58 @@ if (! function_exists('media_url')) {
     }
 }
 
+if (! function_exists('media_variant_path')) {
+    function media_variant_path(?string $path, string $variant): ?string
+    {
+        if (blank($path) || str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_ends_with(strtolower($path), '.svg')) {
+            return $path;
+        }
+
+        $isPublicPath = str_starts_with($path, '/');
+        $directory = trim(dirname($path), '.\\/');
+        $variantPath = ($isPublicPath ? '/' : '').($directory ? trim($directory, '/').'/' : '').pathinfo($path, PATHINFO_FILENAME).'-'.$variant.'.webp';
+
+        $exists = $isPublicPath
+            ? file_exists(public_path(ltrim($variantPath, '/')))
+            : Storage::disk('public')->exists($variantPath);
+
+        return $exists ? $variantPath : $path;
+    }
+}
+
+if (! function_exists('media_variant_url')) {
+    function media_variant_url(?string $path, string $variant, ?string $default = null): ?string
+    {
+        return media_url(media_variant_path($path, $variant), $default);
+    }
+}
+
+if (! function_exists('media_srcset')) {
+    function media_srcset(?string $path, array|string $variants = ['thumb', 'card', 'large']): ?string
+    {
+        if (blank($path) || str_starts_with($path, 'http://') || str_starts_with($path, 'https://') || str_starts_with($path, 'data:') || str_ends_with(strtolower($path), '.svg')) {
+            return null;
+        }
+
+        $variants = is_array($variants) ? $variants : explode(',', $variants);
+        $config = config('uploads.variants', []);
+
+        return collect($variants)
+            ->map(function (string $variant) use ($path, $config): ?string {
+                $variant = trim($variant);
+                $variantPath = media_variant_path($path, $variant);
+
+                if ($variantPath === $path || ! isset($config[$variant]['width'])) {
+                    return null;
+                }
+
+                return media_url($variantPath).' '.(int) $config[$variant]['width'].'w';
+            })
+            ->filter()
+            ->implode(', ') ?: null;
+    }
+}
+
 if (! function_exists('localized_setting')) {
     function localized_setting(string $key, mixed $default = null): mixed
     {
@@ -46,6 +98,13 @@ if (! function_exists('localized_setting')) {
         }
 
         return setting($key, $default);
+    }
+}
+
+if (! function_exists('show_dish_prices')) {
+    function show_dish_prices(): bool
+    {
+        return (string) setting('show_dish_prices', '1') === '1';
     }
 }
 

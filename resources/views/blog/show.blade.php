@@ -12,7 +12,14 @@
             </time>
         </div>
 
-        <img src="{{ media_url($post->thumbnail) }}" alt="{{ $post->localized('title') }}" class="mt-10 aspect-[16/9] w-full rounded-3xl object-cover shadow-xl" fetchpriority="high">
+        <img
+            src="{{ media_variant_url($post->thumbnail, 'large') }}"
+            @if (media_srcset($post->thumbnail, ['card', 'large', 'hero'])) srcset="{{ media_srcset($post->thumbnail, ['card', 'large', 'hero']) }}" @endif
+            alt="{{ $post->localized('title') }}"
+            class="mt-10 aspect-[16/9] w-full rounded-3xl object-cover shadow-xl"
+            fetchpriority="high"
+            sizes="(max-width: 1024px) 100vw, 960px"
+        >
 
         <div class="article-content mt-10">
             {!! $post->localized('content') !!}

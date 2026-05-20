@@ -1,12 +1,12 @@
 @php
     $seo = $seo ?? [];
-    $title = $seo['title'] ?? (is_english()
+    $title = $seo['title'] ?? localized_setting('default_meta_title', is_english()
         ? 'Dan Huong Chay - Hai Phong | Vegetarian fusion kitchen'
         : 'Đàn Hương Chay - Hải Phòng | Quán chay ngon, món chay fusion, đặt bàn');
-    $description = $seo['description'] ?? (is_english()
+    $description = $seo['description'] ?? localized_setting('default_meta_description', is_english()
         ? 'Dan Huong Chay serves vegetarian fusion cuisine in Hai Phong with creative dishes, clean ingredients, a peaceful space and easy table booking.'
         : 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với món chay ngon, thực đơn đa dạng, không gian an yên và đặt bàn tiện lợi.');
-    $keywords = $seo['keywords'] ?? (is_english()
+    $keywords = $seo['keywords'] ?? localized_setting('default_meta_keywords', is_english()
         ? 'vegetarian restaurant Hai Phong, vegetarian food, vegan food, vegetarian menu, Dan Huong Chay'
         : 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy');
     $canonical = $seo['canonical'] ?? url()->current();
@@ -33,7 +33,7 @@
 
 <meta property="og:locale" content="{{ $ogLocale }}">
 <meta property="og:type" content="{{ $type }}">
-<meta property="og:site_name" content="{{ setting('restaurant_name', 'Đàn Hương Chay') }}">
+<meta property="og:site_name" content="{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}">
 <meta property="og:title" content="{{ $title }}">
 <meta property="og:description" content="{{ $description }}">
 <meta property="og:url" content="{{ $canonical }}">

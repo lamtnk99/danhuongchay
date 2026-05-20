@@ -34,11 +34,12 @@ class NavigationMenuController extends Controller
 
     public function store(NavigationMenuRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except('translations')->all();
         $data['is_active'] = $request->boolean('is_active');
         $data['open_new_tab'] = $request->boolean('open_new_tab');
 
-        NavigationMenu::create($data);
+        $menu = NavigationMenu::create($data);
+        $this->syncEnglishTranslation($request, $menu);
 
         return redirect()->route('admin.menus.index')->with('success', 'Đã thêm menu.');
     }
@@ -53,11 +54,12 @@ class NavigationMenuController extends Controller
 
     public function update(NavigationMenuRequest $request, NavigationMenu $menu): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except('translations')->all();
         $data['is_active'] = $request->boolean('is_active');
         $data['open_new_tab'] = $request->boolean('open_new_tab');
 
         $menu->update($data);
+        $this->syncEnglishTranslation($request, $menu);
 
         return redirect()->route('admin.menus.index')->with('success', 'Đã cập nhật menu.');
     }
@@ -77,5 +79,16 @@ class NavigationMenuController extends Controller
             ->orderBy('location')
             ->orderBy('sort_order')
             ->get();
+    }
+
+    private function syncEnglishTranslation(NavigationMenuRequest $request, NavigationMenu $menu): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $menu->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

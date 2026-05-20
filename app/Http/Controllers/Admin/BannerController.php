@@ -28,16 +28,17 @@ class BannerController extends Controller
 
     public function create(): View
     {
-        return view('admin.banners.create', ['banner' => new Banner]);
+        return view('admin.banners.create', ['banner' => new Banner(['is_active' => true, 'position' => 'home'])]);
     }
 
     public function store(BannerRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['image'] = $this->uploads->uploadImage($request->file('image'), 'banners');
         $data['is_active'] = $request->boolean('is_active');
 
-        Banner::create($data);
+        $banner = Banner::create($data);
+        $this->syncEnglishTranslation($request, $banner);
 
         return redirect()->route('admin.banners.index')->with('success', 'Đã thêm banner.');
     }
@@ -49,7 +50,7 @@ class BannerController extends Controller
 
     public function update(BannerRequest $request, Banner $banner): RedirectResponse
     {
-        $data = $request->validated();
+        $data = collect($request->validated())->except(['image', 'translations'])->all();
         $data['is_active'] = $request->boolean('is_active');
 
         if ($request->hasFile('image')) {
@@ -59,6 +60,7 @@ class BannerController extends Controller
         }
 
         $banner->update($data);
+        $this->syncEnglishTranslation($request, $banner);
 
         return redirect()->route('admin.banners.index')->with('success', 'Đã cập nhật banner.');
     }
@@ -76,5 +78,16 @@ class BannerController extends Controller
         $banner->delete();
 
         return back()->with('success', 'Đã xóa banner.');
+    }
+
+    private function syncEnglishTranslation(BannerRequest $request, Banner $banner): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $banner->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
     }
 }

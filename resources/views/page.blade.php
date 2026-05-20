@@ -13,7 +13,13 @@
 
     <article class="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
         @if ($page->image)
-            <img src="{{ media_url($page->image) }}" alt="{{ $page->localized('title') }}" class="mb-10 aspect-[16/8] w-full rounded-3xl object-cover shadow-xl">
+            <img
+                src="{{ media_variant_url($page->image, 'large') }}"
+                @if (media_srcset($page->image, ['card', 'large', 'hero'])) srcset="{{ media_srcset($page->image, ['card', 'large', 'hero']) }}" @endif
+                alt="{{ $page->localized('title') }}"
+                class="mb-10 aspect-[16/8] w-full rounded-3xl object-cover shadow-xl"
+                sizes="(max-width: 1024px) 100vw, 960px"
+            >
         @endif
 
         <div class="article-content">

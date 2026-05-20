@@ -12,7 +12,14 @@
     <section class="section-block">
         <div class="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
-                <img src="{{ media_url($page?->image, 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80') }}" alt="{{ __('site.about.image_alt') }}" class="rounded-3xl object-cover shadow-2xl" loading="lazy">
+                <img
+                    src="{{ media_variant_url($page?->image, 'large', 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1200&q=80') }}"
+                    @if (media_srcset($page?->image, ['card', 'large', 'hero'])) srcset="{{ media_srcset($page?->image, ['card', 'large', 'hero']) }}" @endif
+                    alt="{{ __('site.about.image_alt') }}"
+                    class="rounded-3xl object-cover shadow-2xl"
+                    loading="lazy"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                >
             </div>
             <div>
                 <p class="eyebrow">{{ __('site.about.philosophy_eyebrow') }}</p>
@@ -55,7 +62,7 @@
             <div class="about-gallery-strip mt-10">
                 @foreach ($galleryImages as $image)
                     <a href="{{ localized_route('gallery.index') }}" class="about-gallery-card">
-                        <img src="{{ media_url($image->image) }}" alt="{{ $image->localized('alt_text', $image->localized('title')) }}" loading="lazy">
+                        <img src="{{ media_variant_url($image->image, 'card') }}" alt="{{ $image->localized('alt_text', $image->localized('title')) }}" loading="lazy">
                         <span>{{ $image->localized('title') }}</span>
                     </a>
                 @endforeach

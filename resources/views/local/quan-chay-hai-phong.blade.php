@@ -3,10 +3,12 @@
 @section('content')
     <section class="relative isolate overflow-hidden bg-emerald-950 text-white">
         <img
-            src="{{ media_url(setting('default_background'), 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85') }}"
+            src="{{ media_variant_url(setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85') }}"
+            @if (media_srcset(setting('default_background'), ['card', 'large', 'hero'])) srcset="{{ media_srcset(setting('default_background'), ['card', 'large', 'hero']) }}" @endif
             alt="Không gian và món chay tại Đàn Hương Chay Hải Phòng"
             class="absolute inset-0 -z-20 h-full w-full object-cover"
             fetchpriority="high"
+            sizes="100vw"
         >
         <div class="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-950/90 via-emerald-950/72 to-emerald-900/35"></div>
         <div class="mx-auto grid min-h-[72vh] max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">

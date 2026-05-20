@@ -22,6 +22,7 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'reservation_time_slots', 'value' => '09:00-14:00,16:00-21:00', 'group' => 'general'],
             ['key' => 'reservation_last_booking_time', 'value' => '20:30', 'group' => 'general'],
             ['key' => 'reservation_last_order_buffer_minutes', 'value' => '30', 'group' => 'general'],
+            ['key' => 'show_dish_prices', 'value' => '1', 'type' => 'boolean', 'group' => 'general'],
             ['key' => 'facebook_url', 'value' => 'https://www.facebook.com/danhuongchay', 'group' => 'general'],
             ['key' => 'zalo_url', 'value' => 'https://zalo.me/0947361515', 'group' => 'general'],
             ['key' => 'instagram_url', 'value' => 'https://www.instagram.com/danhuongchay', 'group' => 'general'],
@@ -42,9 +43,13 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'og_image', 'value' => 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1200&q=80', 'type' => 'image', 'group' => 'seo'],
             ['key' => 'default_background', 'value' => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=85', 'type' => 'image', 'group' => 'identity'],
             ['key' => 'translation_enabled', 'value' => '0', 'type' => 'boolean', 'group' => 'translation'],
+            ['key' => 'translation_provider', 'value' => 'deepl', 'group' => 'translation'],
             ['key' => 'deepl_api_plan', 'value' => 'free', 'group' => 'translation'],
             ['key' => 'deepl_source_lang', 'value' => 'VI', 'group' => 'translation'],
             ['key' => 'deepl_target_lang', 'value' => 'EN-US', 'group' => 'translation'],
+            ['key' => 'microsoft_translator_endpoint', 'value' => 'https://api.cognitive.microsofttranslator.com', 'group' => 'translation'],
+            ['key' => 'microsoft_translator_region', 'value' => null, 'group' => 'translation'],
+            ['key' => 'microsoft_translator_target_lang', 'value' => 'en', 'group' => 'translation'],
             ['key' => 'translation_monthly_limit_warning', 'value' => '450000', 'type' => 'number', 'group' => 'translation'],
         ];
 

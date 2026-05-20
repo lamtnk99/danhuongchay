@@ -52,6 +52,9 @@ Route::prefix('admin')
         Route::put('/seo', [AdminSettingController::class, 'updateSeo'])->name('seo.update');
         Route::get('/translations/settings', [AdminTranslationController::class, 'settings'])->name('translations.settings');
         Route::put('/translations/settings', [AdminTranslationController::class, 'updateSettings'])->name('translations.settings.update');
+        Route::get('/translations/usage', [AdminTranslationController::class, 'usage'])->middleware('throttle:20,1')->name('translations.usage');
+        Route::post('/translations/test', [AdminTranslationController::class, 'test'])->middleware('throttle:10,1')->name('translations.test');
+        Route::post('/translations/translate', [AdminTranslationController::class, 'translate'])->middleware('throttle:20,1')->name('translations.translate');
         Route::get('/translations/deepl/usage', [AdminTranslationController::class, 'usage'])->middleware('throttle:20,1')->name('translations.deepl.usage');
         Route::post('/translations/deepl/test', [AdminTranslationController::class, 'test'])->middleware('throttle:10,1')->name('translations.deepl.test');
         Route::post('/translations/deepl', [AdminTranslationController::class, 'translate'])->middleware('throttle:20,1')->name('translations.deepl.translate');

@@ -88,18 +88,25 @@ class SeoService
                     '@type' => 'MenuSection',
                     'name' => $category->localized('name'),
                     'description' => $category->localized('description'),
-                    'hasMenuItem' => $category->dishes->map(fn ($dish): array => [
-                        '@type' => 'MenuItem',
-                        'name' => $dish->localized('name'),
-                        'description' => $dish->localized('description'),
-                        'image' => media_url($dish->image, self::defaultImage()),
-                        'url' => localized_route('menu.show', ['slug' => $dish->localizedSlug()]),
-                        'offers' => [
-                            '@type' => 'Offer',
-                            'price' => (int) ($dish->sale_price ?: $dish->price),
-                            'priceCurrency' => 'VND',
-                        ],
-                    ])->values()->all(),
+                    'hasMenuItem' => $category->dishes->map(function ($dish): array {
+                        $item = [
+                            '@type' => 'MenuItem',
+                            'name' => $dish->localized('name'),
+                            'description' => $dish->localized('description'),
+                            'image' => media_url($dish->image, self::defaultImage()),
+                            'url' => localized_route('menu.show', ['slug' => $dish->localizedSlug()]),
+                        ];
+
+                        if (show_dish_prices()) {
+                            $item['offers'] = [
+                                '@type' => 'Offer',
+                                'price' => (int) ($dish->sale_price ?: $dish->price),
+                                'priceCurrency' => 'VND',
+                            ];
+                        }
+
+                        return $item;
+                    })->values()->all(),
                 ];
             })->values()->all(),
         ];
@@ -107,7 +114,7 @@ class SeoService
 
     public static function dishSchema($dish): array
     {
-        return [
+        $schema = [
             '@context' => 'https://schema.org',
             '@type' => 'MenuItem',
             'name' => $dish->localized('name'),
@@ -115,13 +122,18 @@ class SeoService
             'image' => media_url($dish->image, self::defaultImage()),
             'url' => localized_route('menu.show', ['slug' => $dish->localizedSlug()]),
             'menuAddOn' => $dish->category?->localized('name'),
-            'offers' => [
+        ];
+
+        if (show_dish_prices()) {
+            $schema['offers'] = [
                 '@type' => 'Offer',
                 'price' => (int) ($dish->sale_price ?: $dish->price),
                 'priceCurrency' => 'VND',
                 'availability' => 'https://schema.org/InStock',
-            ],
-        ];
+            ];
+        }
+
+        return $schema;
     }
 
     public static function articleSchema(Post $post): array

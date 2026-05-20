@@ -7,10 +7,12 @@
 
     <section class="hero-section relative isolate overflow-hidden">
         <img
-            src="{{ media_url($hero?->image, media_url(setting('default_background'), 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85')) }}"
+            src="{{ media_variant_url($hero?->image ?: setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85') }}"
+            @if (media_srcset($hero?->image ?: setting('default_background'), ['card', 'large', 'hero'])) srcset="{{ media_srcset($hero?->image ?: setting('default_background'), ['card', 'large', 'hero']) }}" @endif
             alt="{{ $hero?->localized('title') ?: localized_setting('restaurant_name', 'Đàn Hương Chay') }}"
             class="absolute inset-0 -z-20 h-full w-full object-cover"
             fetchpriority="high"
+            sizes="100vw"
         >
         <div class="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-950/82 via-emerald-950/58 to-amber-950/18"></div>
         <div class="mx-auto flex min-h-[74vh] max-w-7xl items-center px-4 py-20 sm:px-6 lg:px-8">
@@ -52,7 +54,13 @@
                 ])>
                     @foreach ($homePromotions as $promotion)
                         <article @class(['promo-card', 'is-featured' => $loop->first && $homePromotions->count() > 2]) style="--promo-accent: {{ $promotion->accent_color ?: '#047857' }}">
-                            <img src="{{ media_url($promotion->image, 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=85') }}" alt="{{ $promotion->localized('title') }}" loading="lazy">
+                            <img
+                                src="{{ media_variant_url($promotion->image, $loop->first ? 'large' : 'card', 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=85') }}"
+                                @if (media_srcset($promotion->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($promotion->image, ['thumb', 'card', 'large']) }}" @endif
+                                alt="{{ $promotion->localized('title') }}"
+                                loading="lazy"
+                                sizes="{{ $loop->first ? '(max-width: 1024px) 100vw, 52vw' : '(max-width: 1024px) 100vw, 34vw' }}"
+                            >
                             <div class="promo-card-copy">
                                 @if ($promotion->localized('badge'))
                                     <span class="promo-badge">{{ $promotion->localized('badge') }}</span>
@@ -70,6 +78,18 @@
                             </div>
                         </article>
                     @endforeach
+                </div>
+
+                <div class="mt-6">
+                    @include('partials.contextual-cta', [
+                        'context' => 'promotion',
+                        'kicker' => is_english() ? 'Interested in today offers?' : 'Thấy ưu đãi hợp ý?',
+                        'title' => is_english() ? 'Book a table or ask us to plan a vegetarian set for your group' : 'Đặt bàn hoặc nhờ quán tư vấn set chay cho nhóm của bạn',
+                        'text' => is_english() ? 'Share your group size and preferred time. Dan Huong Chay will suggest dishes that fit the occasion.' : 'Cho quán biết số người và khung giờ, Đàn Hương Chay sẽ gợi ý món phù hợp với dịp dùng bữa.',
+                        'primaryLabel' => is_english() ? 'Book with today offer' : 'Đặt bàn theo ưu đãi',
+                        'secondaryLabel' => is_english() ? 'Ask about catering' : 'Tư vấn mâm cúng/tiệc chay',
+                        'trackLabel' => 'Home promotion CTA',
+                    ])
                 </div>
             </div>
         </section>
@@ -131,7 +151,13 @@
                 <div class="home-gallery-grid mt-10">
                     @foreach ($homeGalleryImages as $image)
                         <article @class(['home-gallery-card', 'is-large' => $loop->first])>
-                            <img src="{{ media_url($image->image) }}" alt="{{ $image->localized('alt_text', $image->localized('title')) }}" loading="lazy">
+                            <img
+                                src="{{ media_variant_url($image->image, $loop->first ? 'large' : 'card') }}"
+                                @if (media_srcset($image->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($image->image, ['thumb', 'card', 'large']) }}" @endif
+                                alt="{{ $image->localized('alt_text', $image->localized('title')) }}"
+                                loading="lazy"
+                                sizes="{{ $loop->first ? '(max-width: 1024px) 100vw, 50vw' : '(max-width: 1024px) 100vw, 25vw' }}"
+                            >
                             <div>
                                 <h3>{{ $image->localized('title') }}</h3>
                                 @if ($image->localized('description'))
@@ -158,7 +184,7 @@
                             <figure class="testimonial-card" data-testimonial-slide>
                                 <div class="flex items-center gap-3">
                                     @if ($testimonial->avatar)
-                                        <img src="{{ media_url($testimonial->avatar) }}" alt="{{ $testimonial->name }}" loading="lazy">
+                                        <img src="{{ media_variant_url($testimonial->avatar, 'thumb') }}" alt="{{ $testimonial->name }}" loading="lazy">
                                     @else
                                         <span class="testimonial-avatar">{{ mb_substr($testimonial->name, 0, 1) }}</span>
                                     @endif

@@ -7,10 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Concerns\HasLocalizedContent;
 
 class NavigationMenu extends Model
 {
     use HasFactory;
+    use HasLocalizedContent;
 
     protected $fillable = [
         'title',
@@ -39,6 +41,11 @@ class NavigationMenu extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    public function translations(): HasMany
+    {
+        return $this->hasMany(NavigationMenuTranslation::class);
     }
 
     public function scopeActive(Builder $query): Builder

@@ -3,10 +3,12 @@
 @section('content')
     <section class="relative isolate overflow-hidden bg-stone-950 text-white">
         <img
-            src="{{ media_url(setting('default_background'), 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=85') }}"
+            src="{{ media_variant_url(setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1600&q=85') }}"
+            @if (media_srcset(setting('default_background'), ['card', 'large', 'hero'])) srcset="{{ media_srcset(setting('default_background'), ['card', 'large', 'hero']) }}" @endif
             alt="Bàn tiệc chay trang trọng tại Đàn Hương Chay Hải Phòng"
             class="absolute inset-0 -z-20 h-full w-full object-cover"
             fetchpriority="high"
+            sizes="100vw"
         >
         <div class="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-950/92 via-emerald-950/72 to-amber-900/35"></div>
         <div class="mx-auto grid min-h-[70vh] max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:px-8">
@@ -34,6 +36,19 @@
             </div>
         </div>
     </section>
+
+    <div class="section-block pb-0">
+        @include('partials.contextual-cta', [
+            'context' => 'catering',
+            'kicker' => 'Tư vấn theo dịp',
+            'title' => 'Cần mâm cúng chay hay tiệc chay trong hôm nay?',
+            'text' => 'Gửi yêu cầu trước để quán tư vấn số món, khẩu vị, thời gian chuẩn bị và cách bày món phù hợp với gia đình hoặc nhóm khách.',
+            'primaryLabel' => 'Gửi yêu cầu đặt tiệc',
+            'secondaryLabel' => 'Xem món gợi ý',
+            'secondaryUrl' => '#mon-goi-y',
+            'trackLabel' => 'Catering landing smart CTA',
+        ])
+    </div>
 
     <section class="section-block">
         <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
@@ -66,7 +81,7 @@
     </section>
 
     @if ($suggestedDishes->isNotEmpty())
-        <section class="section-block pt-0">
+        <section id="mon-goi-y" class="section-block pt-0">
             <div class="section-heading">
                 <p class="eyebrow">Gợi ý món</p>
                 <h2>Một số món hợp cho bàn nhóm và mâm chay</h2>

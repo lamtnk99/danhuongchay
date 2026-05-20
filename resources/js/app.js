@@ -119,6 +119,16 @@ const postJson = async (url, payload = {}) => {
     return data;
 };
 
+const currentTranslationProviderLabel = () => {
+    const select = document.querySelector('[data-translation-provider]');
+
+    if (!select) {
+        return 'provider dịch';
+    }
+
+    return select.value === 'microsoft' ? 'Microsoft Translator' : 'DeepL';
+};
+
 document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
     button.addEventListener('click', async () => {
         const tabs = button.closest('[data-admin-tabs]');
@@ -147,7 +157,7 @@ document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
         }
 
         button.disabled = true;
-        setDeepLStatus(status, 'Đang gửi nội dung sang DeepL...', 'info');
+        setDeepLStatus(status, `Đang gửi nội dung sang ${currentTranslationProviderLabel()}...`, 'info');
 
         try {
             const data = await postJson(url, { fields });
@@ -180,8 +190,10 @@ document.querySelectorAll('[data-deepl-test-url], [data-deepl-usage-url]').forEa
         const isUsage = Boolean(button.dataset.deeplUsageUrl);
         const url = button.dataset.deeplUsageUrl || button.dataset.deeplTestUrl;
 
+        const providerLabel = currentTranslationProviderLabel();
+
         button.disabled = true;
-        setDeepLStatus(status, isUsage ? 'Đang kiểm tra quota DeepL...' : 'Đang kiểm tra kết nối DeepL...', 'info');
+        setDeepLStatus(status, isUsage ? `Đang kiểm tra quota ${providerLabel}...` : `Đang kiểm tra kết nối ${providerLabel}...`, 'info');
 
         try {
             const data = isUsage
@@ -198,7 +210,7 @@ document.querySelectorAll('[data-deepl-test-url], [data-deepl-usage-url]').forEa
                 : '';
             const sampleText = data.sample ? ` Mẫu: ${data.sample}` : '';
 
-            setDeepLStatus(status, `${data.message || 'Kiểm tra DeepL thành công.'}${usageText}${sampleText}`, 'success');
+            setDeepLStatus(status, `${data.message || `Kiểm tra ${providerLabel} thành công.`}${usageText}${sampleText}`, 'success');
         } catch (error) {
             setDeepLStatus(status, error.message, 'error');
         } finally {
@@ -206,6 +218,19 @@ document.querySelectorAll('[data-deepl-test-url], [data-deepl-usage-url]').forEa
         }
     });
 });
+
+const translationProviderSelect = document.querySelector('[data-translation-provider]');
+
+if (translationProviderSelect) {
+    const updateProviderPanels = () => {
+        document.querySelectorAll('[data-provider-panel]').forEach((panel) => {
+            panel.classList.toggle('hidden', panel.dataset.providerPanel !== translationProviderSelect.value);
+        });
+    };
+
+    translationProviderSelect.addEventListener('change', updateProviderPanels);
+    updateProviderPanels();
+}
 
 const trackConversion = (eventName, params = {}) => {
     const payload = {

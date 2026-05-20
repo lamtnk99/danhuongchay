@@ -1,5 +1,12 @@
 @php
-    if (is_english()) {
+    $navItems = \App\Models\NavigationMenu::active()
+        ->location('header')
+        ->whereNull('parent_id')
+        ->with(['children.translations', 'translations'])
+        ->orderBy('sort_order')
+        ->get();
+
+    if ($navItems->isEmpty() && is_english()) {
         $navItems = collect([
             (object) ['title' => __('site.nav.home'), 'url' => localized_route('home'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.about'), 'url' => localized_route('about'), 'open_new_tab' => false],
@@ -10,25 +17,16 @@
             (object) ['title' => __('site.nav.reservation'), 'url' => localized_route('reservations.create'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.contact'), 'url' => localized_route('contact'), 'open_new_tab' => false],
         ]);
-    } else {
-        $navItems = \App\Models\NavigationMenu::active()
-            ->location('header')
-            ->whereNull('parent_id')
-            ->with('children')
-            ->orderBy('sort_order')
-            ->get();
-
-        if ($navItems->isEmpty()) {
-            $navItems = collect([
-                (object) ['title' => __('site.nav.home'), 'url' => route('home'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.about'), 'url' => route('about'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.menu'), 'url' => route('menu.index'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.blog'), 'url' => route('blog.index'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.catering'), 'url' => route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.reservation'), 'url' => route('reservations.create'), 'open_new_tab' => false],
-                (object) ['title' => __('site.nav.contact'), 'url' => route('contact'), 'open_new_tab' => false],
-            ]);
-        }
+    } elseif ($navItems->isEmpty()) {
+        $navItems = collect([
+            (object) ['title' => __('site.nav.home'), 'url' => route('home'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.about'), 'url' => route('about'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.menu'), 'url' => route('menu.index'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.blog'), 'url' => route('blog.index'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.catering'), 'url' => route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.reservation'), 'url' => route('reservations.create'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.contact'), 'url' => route('contact'), 'open_new_tab' => false],
+        ]);
     }
 
     $languageLinks = [
@@ -54,7 +52,9 @@
         <div class="hidden items-center gap-1 lg:flex">
             @foreach ($navItems as $item)
                 @php
-                    $href = str_starts_with($item->url, 'http') ? $item->url : url($item->url);
+                    $itemUrl = method_exists($item, 'localized') ? $item->localized('url', $item->url) : $item->url;
+                    $itemTitle = method_exists($item, 'localized') ? $item->localized('title', $item->title) : $item->title;
+                    $href = str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl);
                     $isActive = url()->current() === rtrim($href, '/');
                 @endphp
                 <a
@@ -66,7 +66,7 @@
                         'text-stone-700 hover:bg-emerald-50 hover:text-emerald-900' => !$isActive,
                     ])
                 >
-                    {{ $item->title }}
+                    {{ $itemTitle }}
                 </a>
             @endforeach
 
@@ -97,7 +97,9 @@
         <div class="mx-auto grid max-w-7xl gap-2 pt-3">
             @foreach ($navItems as $item)
                 @php
-                    $href = str_starts_with($item->url, 'http') ? $item->url : url($item->url);
+                    $itemUrl = method_exists($item, 'localized') ? $item->localized('url', $item->url) : $item->url;
+                    $itemTitle = method_exists($item, 'localized') ? $item->localized('title', $item->title) : $item->title;
+                    $href = str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl);
                     $isActive = url()->current() === rtrim($href, '/');
                 @endphp
                 <a
@@ -109,7 +111,7 @@
                         'bg-white text-stone-700 shadow-sm' => !$isActive,
                     ])
                 >
-                    {{ $item->title }}
+                    {{ $itemTitle }}
                 </a>
             @endforeach
 

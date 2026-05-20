@@ -23,6 +23,12 @@ class BannerRequest extends FormRequest
             'position' => ['required', 'string', 'max:80'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.title' => ['nullable', 'string', 'max:180'],
+            'translations.en.subtitle' => ['nullable', 'string', 'max:180'],
+            'translations.en.description' => ['nullable', 'string', 'max:1000'],
+            'translations.en.button_text' => ['nullable', 'string', 'max:80'],
         ];
     }
 }

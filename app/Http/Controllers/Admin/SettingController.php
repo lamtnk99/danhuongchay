@@ -19,14 +19,17 @@ class SettingController extends Controller
             'title' => 'Cài đặt website',
             'action' => route('admin.settings.update'),
             'keys' => $this->generalKeys(),
+            'translationKeys' => $this->generalTranslationKeys(),
             'imageKeys' => [],
         ]);
     }
 
     public function update(Request $request): RedirectResponse
     {
-        $data = $request->validate($this->rulesFor($this->generalKeys()));
+        $data = $request->validate($this->rulesFor($this->generalKeys()) + $this->rulesFor($this->generalTranslationKeys()));
+        $data['show_dish_prices'] = $request->boolean('show_dish_prices') ? '1' : '0';
         $this->saveSettings($data, $this->generalKeys(), 'general');
+        $this->saveSettings($data, $this->generalTranslationKeys(), 'translation');
 
         return back()->with('success', 'Đã cập nhật cài đặt website.');
     }
@@ -54,15 +57,17 @@ class SettingController extends Controller
             'title' => 'SEO tổng thể',
             'action' => route('admin.seo.update'),
             'keys' => $this->seoKeys(),
+            'translationKeys' => $this->seoTranslationKeys(),
             'imageKeys' => ['og_image' => 'OG image mặc định'],
         ]);
     }
 
     public function updateSeo(Request $request): RedirectResponse
     {
-        $data = $request->validate($this->rulesFor($this->seoKeys()) + $this->imageRulesFor(['og_image' => 'OG image mặc định']));
+        $data = $request->validate($this->rulesFor($this->seoKeys()) + $this->rulesFor($this->seoTranslationKeys()) + $this->imageRulesFor(['og_image' => 'OG image mặc định']));
 
         $this->saveSettings($data, $this->seoKeys(), 'seo');
+        $this->saveSettings($data, $this->seoTranslationKeys(), 'translation');
         $this->saveImages($data, ['og_image' => 'OG image mặc định'], 'seo');
 
         return back()->with('success', 'Đã cập nhật SEO tổng thể.');
@@ -83,6 +88,7 @@ class SettingController extends Controller
             'reservation_time_slots' => 'Khung giờ nhận đặt bàn',
             'reservation_last_booking_time' => 'Giờ nhận đặt bàn muộn nhất',
             'reservation_last_order_buffer_minutes' => 'Số phút ngừng nhận trước giờ đóng bếp',
+            'show_dish_prices' => 'Hiển thị giá món ăn ngoài website',
             'facebook_url' => 'Link Facebook',
             'zalo_url' => 'Link Zalo',
             'tiktok_url' => 'Link TikTok',
@@ -101,6 +107,20 @@ class SettingController extends Controller
             'logo_footer' => 'Logo footer',
             'favicon' => 'Favicon',
             'default_background' => 'Ảnh nền mặc định',
+        ];
+    }
+
+    private function generalTranslationKeys(): array
+    {
+        return [
+            'site_name_en' => 'Website name (English)',
+            'restaurant_name_en' => 'Restaurant name (English)',
+            'slogan_en' => 'Slogan (English)',
+            'short_description_en' => 'Short description (English)',
+            'address_en' => 'Address (English)',
+            'opening_hours_en' => 'Opening hours (English)',
+            'copyright_en' => 'Footer copyright (English)',
+            'footer_description_en' => 'Footer description (English)',
         ];
     }
 
@@ -124,12 +144,25 @@ class SettingController extends Controller
         ];
     }
 
+    private function seoTranslationKeys(): array
+    {
+        return [
+            'default_meta_title_en' => 'Default meta title (English)',
+            'default_meta_description_en' => 'Default meta description (English)',
+            'default_meta_keywords_en' => 'Default meta keywords (English)',
+            'schema_restaurant_name_en' => 'Schema restaurant name (English)',
+            'schema_address_en' => 'Schema address (English)',
+            'schema_opening_hours_en' => 'Schema opening hours (English)',
+        ];
+    }
+
     private function rulesFor(array $keys): array
     {
         return collect($keys)
             ->mapWithKeys(function ($label, $key): array {
                 return match ($key) {
                     'reservation_last_order_buffer_minutes' => [$key => ['nullable', 'integer', 'min:0', 'max:240']],
+                    'show_dish_prices' => [$key => ['nullable', 'boolean']],
                     default => [$key => ['nullable', 'string']],
                 };
             })
