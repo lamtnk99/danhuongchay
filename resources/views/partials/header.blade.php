@@ -6,26 +6,15 @@
         ->orderBy('sort_order')
         ->get();
 
-    if ($navItems->isEmpty() && is_english()) {
+    if ($navItems->isEmpty()) {
         $navItems = collect([
             (object) ['title' => __('site.nav.home'), 'url' => localized_route('home'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.about'), 'url' => localized_route('about'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.gallery'), 'url' => localized_route('gallery.index'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.menu'), 'url' => localized_route('menu.index'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.blog'), 'url' => localized_route('blog.index'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
+            (object) ['title' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.reservation'), 'url' => localized_route('reservations.create'), 'open_new_tab' => false],
             (object) ['title' => __('site.nav.contact'), 'url' => localized_route('contact'), 'open_new_tab' => false],
-        ]);
-    } elseif ($navItems->isEmpty()) {
-        $navItems = collect([
-            (object) ['title' => __('site.nav.home'), 'url' => route('home'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.about'), 'url' => route('about'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.menu'), 'url' => route('menu.index'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.blog'), 'url' => route('blog.index'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.catering'), 'url' => route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.reservation'), 'url' => route('reservations.create'), 'open_new_tab' => false],
-            (object) ['title' => __('site.nav.contact'), 'url' => route('contact'), 'open_new_tab' => false],
         ]);
     }
 
@@ -54,8 +43,16 @@
                 @php
                     $itemUrl = method_exists($item, 'localized') ? $item->localized('url', $item->url) : $item->url;
                     $itemTitle = method_exists($item, 'localized') ? $item->localized('title', $item->title) : $item->title;
-                    $href = str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl);
-                    $isActive = url()->current() === rtrim($href, '/');
+                    $isCatering = str_contains($itemUrl, 'dat-tiec')
+                        || str_contains($itemUrl, 'vegetarian-catering')
+                        || str_contains(strtolower($itemTitle), 'tiệc')
+                        || str_contains(strtolower($itemTitle), 'catering');
+                    $href = $isCatering
+                        ? localized_route('local.vegetarian-catering')
+                        : (str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl));
+                    $isActive = $isCatering
+                        ? request()->routeIs('local.vegetarian-catering*', 'localized.local.vegetarian-catering*')
+                        : url()->current() === rtrim($href, '/');
                 @endphp
                 <a
                     href="{{ $href }}"
@@ -99,8 +96,16 @@
                 @php
                     $itemUrl = method_exists($item, 'localized') ? $item->localized('url', $item->url) : $item->url;
                     $itemTitle = method_exists($item, 'localized') ? $item->localized('title', $item->title) : $item->title;
-                    $href = str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl);
-                    $isActive = url()->current() === rtrim($href, '/');
+                    $isCatering = str_contains($itemUrl, 'dat-tiec')
+                        || str_contains($itemUrl, 'vegetarian-catering')
+                        || str_contains(strtolower($itemTitle), 'tiệc')
+                        || str_contains(strtolower($itemTitle), 'catering');
+                    $href = $isCatering
+                        ? localized_route('local.vegetarian-catering')
+                        : (str_starts_with($itemUrl, 'http') ? $itemUrl : url($itemUrl));
+                    $isActive = $isCatering
+                        ? request()->routeIs('local.vegetarian-catering*', 'localized.local.vegetarian-catering*')
+                        : url()->current() === rtrim($href, '/');
                 @endphp
                 <a
                     href="{{ $href }}"

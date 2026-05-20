@@ -72,22 +72,102 @@
 
     <section class="about-map-section">
         <div class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-            <div class="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div class="about-branches-layout">
                 <div>
                     <p class="eyebrow">{{ __('site.about.address_eyebrow') }}</p>
-                    <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ __('site.about.address_title') }}</h2>
-                    <p class="mt-5 leading-8 text-stone-700">{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</p>
-                    <p class="mt-2 leading-8 text-stone-700">{{ __('site.about.opening_hours') }}: {{ localized_setting('opening_hours', '09:00 - 21:30') }}</p>
-                    <a href="{{ localized_route('reservations.create') }}" class="btn-primary mt-6">{{ __('site.nav.reservation') }}</a>
+                    <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'Two peaceful vegetarian spaces' : 'Hai điểm hẹn chay thanh lành' }}</h2>
+                    <p class="mt-5 leading-8 text-stone-700">
+                        {{ is_english() ? 'Each branch keeps a calm dining rhythm, warm service and a menu built for family meals, gatherings and mindful vegetarian moments.' : 'Mỗi cơ sở là một không gian riêng để ghé ăn nhẹ, dùng bữa cùng gia đình hoặc đặt trước những mâm chay chỉn chu cho dịp quan trọng.' }}
+                    </p>
+
+                    <div class="mt-7 grid gap-4">
+                        @forelse ($branches as $branch)
+                            <article class="about-branch-card">
+                                <div>
+                                    <p>{{ $branch->city ?: $branch->name }}</p>
+                                    <h3>{{ $branch->name }}</h3>
+                                    <span>{{ $branch->address }}</span>
+                                </div>
+                                <div class="about-branch-actions">
+                                    @if ($branch->hotline)
+                                        <a href="tel:{{ preg_replace('/\D+/', '', $branch->hotline) }}">{{ $branch->hotline }}</a>
+                                    @endif
+                                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}">{{ __('site.nav.reservation') }}</a>
+                                </div>
+                            </article>
+                        @empty
+                            <article class="about-branch-card">
+                                <div>
+                                    <p>{{ is_english() ? 'Main branch' : 'Cơ sở chính' }}</p>
+                                    <h3>{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}</h3>
+                                    <span>{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</span>
+                                </div>
+                            </article>
+                        @endforelse
+                    </div>
                 </div>
-                <div class="map-frame">
-                    @if (setting('google_map_iframe'))
-                        {!! setting('google_map_iframe') !!}
-                    @else
-                        <iframe title="{{ __('site.about.map_title') }}" src="https://www.google.com/maps?q=Hai%20Phong&output=embed" class="h-80 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    @endif
+
+                <div class="about-map-feature" data-map-slider>
+                    <div class="about-map-copy">
+                        <p>{{ is_english() ? 'Map' : 'Bản đồ cơ sở' }}</p>
+                        <h3 data-map-title>{{ $branches->first()?->name ?: localized_setting('restaurant_name', 'Đàn Hương Chay') }}</h3>
+                        @if ($branches->count() > 1)
+                            <div class="about-map-tabs">
+                                @foreach ($branches as $branch)
+                                    <button type="button" @class(['is-active' => $loop->first]) data-map-tab="{{ $loop->index }}">{{ $branch->city ?: $branch->name }}</button>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    <div class="about-map-slides">
+                        @forelse ($branches as $branch)
+                            <div @class(['about-map-slide', 'is-active' => $loop->first]) data-map-slide="{{ $loop->index }}" data-title="{{ $branch->name }}">
+                                <div class="map-frame">
+                                    @if ($branch->google_map_iframe)
+                                        {!! $branch->google_map_iframe !!}
+                                    @elseif (setting('google_map_iframe') && $loop->first)
+                                        {!! setting('google_map_iframe') !!}
+                                    @else
+                                        <iframe title="{{ $branch->name }}" src="https://www.google.com/maps?q={{ urlencode($branch->address ?? $branch->name) }}&output=embed" class="h-80 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <div class="about-map-slide is-active" data-map-slide="0" data-title="{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}">
+                                <div class="map-frame">
+                                    @if (setting('google_map_iframe'))
+                                        {!! setting('google_map_iframe') !!}
+                                    @else
+                                        <iframe title="{{ __('site.about.map_title') }}" src="https://www.google.com/maps?q={{ urlencode(localized_setting('address', 'Hai Phong')) }}&output=embed" class="h-80 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-map-slider]').forEach((slider) => {
+                const tabs = [...slider.querySelectorAll('[data-map-tab]')];
+                const slides = [...slider.querySelectorAll('[data-map-slide]')];
+                const title = slider.querySelector('[data-map-title]');
+                if (!tabs.length || slides.length < 2) return;
+
+                let active = 0;
+                const show = (index) => {
+                    active = index;
+                    tabs.forEach((tab, tabIndex) => tab.classList.toggle('is-active', tabIndex === index));
+                    slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === index));
+                    if (title) title.textContent = slides[index]?.dataset.title || title.textContent;
+                };
+
+                tabs.forEach((tab, index) => tab.addEventListener('click', () => show(index)));
+                window.setInterval(() => show((active + 1) % slides.length), 6500);
+            });
+        });
+    </script>
 @endsection

@@ -19,6 +19,7 @@ class GalleryImageRequest extends FormRequest
 
         return [
             'title' => ['required', 'string', 'max:180'],
+            'branch_id' => ['nullable', Rule::exists('branches', 'id')->where('is_active', true)],
             'slug' => ['nullable', 'string', 'max:200', Rule::unique('gallery_images', 'slug')->ignore($galleryId)],
             'description' => ['nullable', 'string', 'max:1200'],
             'image' => [$this->isMethod('post') ? 'required' : 'nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:'.config('uploads.max_image_kb')],

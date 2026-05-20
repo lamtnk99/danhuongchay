@@ -2,12 +2,25 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Branch;
 use App\Support\OpeningHours;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreReservationRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        if (! $this->filled('branch_id')) {
+            $defaultBranchId = Branch::query()->active()->orderBy('sort_order')->value('id');
+
+            if ($defaultBranchId) {
+                $this->merge(['branch_id' => $defaultBranchId]);
+            }
+        }
+    }
+
     public function authorize(): bool
     {
         return true;
@@ -17,6 +30,7 @@ class StoreReservationRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:120'],
+            'branch_id' => ['required', Rule::exists('branches', 'id')->where('is_active', true)],
             'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9+\-\s().]{8,20}$/'],
             'email' => ['nullable', 'email:rfc,dns', 'max:160'],
             'reservation_date' => ['required', 'date', 'date_format:Y-m-d', 'after_or_equal:today'],
@@ -36,7 +50,8 @@ class StoreReservationRequest extends FormRequest
                 return;
             }
 
-            $openingHours = OpeningHours::fromSetting();
+            $branch = Branch::query()->active()->find($this->input('branch_id'));
+            $openingHours = OpeningHours::fromBranch($branch);
 
             if (! $openingHours->isWithin($time)) {
                 $validator->errors()->add('reservation_time', $openingHours->message().' Vui lòng chọn giờ phù hợp.');
@@ -54,6 +69,8 @@ class StoreReservationRequest extends FormRequest
     {
         return [
             'name.required' => 'Vui lòng nhập họ tên.',
+            'branch_id.required' => 'Vui lòng chọn cơ sở.',
+            'branch_id.exists' => 'Cơ sở đã chọn không hợp lệ hoặc đang tạm ẩn.',
             'phone.required' => 'Vui lòng nhập số điện thoại.',
             'phone.regex' => 'Số điện thoại chưa đúng định dạng.',
             'email.email' => 'Email chưa đúng định dạng.',

@@ -10,47 +10,50 @@
     </section>
 
     <section class="section-block">
-        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+        <div class="grid gap-10 lg:grid-cols-[1fr_1fr]">
             <div class="space-y-6">
                 <div class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h2 class="text-2xl font-semibold text-emerald-950">{{ __('site.contact.info_title') }}</h2>
-                    <dl class="mt-5 space-y-4 text-stone-700">
-                        <div>
-                            <dt class="font-semibold text-emerald-900">{{ __('site.contact.name') }}</dt>
-                            <dd>{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}</dd>
-                        </div>
-                        <div>
-                            <dt class="font-semibold text-emerald-900">{{ __('site.contact.address') }}</dt>
-                            <dd>{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</dd>
-                        </div>
-                        <div>
-                            <dt class="font-semibold text-emerald-900">{{ __('site.contact.hotline') }}</dt>
-                            <dd>{{ setting('hotline', setting('phone', '0912 345 678')) }}</dd>
-                        </div>
-                        @if (setting('phone') && setting('phone') !== setting('hotline'))
-                            <div>
-                                <dt class="font-semibold text-emerald-900">{{ __('site.contact.phone') }}</dt>
-                                <dd>{{ setting('phone') }}</dd>
-                            </div>
-                        @endif
-                        <div>
-                            <dt class="font-semibold text-emerald-900">Email</dt>
-                            <dd>{{ setting('email', 'hello@danhuongchay.vn') }}</dd>
-                        </div>
-                        <div>
-                            <dt class="font-semibold text-emerald-900">{{ __('site.contact.opening_hours') }}</dt>
-                            <dd>{{ localized_setting('opening_hours', '09:00 - 21:30') }}</dd>
-                        </div>
-                    </dl>
+                    <h2 class="text-2xl font-semibold text-emerald-950">{{ is_english() ? 'Branches' : 'Các cơ sở Đàn Hương Chay' }}</h2>
+                    <div class="mt-5 grid gap-4">
+                        @forelse ($branches as $branch)
+                            <article class="rounded-2xl border border-emerald-900/10 bg-stone-50 p-5">
+                                <h3 class="text-lg font-semibold text-emerald-950">{{ $branch->name }}</h3>
+                                @if ($branch->address)
+                                    <p class="mt-2 text-sm leading-6 text-stone-700">{{ $branch->address }}</p>
+                                @endif
+                                <dl class="mt-4 grid gap-2 text-sm text-stone-700">
+                                    @if ($branch->hotline)
+                                        <div><dt class="inline font-semibold text-emerald-900">Hotline:</dt> <dd class="inline">{{ $branch->hotline }}</dd></div>
+                                    @endif
+                                    @if ($branch->phone && $branch->phone !== $branch->hotline)
+                                        <div><dt class="inline font-semibold text-emerald-900">{{ __('site.contact.phone') }}:</dt> <dd class="inline">{{ $branch->phone }}</dd></div>
+                                    @endif
+                                    @if ($branch->email)
+                                        <div><dt class="inline font-semibold text-emerald-900">Email:</dt> <dd class="inline">{{ $branch->email }}</dd></div>
+                                    @endif
+                                    @if ($branch->opening_hours)
+                                        <div><dt class="inline font-semibold text-emerald-900">{{ __('site.contact.opening_hours') }}:</dt> <dd class="inline">{{ $branch->opening_hours }}</dd></div>
+                                    @endif
+                                </dl>
+                                <div class="mt-4 flex flex-wrap gap-3">
+                                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-primary py-3 text-sm">{{ is_english() ? 'Book this branch' : 'Đặt bàn cơ sở này' }}</a>
+                                    @if ($branch->hotline || $branch->phone)
+                                        <a href="tel:{{ preg_replace('/\D+/', '', $branch->hotline ?: $branch->phone) }}" class="btn-ghost py-3 text-sm">{{ is_english() ? 'Call' : 'Gọi' }}</a>
+                                    @endif
+                                </div>
+                            </article>
+                        @empty
+                            <p class="text-stone-600">{{ is_english() ? 'Branch information is being updated.' : 'Thông tin cơ sở đang được cập nhật.' }}</p>
+                        @endforelse
+                    </div>
                 </div>
 
-                <div class="overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-sm">
-                    @if (setting('google_map_iframe'))
-                        {!! setting('google_map_iframe') !!}
-                    @else
-                        <iframe title="{{ __('site.contact.map_title') }}" src="https://www.google.com/maps?q=Hai%20Phong&output=embed" class="h-80 w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    @endif
-                </div>
+                @foreach ($branches->filter(fn ($branch) => filled($branch->google_map_iframe))->take(2) as $branch)
+                    <div class="overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-sm">
+                        <div class="border-b border-emerald-900/10 px-5 py-3 font-semibold text-emerald-950">{{ $branch->name }}</div>
+                        {!! $branch->google_map_iframe !!}
+                    </div>
+                @endforeach
             </div>
 
             <div class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm sm:p-8">
@@ -61,6 +64,16 @@
 
                 <form action="{{ localized_route('contact.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_contact" data-track-category="lead" data-track-label="Contact form" data-facebook-event="Lead">
                     @csrf
+                    <div>
+                        <label for="branch_id" class="form-label">{{ is_english() ? 'Branch' : 'Cơ sở cần liên hệ' }}</label>
+                        <select id="branch_id" name="branch_id" class="form-input">
+                            <option value="">{{ is_english() ? 'General contact' : 'Liên hệ chung' }}</option>
+                            @foreach ($branches as $branch)
+                                <option value="{{ $branch->id }}" @selected((string) old('branch_id', $selectedBranch?->id) === (string) $branch->id)>{{ $branch->name }}</option>
+                            @endforeach
+                        </select>
+                        @error('branch_id') <p class="form-error">{{ $message }}</p> @enderror
+                    </div>
                     <div>
                         <label for="name" class="form-label">{{ __('site.contact.field_name') }}</label>
                         <input id="name" name="name" value="{{ old('name') }}" class="form-input" autocomplete="name" required>

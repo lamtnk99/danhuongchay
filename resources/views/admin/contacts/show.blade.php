@@ -8,6 +8,7 @@
             <h2 class="text-xl font-bold text-slate-950">{{ $contact->name }}</h2>
             <dl class="mt-5 space-y-4 text-sm">
                 <div><dt class="font-bold text-slate-500">Số điện thoại</dt><dd>{{ $contact->phone ?: 'Không có' }}</dd></div>
+                <div><dt class="font-bold text-slate-500">Cơ sở</dt><dd>{{ $contact->branch?->name ?: 'Chưa chọn' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Email</dt><dd>{{ $contact->email ?: 'Không có' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Ngày gửi</dt><dd>{{ $contact->created_at->format('d/m/Y H:i') }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Nội dung</dt><dd class="whitespace-pre-line leading-7">{{ $contact->message }}</dd></div>

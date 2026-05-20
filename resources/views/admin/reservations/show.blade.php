@@ -8,6 +8,7 @@
             <h2 class="text-xl font-bold text-slate-950">{{ $reservation->name }}</h2>
             <dl class="mt-5 space-y-4 text-sm">
                 <div><dt class="font-bold text-slate-500">Số điện thoại</dt><dd>{{ $reservation->phone }}</dd></div>
+                <div><dt class="font-bold text-slate-500">Cơ sở</dt><dd>{{ $reservation->branch?->name ?: 'Chưa chọn' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Email</dt><dd>{{ $reservation->email ?: 'Không có' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Ngày đặt</dt><dd>{{ $reservation->reservation_date->format('d/m/Y') }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Giờ đặt</dt><dd>{{ substr($reservation->reservation_time, 0, 5) }}</dd></div>

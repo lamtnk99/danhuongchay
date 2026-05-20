@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\Models\Branch;
 use Carbon\Carbon;
 
 class OpeningHours
@@ -25,25 +26,21 @@ class OpeningHours
         $lastBookingTime = self::extractTime((string) setting('reservation_last_booking_time', ''));
         $bufferMinutes = max(0, (int) setting('reservation_last_order_buffer_minutes', 30));
 
-        $slots = self::parseSlots($slotSetting);
-        if ($slots === []) {
-            $slots = self::parseSlotsFromFreeText($openingLabel);
-        }
-        if ($slots === []) {
-            $slots = [['start' => '09:00', 'end' => '21:30']];
+        return self::make($openingLabel, $slotSetting, $lastBookingTime, $bufferMinutes);
+    }
+
+    public static function fromBranch(?Branch $branch = null): self
+    {
+        if (! $branch) {
+            return self::fromSetting();
         }
 
-        $opensAt = $slots[0]['start'];
-        $closesAt = $slots[array_key_last($slots)]['end'];
+        $openingLabel = trim((string) ($branch->opening_hours ?: setting('opening_hours', '09:00 - 21:30 hằng ngày')));
+        $slotSetting = trim((string) ($branch->reservation_time_slots ?: setting('reservation_time_slots', '')));
+        $lastBookingTime = self::extractTime((string) ($branch->reservation_last_booking_time ?: setting('reservation_last_booking_time', '')));
+        $bufferMinutes = max(0, (int) ($branch->reservation_last_order_buffer_minutes ?? setting('reservation_last_order_buffer_minutes', 30)));
 
-        return new self(
-            slots: $slots,
-            opensAt: $opensAt,
-            closesAt: $closesAt,
-            lastBookingTime: $lastBookingTime,
-            bufferMinutes: $bufferMinutes,
-            label: self::buildLabel($slots, $lastBookingTime, $bufferMinutes),
-        );
+        return self::make($openingLabel, $slotSetting, $lastBookingTime, $bufferMinutes);
     }
 
     public function isWithin(string $time): bool
@@ -105,6 +102,29 @@ class OpeningHours
         $slots = $this->bookableSlots();
 
         return $slots === [] ? null : $slots[array_key_last($slots)]['end'];
+    }
+
+    private static function make(string $openingLabel, string $slotSetting, ?string $lastBookingTime, int $bufferMinutes): self
+    {
+        $slots = self::parseSlots($slotSetting);
+        if ($slots === []) {
+            $slots = self::parseSlotsFromFreeText($openingLabel);
+        }
+        if ($slots === []) {
+            $slots = [['start' => '09:00', 'end' => '21:30']];
+        }
+
+        $opensAt = $slots[0]['start'];
+        $closesAt = $slots[array_key_last($slots)]['end'];
+
+        return new self(
+            slots: $slots,
+            opensAt: $opensAt,
+            closesAt: $closesAt,
+            lastBookingTime: $lastBookingTime,
+            bufferMinutes: $bufferMinutes,
+            label: self::buildLabel($slots, $lastBookingTime, $bufferMinutes),
+        );
     }
 
     private static function normalizeTime(string $time): string
@@ -205,4 +225,3 @@ class OpeningHours
         return implode(' | ', $parts);
     }
 }
-

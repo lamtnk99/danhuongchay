@@ -24,6 +24,16 @@
         @error('location') <p class="form-error">{{ $message }}</p> @enderror
     </div>
     <div>
+        <label class="admin-label" for="branch_id">Cơ sở</label>
+        <select id="branch_id" name="branch_id" class="admin-input">
+            <option value="">Dùng chung / chưa gắn cơ sở</option>
+            @foreach (($branches ?? collect()) as $branch)
+                <option value="{{ $branch->id }}" @selected((string) old('branch_id', $galleryImage->branch_id) === (string) $branch->id)>{{ $branch->name }}</option>
+            @endforeach
+        </select>
+        @error('branch_id') <p class="form-error">{{ $message }}</p> @enderror
+    </div>
+    <div>
         <label class="admin-label" for="sort_order">Thứ tự</label>
         <input id="sort_order" type="number" min="0" name="sort_order" value="{{ old('sort_order', $galleryImage->sort_order ?? 0) }}" class="admin-input">
         @error('sort_order') <p class="form-error">{{ $message }}</p> @enderror

@@ -6,6 +6,12 @@
     <div class="admin-page-head">
         <form class="admin-filter" method="GET">
             <input name="q" value="{{ request('q') }}" placeholder="Tìm tên ảnh..." class="admin-input">
+            <select name="branch_id" class="admin-input">
+                <option value="">Tất cả cơ sở</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                @endforeach
+            </select>
             <select name="status" class="admin-input">
                 <option value="">Tất cả trạng thái</option>
                 <option value="active" @selected(request('status') === 'active')>Đang hiển thị</option>
@@ -22,6 +28,7 @@
                 <tr>
                     <th>Ảnh</th>
                     <th>Tiêu đề</th>
+                    <th>Cơ sở</th>
                     <th>Vị trí</th>
                     <th>Thứ tự</th>
                     <th>Nổi bật</th>
@@ -33,12 +40,13 @@
                 @forelse ($galleryImages as $image)
                     <tr>
                         <td>
-                            <img src="{{ media_url($image->image) }}" alt="{{ $image->alt_text ?: $image->title }}" class="h-16 w-24 rounded-xl object-cover">
+                            <img src="{{ media_variant_url($image->image, 'thumb') }}" alt="{{ $image->alt_text ?: $image->title }}" class="h-16 w-24 rounded-xl object-cover">
                         </td>
                         <td>
                             <span class="block font-semibold">{{ $image->title }}</span>
                             <span class="text-xs text-slate-500">{{ $image->slug }}</span>
                         </td>
+                        <td>{{ $image->branch?->name ?: 'Dùng chung' }}</td>
                         <td>{{ $image->location }}</td>
                         <td>{{ $image->sort_order }}</td>
                         <td><span class="status-badge {{ $image->is_featured ? 'status-active' : 'status-inactive' }}">{{ $image->is_featured ? 'có' : 'không' }}</span></td>
@@ -56,7 +64,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-slate-500">Chưa có ảnh không gian.</td></tr>
+                    <tr><td colspan="8" class="text-center text-slate-500">Chưa có ảnh không gian.</td></tr>
                 @endforelse
             </tbody>
         </table>

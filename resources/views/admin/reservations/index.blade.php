@@ -7,6 +7,12 @@
         <form class="admin-filter" method="GET">
             <input name="q" value="{{ request('q') }}" placeholder="Tìm tên hoặc SĐT..." class="admin-input">
             <input type="date" name="date" value="{{ request('date') }}" class="admin-input">
+            <select name="branch_id" class="admin-input">
+                <option value="">Tất cả cơ sở</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                @endforeach
+            </select>
             <select name="status" class="admin-input">
                 <option value="">Tất cả trạng thái</option>
                 @foreach (['pending', 'confirmed', 'cancelled', 'completed'] as $status)
@@ -22,6 +28,7 @@
             <thead>
                 <tr>
                     <th>Khách</th>
+                    <th>Cơ sở</th>
                     <th>Liên hệ</th>
                     <th>Ngày giờ</th>
                     <th>Số người</th>
@@ -33,6 +40,7 @@
                 @forelse ($reservations as $reservation)
                     <tr>
                         <td class="font-semibold">{{ $reservation->name }}</td>
+                        <td>{{ $reservation->branch?->name ?: 'Chưa chọn' }}</td>
                         <td>
                             <p>{{ $reservation->phone }}</p>
                             <p class="text-xs text-slate-500">{{ $reservation->email }}</p>
@@ -52,7 +60,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-slate-500">Chưa có đặt bàn.</td></tr>
+                    <tr><td colspan="7" class="text-center text-slate-500">Chưa có đặt bàn.</td></tr>
                 @endforelse
             </tbody>
         </table>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Contact;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class ContactController extends Controller
     public function index(Request $request): View
     {
         $contacts = Contact::query()
+            ->with('branch')
             ->when($request->filled('q'), function ($query) use ($request): void {
                 $query->where(function ($query) use ($request): void {
                     $query->where('name', 'like', '%'.$request->q.'%')
@@ -21,16 +23,21 @@ class ContactController extends Controller
                         ->orWhere('email', 'like', '%'.$request->q.'%');
                 });
             })
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.contacts.index', compact('contacts'));
+        $branches = Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get();
+
+        return view('admin.contacts.index', compact('contacts', 'branches'));
     }
 
     public function show(Contact $contact): View
     {
+        $contact->load('branch');
+
         if ($contact->status === 'new') {
             $contact->update(['status' => 'read']);
         }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\GalleryImageRequest;
+use App\Models\Branch;
 use App\Models\GalleryImage;
 use App\Services\UploadService;
 use Illuminate\Http\RedirectResponse;
@@ -17,14 +18,18 @@ class GalleryImageController extends Controller
     public function index(Request $request): View
     {
         $galleryImages = GalleryImage::query()
+            ->with('branch')
             ->when($request->filled('q'), fn ($query) => $query->where('title', 'like', '%'.$request->q.'%'))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
             ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->status === 'active'))
             ->orderBy('sort_order')
             ->latest()
             ->paginate(12)
             ->withQueryString();
 
-        return view('admin.gallery.index', compact('galleryImages'));
+        $branches = Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get();
+
+        return view('admin.gallery.index', compact('galleryImages', 'branches'));
     }
 
     public function create(): View
@@ -35,6 +40,7 @@ class GalleryImageController extends Controller
                 'is_featured' => true,
                 'is_active' => true,
             ]),
+            'branches' => Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get(),
         ]);
     }
 
@@ -50,7 +56,10 @@ class GalleryImageController extends Controller
 
     public function edit(GalleryImage $gallery): View
     {
-        return view('admin.gallery.edit', ['galleryImage' => $gallery]);
+        return view('admin.gallery.edit', [
+            'galleryImage' => $gallery,
+            'branches' => Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get(),
+        ]);
     }
 
     public function update(GalleryImageRequest $request, GalleryImage $gallery): RedirectResponse

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GalleryImage;
+use App\Models\Branch;
 use App\Models\Page;
 use App\Services\SeoService;
 use Illuminate\View\View;
@@ -25,6 +26,11 @@ class PageController extends Controller
             ->limit(3)
             ->get();
 
+        $branches = Branch::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
         $seo = SeoService::page(
             $page?->localized('meta_title') ?: (is_english() ? 'About Dan Huong Chay | Vegetarian restaurant in Hai Phong' : 'Giới thiệu quán chay Hải Phòng | Câu chuyện Đàn Hương Chay'),
             $page?->localized('meta_description') ?: (is_english() ? 'Learn about Dan Huong Chay, our vegetarian fusion philosophy, peaceful restaurant space and commitment to clean ingredients in Hai Phong.' : 'Tìm hiểu câu chuyện thương hiệu Đàn Hương Chay, triết lý ẩm thực chay fusion, không gian quán và cam kết nguyên liệu sạch tại Hải Phòng.'),
@@ -37,7 +43,7 @@ class PageController extends Controller
             SeoService::restaurantSchema(),
         ];
 
-        return view('about', compact('seo', 'schemas', 'page', 'galleryImages'));
+        return view('about', compact('seo', 'schemas', 'page', 'galleryImages', 'branches'));
     }
 
     public function show(Page|string $page): View

@@ -6,6 +6,12 @@
     <div class="admin-page-head">
         <form class="admin-filter" method="GET">
             <input name="q" value="{{ request('q') }}" placeholder="Tìm tên, SĐT, email..." class="admin-input">
+            <select name="branch_id" class="admin-input">
+                <option value="">Tất cả cơ sở</option>
+                @foreach ($branches as $branch)
+                    <option value="{{ $branch->id }}" @selected((string) request('branch_id') === (string) $branch->id)>{{ $branch->name }}</option>
+                @endforeach
+            </select>
             <select name="status" class="admin-input">
                 <option value="">Tất cả trạng thái</option>
                 @foreach (['new', 'read', 'processed'] as $status)
@@ -21,6 +27,7 @@
             <thead>
                 <tr>
                     <th>Khách</th>
+                    <th>Cơ sở</th>
                     <th>Liên hệ</th>
                     <th>Nội dung</th>
                     <th>Trạng thái</th>
@@ -32,6 +39,7 @@
                 @forelse ($contacts as $contact)
                     <tr>
                         <td class="font-semibold">{{ $contact->name }}</td>
+                        <td>{{ $contact->branch?->name ?: 'Chưa chọn' }}</td>
                         <td>
                             <p>{{ $contact->phone ?: 'Không có SĐT' }}</p>
                             <p class="text-xs text-slate-500">{{ $contact->email }}</p>
@@ -51,7 +59,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-slate-500">Chưa có liên hệ.</td></tr>
+                    <tr><td colspan="7" class="text-center text-slate-500">Chưa có liên hệ.</td></tr>
                 @endforelse
             </tbody>
         </table>

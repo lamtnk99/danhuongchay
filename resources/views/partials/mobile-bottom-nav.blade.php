@@ -2,7 +2,7 @@
     $items = [
         ['label' => __('site.nav.home'), 'url' => localized_route('home'), 'active' => request()->routeIs('home', 'localized.home'), 'icon' => 'home'],
         ['label' => __('site.nav.menu'), 'url' => localized_route('menu.index'), 'active' => request()->routeIs('menu.*', 'localized.menu.*'), 'icon' => 'menu'],
-        ['label' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering-hai-phong'), 'active' => request()->routeIs('local.vegetarian-catering-hai-phong', 'localized.local.vegetarian-catering-hai-phong'), 'icon' => 'catering'],
+        ['label' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering'), 'active' => request()->routeIs('local.vegetarian-catering', 'localized.local.vegetarian-catering', 'local.vegetarian-catering-hai-phong', 'localized.local.vegetarian-catering-hai-phong', 'local.vegetarian-catering-buon-ma-thuot', 'localized.local.vegetarian-catering-buon-ma-thuot'), 'icon' => 'catering'],
         ['label' => __('site.nav.reservation'), 'url' => localized_route('reservations.create'), 'active' => request()->routeIs('reservations.*', 'localized.reservations.*'), 'icon' => 'calendar'],
         ['label' => __('site.nav.contact'), 'url' => localized_route('contact'), 'active' => request()->routeIs('contact', 'localized.contact'), 'icon' => 'phone'],
     ];

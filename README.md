@@ -74,6 +74,7 @@ php artisan test
 - `/admin/dashboard` - Dashboard quản trị
 - `/admin/settings` - Cài đặt website
 - `/admin/identity` - Logo và nhận diện
+- `/admin/branches` - Quản lý cơ sở, giờ mở cửa, giờ nhận đặt bàn và map
 - `/admin/banners` - Banner trang chủ
 - `/admin/testimonials` - Review khách hàng
 - `/admin/promotions` - Khuyến mãi, quảng cáo và popup
@@ -108,6 +109,7 @@ Các bảng chính:
 - `reservations`: yêu cầu đặt bàn
 - `contacts`: tin nhắn liên hệ
 - `site_settings`: cài đặt website, nhận diện, SEO
+- `branches`: cơ sở Hải Phòng/Buôn Ma Thuột, hotline, địa chỉ, khung giờ nhận đặt bàn, map và SEO local
 - `banners`: banner trang chủ
 - `testimonials`: review khách hàng hiển thị dạng slider ở trang chủ
 - `promotions`: chương trình nổi bật ở trang chủ và popup thông báo/quảng cáo
@@ -238,6 +240,18 @@ Neu chay bang PHP CLI / `php artisan serve`, can dam bao PHP cho phep nhan file 
 php -d upload_max_filesize=12M -d post_max_size=16M -d memory_limit=256M artisan serve
 ```
 
+## Multi-branch setup
+
+Website dung mot thuong hieu, mot menu va mot bang gia chung cho ca hai co so. Nhung phan can tach theo co so duoc quan ly trong `/admin/branches`:
+
+- Dia chi, hotline, so dien thoai, email va Google Map iframe rieng.
+- Gio mo cua hien thi rieng.
+- Khung gio nhan dat ban rieng, vi du `09:00-14:00,16:00-21:00`.
+- Gio cuoi nhan dat ban, vi du `20:30`.
+- Anh khong gian co the gan voi tung co so trong `/admin/gallery`.
+
+Form dat ban bat buoc chon co so va se validate theo khung gio cua co so da chon. Trang `/khong-gian` hien thi anh theo tung co so tu tren xuong duoi, giup khach xem khong gian ma khong bi bat chon co so qua som.
+
 ## Form
 
 Form liên hệ lưu vào bảng `contacts`.
@@ -251,6 +265,7 @@ Cả hai form đều dùng Form Request để validate và hiển thị thông b
 Route SEO local moi:
 
 - `/quan-chay-hai-phong`: landing page cho tu khoa quan chay Hai Phong.
+- `/quan-chay-buon-ma-thuot`: landing page cho tu khoa quan chay Buon Ma Thuot.
 - `/dat-tiec-chay-hai-phong`: landing page dat tiec chay / mam cung chay.
 - `/mam-cung-chay-hai-phong`: redirect ve `/dat-tiec-chay-hai-phong`.
 
@@ -353,3 +368,19 @@ openssl.cafile="C:\php\extras\ssl\cacert.pem"
 4. Restart PHP/server roi chay `php artisan optimize:clear`.
 
 Tam thoi khi dev local co the them `DEEPL_VERIFY_SSL=false` vao `.env`, nhung khong nen dung tren production.
+
+## Multi-branch updates (May 2026)
+
+- Added unique sorting guard for branches:
+  - Validation: `App\Http\Requests\Admin\BranchRequest` now enforces unique `sort_order`.
+  - Database: migration `2026_05_20_235900_add_unique_sort_order_to_branches_table.php` normalizes existing values and adds unique index.
+- Added catering hub route:
+  - `GET /dat-tiec-chay` (`local.vegetarian-catering`)
+  - `GET /dat-tiec-chay-hai-phong`
+  - `GET /dat-tiec-chay-buon-ma-thuot`
+- Added EN equivalents:
+  - `/en/vegetarian-catering`
+  - `/en/vegetarian-catering-hai-phong`
+  - `/en/vegetarian-catering-buon-ma-thuot`
+- About page now renders all active branches with branch-level map/address/contact blocks.
+- Reservation page redesigned with editorial/premium layout while keeping dynamic branch time-slot validation intact.

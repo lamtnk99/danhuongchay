@@ -11,12 +11,19 @@
             $footerMenus = collect([
                 (object) ['title' => __('site.nav.about'), 'url' => localized_route('about'), 'open_new_tab' => false],
                 (object) ['title' => is_english() ? 'Vegetarian restaurant Hai Phong' : 'Quán chay Hải Phòng', 'url' => localized_route('local.vegetarian-restaurant-hai-phong'), 'open_new_tab' => false],
+                (object) ['title' => is_english() ? 'Vegetarian restaurant Buon Ma Thuot' : 'Quán chay Buôn Ma Thuột', 'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.gallery'), 'url' => localized_route('gallery.index'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.menu'), 'url' => localized_route('menu.index'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.contact'), 'url' => localized_route('contact'), 'open_new_tab' => false],
             ]);
         }
+
+        $footerBranches = \App\Models\Branch::active()
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(3)
+            ->get();
     @endphp
     <div class="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
         <div>
@@ -31,14 +38,19 @@
 
         <div>
             <p class="font-semibold">{{ __('site.footer.info') }}</p>
-            <ul class="mt-4 space-y-2 text-sm text-emerald-50/75">
-                <li>{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</li>
-                @if (setting('hotline'))
-                    <li>Hotline: {{ setting('hotline') }}</li>
-                @endif
-                @if (setting('phone') && setting('phone') !== setting('hotline'))
-                    <li>{{ __('site.footer.phone') }}: {{ setting('phone') }}</li>
-                @endif
+            <ul class="mt-4 space-y-3 text-sm text-emerald-50/75">
+                @forelse ($footerBranches as $branch)
+                    <li>
+                        <span class="block font-semibold text-emerald-50">{{ $branch->name }}</span>
+                        @if ($branch->address)<span class="block">{{ $branch->address }}</span>@endif
+                        @if ($branch->hotline)<span class="block">Hotline: {{ $branch->hotline }}</span>@endif
+                        @if ($branch->phone && $branch->phone !== $branch->hotline)<span class="block">{{ __('site.footer.phone') }}: {{ $branch->phone }}</span>@endif
+                    </li>
+                @empty
+                    <li>{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</li>
+                    @if (setting('hotline'))<li>Hotline: {{ setting('hotline') }}</li>@endif
+                    @if (setting('phone') && setting('phone') !== setting('hotline'))<li>{{ __('site.footer.phone') }}: {{ setting('phone') }}</li>@endif
+                @endforelse
                 <li>{{ setting('email', 'info@danhuongchay.com') }}</li>
                 <li>{{ localized_setting('opening_hours', '09:00 - 14:00 | 16:00 - 21:00 hằng ngày') }}</li>
             </ul>

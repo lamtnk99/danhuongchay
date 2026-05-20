@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Reservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class ReservationController extends Controller
     public function index(Request $request): View
     {
         $reservations = Reservation::query()
+            ->with('branch')
             ->when($request->filled('q'), function ($query) use ($request): void {
                 $query->where(function ($query) use ($request): void {
                     $query->where('name', 'like', '%'.$request->q.'%')
@@ -21,16 +23,21 @@ class ReservationController extends Controller
                 });
             })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
             ->when($request->filled('date'), fn ($query) => $query->whereDate('reservation_date', $request->date))
             ->latest('reservation_date')
             ->paginate(10)
             ->withQueryString();
 
-        return view('admin.reservations.index', compact('reservations'));
+        $branches = Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get();
+
+        return view('admin.reservations.index', compact('reservations', 'branches'));
     }
 
     public function show(Reservation $reservation): View
     {
+        $reservation->load('branch');
+
         return view('admin.reservations.show', compact('reservation'));
     }
 

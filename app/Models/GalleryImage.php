@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Concerns\HasLocalizedContent;
 use Illuminate\Support\Str;
@@ -16,6 +17,7 @@ class GalleryImage extends Model
 
     protected $fillable = [
         'title',
+        'branch_id',
         'slug',
         'description',
         'image',
@@ -59,5 +61,10 @@ class GalleryImage extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(GalleryImageTranslation::class);
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

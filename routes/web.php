@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
+use App\Http\Controllers\Admin\BranchController as AdminBranchController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ContactController as AdminContactController;
@@ -60,6 +61,7 @@ Route::prefix('admin')
         Route::post('/translations/deepl', [AdminTranslationController::class, 'translate'])->middleware('throttle:20,1')->name('translations.deepl.translate');
 
         Route::patch('/banners/{banner}/toggle', [AdminBannerController::class, 'toggle'])->name('banners.toggle');
+        Route::resource('branches', AdminBranchController::class)->except('show');
         Route::resource('banners', AdminBannerController::class)->except('show');
         Route::resource('categories', AdminCategoryController::class)->except('show');
         Route::resource('dishes', AdminDishController::class)->except('show');
@@ -82,7 +84,10 @@ Route::prefix('admin')
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/quan-chay-hai-phong', [LocalSeoController::class, 'vegetarianRestaurantHaiPhong'])->name('local.vegetarian-restaurant-hai-phong');
+Route::get('/quan-chay-buon-ma-thuot', [LocalSeoController::class, 'vegetarianRestaurantBuonMaThuot'])->name('local.vegetarian-restaurant-buon-ma-thuot');
+Route::get('/dat-tiec-chay', [LocalSeoController::class, 'cateringHub'])->name('local.vegetarian-catering');
 Route::get('/dat-tiec-chay-hai-phong', [LocalSeoController::class, 'vegetarianCateringHaiPhong'])->name('local.vegetarian-catering-hai-phong');
+Route::get('/dat-tiec-chay-buon-ma-thuot', [LocalSeoController::class, 'vegetarianCateringBuonMaThuot'])->name('local.vegetarian-catering-buon-ma-thuot');
 Route::redirect('/mam-cung-chay-hai-phong', '/dat-tiec-chay-hai-phong');
 Route::get('/gioi-thieu', [PageController::class, 'about'])->name('about');
 Route::get('/khong-gian', GalleryController::class)->name('gallery.index');
@@ -121,7 +126,10 @@ Route::prefix('en')
     ->group(function (): void {
         Route::get('/', HomeController::class)->name('home');
         Route::get('/vegetarian-restaurant-hai-phong', [LocalSeoController::class, 'vegetarianRestaurantHaiPhong'])->name('local.vegetarian-restaurant-hai-phong');
+        Route::get('/vegetarian-restaurant-buon-ma-thuot', [LocalSeoController::class, 'vegetarianRestaurantBuonMaThuot'])->name('local.vegetarian-restaurant-buon-ma-thuot');
+        Route::get('/vegetarian-catering', [LocalSeoController::class, 'cateringHub'])->name('local.vegetarian-catering');
         Route::get('/vegetarian-catering-hai-phong', [LocalSeoController::class, 'vegetarianCateringHaiPhong'])->name('local.vegetarian-catering-hai-phong');
+        Route::get('/vegetarian-catering-buon-ma-thuot', [LocalSeoController::class, 'vegetarianCateringBuonMaThuot'])->name('local.vegetarian-catering-buon-ma-thuot');
         Route::get('/about', [PageController::class, 'about'])->name('about');
         Route::get('/space', GalleryController::class)->name('gallery.index');
         Route::get('/pages/{page}', [PageController::class, 'show'])->name('pages.show');

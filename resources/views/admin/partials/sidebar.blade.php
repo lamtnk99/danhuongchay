@@ -16,6 +16,7 @@
         ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard'],
         ['label' => 'Cài đặt website', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*'],
         ['label' => 'Logo & nhận diện', 'route' => 'admin.identity.edit', 'active' => 'admin.identity.*'],
+        ['label' => 'Cơ sở', 'route' => 'admin.branches.index', 'active' => 'admin.branches.*'],
         ['label' => 'Banner trang chủ', 'route' => 'admin.banners.index', 'active' => 'admin.banners.*'],
         ['label' => 'Danh mục', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
         ['label' => 'Món ăn / Sản phẩm', 'route' => 'admin.dishes.index', 'active' => 'admin.dishes.*'],

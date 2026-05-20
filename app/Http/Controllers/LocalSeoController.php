@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Dish;
 use App\Models\Post;
 use App\Services\SeoService;
@@ -9,6 +10,31 @@ use Illuminate\View\View;
 
 class LocalSeoController extends Controller
 {
+    public function cateringHub(): View
+    {
+        $branches = Branch::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
+        $seo = SeoService::page(
+            is_english() ? 'Vegetarian Catering | Dan Huong Chay' : 'Đặt tiệc chay | Đàn Hương Chay',
+            is_english()
+                ? 'Choose your branch to request vegetarian catering or ceremonial vegetarian trays.'
+                : 'Chọn cơ sở để gửi yêu cầu đặt tiệc chay hoặc mâm cúng chay nhanh chóng.',
+            is_english()
+                ? 'vegetarian catering, dan huong chay'
+                : 'đặt tiệc chay, mâm cúng chay, đàn hương chay',
+            localized_route('local.vegetarian-catering')
+        );
+
+        $schemas = [
+            SeoService::restaurantSchema(),
+        ];
+
+        return view('local.dat-tiec-chay', compact('branches', 'seo', 'schemas'));
+    }
+
     public function vegetarianRestaurantHaiPhong(): View
     {
         $featuredDishes = Dish::query()
@@ -106,5 +132,97 @@ class LocalSeoController extends Controller
         ];
 
         return view('local.dat-tiec-chay-hai-phong', compact('suggestedDishes', 'faqs', 'seo', 'schemas'));
+    }
+    public function vegetarianRestaurantBuonMaThuot(): View
+    {
+        $branch = Branch::query()->active()->where('slug', 'buon-ma-thuot')->first();
+
+        $featuredDishes = Dish::query()
+            ->with('category')
+            ->active()
+            ->featured()
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        $latestPosts = Post::query()
+            ->with('category')
+            ->published()
+            ->latest('published_at')
+            ->limit(3)
+            ->get();
+
+        $faqs = [
+            [
+                'question' => 'Đàn Hương Chay có cơ sở tại Buôn Ma Thuột không?',
+                'answer' => 'Có. Đàn Hương Chay có cơ sở tại Buôn Ma Thuột, phục vụ ẩm thực chay fusion, món chay gọi món và các nhu cầu đặt bàn theo thông tin cơ sở đang cập nhật trên website.',
+            ],
+            [
+                'question' => 'Thực đơn Buôn Ma Thuột có khác Hải Phòng không?',
+                'answer' => 'Website hiện dùng thực đơn và giá chung để khách dễ xem món. Một số món theo mùa hoặc chương trình tại từng cơ sở có thể được tư vấn khi khách đặt bàn.',
+            ],
+            [
+                'question' => 'Có thể đặt bàn trước tại cơ sở Buôn Ma Thuột không?',
+                'answer' => 'Có. Khách chọn cơ sở Buôn Ma Thuột trong form đặt bàn, hệ thống sẽ kiểm tra khung giờ nhận đặt của cơ sở và lưu thông tin để quán xác nhận.',
+            ],
+        ];
+
+        $seo = SeoService::page(
+            'Quán chay Buôn Ma Thuột | Đàn Hương Chay',
+            'Đàn Hương Chay Buôn Ma Thuột phục vụ ẩm thực chay fusion, món chay ngon, không gian an yên và có form đặt bàn theo cơ sở.',
+            'quán chay Buôn Ma Thuột, nhà hàng chay Buôn Ma Thuột, món chay ngon Buôn Ma Thuột, Đàn Hương Chay Buôn Ma Thuột',
+            route('local.vegetarian-restaurant-buon-ma-thuot'),
+            $branch?->image
+        );
+
+        $schemas = [
+            SeoService::restaurantSchema(),
+            SeoService::faqSchema($faqs),
+        ];
+
+        return view('local.quan-chay-buon-ma-thuot', compact('branch', 'featuredDishes', 'latestPosts', 'faqs', 'seo', 'schemas'));
+    }
+
+    public function vegetarianCateringBuonMaThuot(): View
+    {
+        $branch = Branch::query()->active()->where('slug', 'buon-ma-thuot')->first();
+
+        $suggestedDishes = Dish::query()
+            ->with('category')
+            ->active()
+            ->featured()
+            ->orderBy('sort_order')
+            ->limit(6)
+            ->get();
+
+        $faqs = [
+            [
+                'question' => 'Đàn Hương Chay có nhận đặt tiệc chay tại Buôn Ma Thuột không?',
+                'answer' => 'Có. Quán nhận tư vấn tiệc chay, mâm cúng chay và set món theo số lượng khách tại cơ sở Buôn Ma Thuột.',
+            ],
+            [
+                'question' => 'Giá món có khác giữa 2 cơ sở không?',
+                'answer' => 'Hiện tại website đang áp dụng bảng giá món đồng nhất để khách dễ theo dõi và đặt dịch vụ.',
+            ],
+            [
+                'question' => 'Nên đặt trước bao lâu?',
+                'answer' => 'Bạn nên đặt sớm để quán sắp xếp bếp và nguyên liệu tốt hơn, đặc biệt với mâm cúng hoặc nhóm đông.',
+            ],
+        ];
+
+        $seo = SeoService::page(
+            'Đặt tiệc chay Buôn Ma Thuột | Đàn Hương Chay',
+            'Đặt tiệc chay và mâm cúng chay tại Buôn Ma Thuột với Đàn Hương Chay. Tư vấn theo số lượng khách, khẩu vị và khung giờ phục vụ.',
+            'đặt tiệc chay Buôn Ma Thuột, mâm cúng chay Buôn Ma Thuột, quán chay Buôn Ma Thuột',
+            localized_route('local.vegetarian-catering-buon-ma-thuot'),
+            $branch?->image
+        );
+
+        $schemas = [
+            SeoService::restaurantSchema(),
+            SeoService::faqSchema($faqs),
+        ];
+
+        return view('local.dat-tiec-chay-buon-ma-thuot', compact('branch', 'suggestedDishes', 'faqs', 'seo', 'schemas'));
     }
 }
