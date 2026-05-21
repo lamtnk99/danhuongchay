@@ -13,25 +13,26 @@
     ];
 
     $items = [
-        ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard'],
-        ['label' => 'Cài đặt website', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*'],
-        ['label' => 'Logo & nhận diện', 'route' => 'admin.identity.edit', 'active' => 'admin.identity.*'],
-        ['label' => 'Cơ sở', 'route' => 'admin.branches.index', 'active' => 'admin.branches.*'],
-        ['label' => 'Banner trang chủ', 'route' => 'admin.banners.index', 'active' => 'admin.banners.*'],
-        ['label' => 'Danh mục', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
-        ['label' => 'Món ăn / Sản phẩm', 'route' => 'admin.dishes.index', 'active' => 'admin.dishes.*'],
-        ['label' => 'Bài viết', 'route' => 'admin.posts.index', 'active' => 'admin.posts.*'],
-        ['label' => 'Review khách hàng', 'route' => 'admin.testimonials.index', 'active' => 'admin.testimonials.*'],
-        ['label' => 'Khuyến mãi / Popup', 'route' => 'admin.promotions.index', 'active' => 'admin.promotions.*'],
-        ['label' => 'Không gian quán', 'route' => 'admin.gallery.index', 'active' => 'admin.gallery.*'],
-        ['label' => 'Trang tĩnh', 'route' => 'admin.pages.index', 'active' => 'admin.pages.*'],
-        ['label' => 'Menu điều hướng', 'route' => 'admin.menus.index', 'active' => 'admin.menus.*'],
-        ['label' => 'Đặt bàn', 'route' => 'admin.reservations.index', 'active' => 'admin.reservations.*', 'badge' => 'reservations'],
-        ['label' => 'Liên hệ', 'route' => 'admin.contacts.index', 'active' => 'admin.contacts.*', 'badge' => 'contacts'],
-        ['label' => 'Chat online', 'route' => 'admin.chats.index', 'active' => 'admin.chats.*', 'badge' => 'chat'],
-        ['label' => 'SEO', 'route' => 'admin.seo.edit', 'active' => 'admin.seo.*'],
-        ['label' => 'Dịch tự động', 'route' => 'admin.translations.settings', 'active' => 'admin.translations.*'],
-        ['label' => 'Tài khoản admin', 'route' => 'admin.users.index', 'active' => 'admin.users.*'],
+        ['label' => 'Dashboard', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'permission' => 'dashboard.view'],
+        ['label' => 'Cài đặt website', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*', 'permission' => 'settings.view'],
+        ['label' => 'Logo & nhận diện', 'route' => 'admin.identity.edit', 'active' => 'admin.identity.*', 'permission' => 'identity.view'],
+        ['label' => 'Cơ sở', 'route' => 'admin.branches.index', 'active' => 'admin.branches.*', 'permission' => 'branches.view'],
+        ['label' => 'Banner trang chủ', 'route' => 'admin.banners.index', 'active' => 'admin.banners.*', 'permission' => 'banners.view'],
+        ['label' => 'Danh mục', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'permission' => 'categories.view'],
+        ['label' => 'Món ăn / Sản phẩm', 'route' => 'admin.dishes.index', 'active' => 'admin.dishes.*', 'permission' => 'dishes.view'],
+        ['label' => 'Bài viết', 'route' => 'admin.posts.index', 'active' => 'admin.posts.*', 'permission' => 'posts.view'],
+        ['label' => 'Review khách hàng', 'route' => 'admin.testimonials.index', 'active' => 'admin.testimonials.*', 'permission' => 'testimonials.view'],
+        ['label' => 'Khuyến mãi / Popup', 'route' => 'admin.promotions.index', 'active' => 'admin.promotions.*', 'permission' => 'promotions.view'],
+        ['label' => 'Không gian quán', 'route' => 'admin.gallery.index', 'active' => 'admin.gallery.*', 'permission' => 'gallery.view'],
+        ['label' => 'Trang tĩnh', 'route' => 'admin.pages.index', 'active' => 'admin.pages.*', 'permission' => 'pages.view'],
+        ['label' => 'Menu điều hướng', 'route' => 'admin.menus.index', 'active' => 'admin.menus.*', 'permission' => 'menus.view'],
+        ['label' => 'Đặt bàn', 'route' => 'admin.reservations.index', 'active' => 'admin.reservations.*', 'badge' => 'reservations', 'permission' => 'reservations.view'],
+        ['label' => 'Liên hệ', 'route' => 'admin.contacts.index', 'active' => 'admin.contacts.*', 'badge' => 'contacts', 'permission' => 'contacts.view'],
+        ['label' => 'Chat online', 'route' => 'admin.chats.index', 'active' => 'admin.chats.*', 'badge' => 'chat', 'permission' => 'chats.view'],
+        ['label' => 'SEO', 'route' => 'admin.seo.edit', 'active' => 'admin.seo.*', 'permission' => 'seo.view'],
+        ['label' => 'Dịch tự động', 'route' => 'admin.translations.settings', 'active' => 'admin.translations.*', 'permission' => 'translations.view'],
+        ['label' => 'Tài khoản admin', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'permission' => 'users.view'],
+        ['label' => 'Phân quyền', 'route' => 'admin.roles.index', 'active' => 'admin.roles.*', 'permission' => 'roles.view'],
     ];
 @endphp
 
@@ -51,6 +52,10 @@
     <nav class="space-y-1 p-4">
         @foreach ($items as $item)
             @php
+                if (! $authUser?->hasPermission($item['permission'])) {
+                    continue;
+                }
+
                 $count = !empty($item['badge']) ? ($sidebarCounts[$item['badge']] ?? 0) : 0;
             @endphp
             <a

@@ -78,16 +78,24 @@
             </div>
         </div>
 
-        <button
-            type="button"
-            class="mobile-nav-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-emerald-900/20 bg-white text-emerald-950 shadow-sm lg:hidden"
-            aria-controls="mobile-nav"
-            aria-expanded="false"
-            aria-label="{{ __('site.nav.menu') }}"
-        >
-            <span class="sr-only">{{ __('site.nav.menu') }}</span>
-            <span class="hamburger" aria-hidden="true"></span>
-        </button>
+        <div class="mobile-header-actions lg:hidden">
+            <div class="mobile-language-switcher" aria-label="{{ is_english() ? 'Language' : 'Ngôn ngữ' }}">
+                @foreach ($languageLinks as $locale => $url)
+                    <a href="{{ $url }}" @class(['is-active' => current_locale() === $locale])>{{ strtoupper($locale) }}</a>
+                @endforeach
+            </div>
+
+            <button
+                type="button"
+                class="mobile-nav-toggle inline-flex h-11 w-11 items-center justify-center rounded-full border border-emerald-900/20 bg-white text-emerald-950 shadow-sm"
+                aria-controls="mobile-nav"
+                aria-expanded="false"
+                aria-label="{{ __('site.nav.menu') }}"
+            >
+                <span class="sr-only">{{ __('site.nav.menu') }}</span>
+                <span class="hamburger" aria-hidden="true"></span>
+            </button>
+        </div>
     </nav>
 
     <div id="mobile-nav" class="mobile-nav-panel border-t border-emerald-900/10 bg-[#fbfaf5] px-4 pb-4 lg:hidden" data-mobile-nav hidden>

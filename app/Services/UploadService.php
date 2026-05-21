@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class UploadService
 {
@@ -15,7 +16,7 @@ class UploadService
         }
 
         if ($this->isSvg($file)) {
-            return $file->store($folder, 'public');
+            return $file->store($folder, $this->disk());
         }
 
         return $this->storeOptimizedRasterImage($file, $folder, $profile);
@@ -40,8 +41,8 @@ class UploadService
             return;
         }
 
-        Storage::disk('public')->delete($path);
-        Storage::disk('public')->delete($this->variantPaths($path));
+        Storage::disk($this->disk())->delete($path);
+        Storage::disk($this->disk())->delete($this->variantPaths($path));
     }
 
     public function deleteImages(array $paths): void
@@ -53,10 +54,14 @@ class UploadService
 
     private function storeOptimizedRasterImage(UploadedFile $file, string $folder, ?string $profile = null): string
     {
+        if (! extension_loaded('gd') || ! function_exists('imagewebp')) {
+            return $this->storeOriginalImage($file, $folder);
+        }
+
         $imageInfo = getimagesize($file->getRealPath());
 
         if (! $imageInfo) {
-            return $file->store($folder, 'public');
+            return $this->storeOriginalImage($file, $folder);
         }
 
         [$width, $height, $type] = $imageInfo;
@@ -69,7 +74,7 @@ class UploadService
         };
 
         if (! $source) {
-            return $file->store($folder, 'public');
+            return $this->storeOriginalImage($file, $folder);
         }
 
         $profileConfig = $this->profileFor($folder, $profile);
@@ -88,8 +93,8 @@ class UploadService
         imagecopyresampled($target, $source, 0, 0, 0, 0, $targetWidth, $targetHeight, $width, $height);
 
         $path = trim($folder, '/').'/'.Str::uuid().'.webp';
-        Storage::disk('public')->makeDirectory($folder);
-        $stored = imagewebp($target, Storage::disk('public')->path($path), $quality);
+        $this->ensureStorageDirectory($folder);
+        $stored = imagewebp($target, Storage::disk($this->disk())->path($path), $quality);
 
         if ($stored) {
             $this->storeVariantsFromResource($target, $targetWidth, $targetHeight, $path, $profileConfig['name'] ?? $this->profileNameFor($folder, $profile));
@@ -98,7 +103,33 @@ class UploadService
         imagedestroy($source);
         imagedestroy($target);
 
-        return $stored ? $path : $file->store($folder, 'public');
+        return $stored ? $path : $this->storeOriginalImage($file, $folder);
+    }
+
+    private function storeOriginalImage(UploadedFile $file, string $folder): string
+    {
+        $this->ensureStorageDirectory($folder);
+
+        $path = $file->store($folder, $this->disk());
+
+        if (! is_string($path) || blank($path)) {
+            throw new RuntimeException('Khong the luu anh. Hay kiem tra quyen ghi cua disk upload ['.$this->disk().'].');
+        }
+
+        return $path;
+    }
+
+    private function ensureStorageDirectory(string $folder): void
+    {
+        if (! Storage::disk($this->disk())->makeDirectory($folder)) {
+            throw new RuntimeException("Khong the tao thu muc upload [{$folder}] tren disk [{$this->disk()}].");
+        }
+
+        $absoluteFolder = Storage::disk($this->disk())->path($folder);
+
+        if (! is_dir($absoluteFolder) || ! is_writable($absoluteFolder)) {
+            throw new RuntimeException("Thu muc upload [{$absoluteFolder}] khong co quyen ghi.");
+        }
     }
 
     public function regenerateResponsiveVariants(?string $path, ?string $profile = null, bool $overwrite = true): int
@@ -227,14 +258,14 @@ class UploadService
     {
         return str_starts_with($path, '/')
             ? file_exists(public_path(ltrim($path, '/')))
-            : Storage::disk('public')->exists($path);
+            : Storage::disk($this->disk())->exists($path);
     }
 
     private function absoluteImagePath(string $path): string
     {
         return str_starts_with($path, '/')
             ? public_path(ltrim($path, '/'))
-            : Storage::disk('public')->path($path);
+            : Storage::disk($this->disk())->path($path);
     }
 
     private function ensureImageDirectory(string $path): void
@@ -249,12 +280,17 @@ class UploadService
             return;
         }
 
-        Storage::disk('public')->makeDirectory(dirname($path));
+        $this->ensureStorageDirectory(dirname($path));
     }
 
     private function isSvg(UploadedFile $file): bool
     {
         return $file->getClientOriginalExtension() === 'svg'
             || $file->getMimeType() === 'image/svg+xml';
+    }
+
+    private function disk(): string
+    {
+        return config('uploads.disk', 'public');
     }
 }

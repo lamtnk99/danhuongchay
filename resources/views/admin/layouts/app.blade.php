@@ -36,5 +36,6 @@
             adminToggle.addEventListener('click', () => adminSidebar.classList.toggle('hidden'));
         }
     </script>
+    @stack('scripts')
 </body>
 </html>

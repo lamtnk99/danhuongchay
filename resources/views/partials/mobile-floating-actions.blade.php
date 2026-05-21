@@ -1,11 +1,26 @@
 @php
-    $phone = setting('hotline', setting('phone'));
+    $chatBranch = $selectedBranch ?? null;
+
+    if (! $chatBranch && isset($branch) && $branch instanceof \App\Models\Branch) {
+        $chatBranch = $branch;
+    }
+
+    if (! $chatBranch && request()->filled('branch')) {
+        $branchParam = request('branch');
+        $chatBranch = \App\Models\Branch::query()
+            ->active()
+            ->where(fn ($query) => $query
+                ->where('id', $branchParam)
+                ->orWhere('slug', $branchParam))
+            ->first();
+    }
+
+    $phone = $chatBranch?->hotline ?: $chatBranch?->phone ?: setting('hotline', setting('phone'));
     $phoneHref = $phone ? preg_replace('/[^0-9+]/', '', $phone) : null;
-    $zaloUrl = setting('zalo_url');
-    $messengerUrl = setting('messenger_url', setting('facebook_url'));
+    $zaloUrl = $chatBranch?->zalo_url ?: setting('zalo_url');
 @endphp
 
-@if ($phoneHref || $zaloUrl || $messengerUrl)
+@if ($phoneHref || $zaloUrl)
     <div class="mobile-floating-actions lg:hidden" aria-label="Liên hệ nhanh">
         @if ($phoneHref)
             <a href="tel:{{ $phoneHref }}" class="mobile-floating-action is-call" aria-label="Gọi {{ setting('restaurant_name', 'Đàn Hương Chay') }}" data-track-event="click_call" data-track-category="contact" data-track-label="Mobile floating call" data-facebook-event="ClickCall">
@@ -21,10 +36,5 @@
             </a>
         @endif
 
-        @if ($messengerUrl)
-            <a href="{{ $messengerUrl }}" class="mobile-floating-action" aria-label="Nhắn Facebook" target="_blank" rel="noopener" data-track-event="click_messenger" data-track-category="contact" data-track-label="Mobile floating Facebook" data-facebook-event="ClickMessenger">
-                @include('partials.social-icon', ['name' => 'facebook'])
-            </a>
-        @endif
     </div>
 @endif

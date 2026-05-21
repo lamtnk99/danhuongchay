@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <section class="subpage-hero">
+    <section class="subpage-hero local-bmt-hero">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">
             <div>
                 <p class="eyebrow">Quán chay Buôn Ma Thuột</p>

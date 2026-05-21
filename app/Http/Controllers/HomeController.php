@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Banner;
+use App\Models\Branch;
 use App\Models\Dish;
 use App\Models\GalleryImage;
 use App\Models\Post;
@@ -61,6 +62,11 @@ class HomeController extends Controller
             ->limit(5)
             ->get();
 
+        $branches = Branch::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->get();
+
         $seo = SeoService::page(
             is_english() ? 'Dan Huong Chay - Hai Phong | Vegetarian fusion kitchen' : setting('default_meta_title', 'Đàn Hương Chay - Hải Phòng | Quán chay ngon, món chay fusion, đặt bàn'),
             is_english() ? 'Dan Huong Chay serves vegetarian fusion cuisine in Hai Phong with creative dishes, clean ingredients, a peaceful space and easy table booking.' : setting('default_meta_description', 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với món chay ngon, thực đơn đa dạng, không gian an yên và đặt bàn tiện lợi.'),
@@ -72,6 +78,6 @@ class HomeController extends Controller
             SeoService::restaurantSchema(),
         ];
 
-        return view('home', compact('featuredDishes', 'latestPosts', 'testimonials', 'homePromotions', 'homeGalleryImages', 'banners', 'seo', 'schemas'));
+        return view('home', compact('featuredDishes', 'latestPosts', 'testimonials', 'homePromotions', 'homeGalleryImages', 'banners', 'branches', 'seo', 'schemas'));
     }
 }

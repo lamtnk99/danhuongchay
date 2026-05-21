@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'admin' => CheckAdmin::class,
+            'permission' => CheckPermission::class,
             'locale' => SetLocale::class,
         ]);
     })

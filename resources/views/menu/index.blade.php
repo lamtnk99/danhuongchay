@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <section class="subpage-hero">
+    <section class="subpage-hero menu-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <p class="eyebrow">{{ __('site.menu.eyebrow') }}</p>
             <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ __('site.menu.title') }}</h1>

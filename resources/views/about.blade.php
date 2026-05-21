@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <section class="subpage-hero">
+    <section class="subpage-hero about-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <p class="eyebrow">{{ __('site.about.eyebrow') }}</p>
             <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ $page?->localized('title') ?: __('site.about.fallback_title') }}</h1>
@@ -88,12 +88,7 @@
                                     <h3>{{ $branch->name }}</h3>
                                     <span>{{ $branch->address }}</span>
                                 </div>
-                                <div class="about-branch-actions">
-                                    @if ($branch->hotline)
-                                        <a href="tel:{{ preg_replace('/\D+/', '', $branch->hotline) }}">{{ $branch->hotline }}</a>
-                                    @endif
-                                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}">{{ __('site.nav.reservation') }}</a>
-                                </div>
+                                @include('partials.branch-social-actions', ['branch' => $branch])
                             </article>
                         @empty
                             <article class="about-branch-card">

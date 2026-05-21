@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\UserRequest;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\UploadService;
 use Illuminate\Http\RedirectResponse;
@@ -18,6 +19,7 @@ class UserController extends Controller
     public function index(Request $request): View
     {
         $users = User::query()
+            ->with('adminRole')
             ->when($request->filled('q'), function ($query) use ($request): void {
                 $query->where('name', 'like', '%'.$request->q.'%')
                     ->orWhere('email', 'like', '%'.$request->q.'%');
@@ -31,7 +33,10 @@ class UserController extends Controller
 
     public function create(): View
     {
-        return view('admin.users.create', ['user' => new User(['role' => 'admin'])]);
+        return view('admin.users.create', [
+            'user' => new User(['role' => 'admin', 'role_id' => Role::where('slug', 'viewer')->value('id')]),
+            'roles' => Role::orderBy('name')->get(),
+        ]);
     }
 
     public function store(UserRequest $request): RedirectResponse
@@ -50,7 +55,10 @@ class UserController extends Controller
 
     public function edit(User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        return view('admin.users.edit', [
+            'user' => $user,
+            'roles' => Role::orderBy('name')->get(),
+        ]);
     }
 
     public function update(UserRequest $request, User $user): RedirectResponse

@@ -19,6 +19,20 @@
             ]);
         }
 
+        $footerMenuPaths = $footerMenus
+            ->map(fn ($menu) => method_exists($menu, 'localized') ? $menu->localized('url', $menu->url) : $menu->url)
+            ->map(fn ($url) => parse_url(str_starts_with($url, 'http') ? $url : url($url), PHP_URL_PATH))
+            ->filter()
+            ->values();
+
+        $requiredFooterLinks = collect([
+            (object) [
+                'title' => is_english() ? 'Vegetarian restaurant Buon Ma Thuot' : 'Quán chay Buôn Ma Thuột',
+                'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot'),
+                'open_new_tab' => false,
+            ],
+        ])->reject(fn ($link) => $footerMenuPaths->contains(parse_url($link->url, PHP_URL_PATH)));
+
         $footerBranches = \App\Models\Branch::active()
             ->orderBy('sort_order')
             ->orderBy('name')
@@ -67,6 +81,13 @@
                     <li>
                         <a class="hover:text-white" href="{{ str_starts_with($menuUrl, 'http') ? $menuUrl : url($menuUrl) }}" @if ($menu->open_new_tab) target="_blank" rel="noopener" @endif>
                             {{ $menuTitle }}
+                        </a>
+                    </li>
+                @endforeach
+                @foreach ($requiredFooterLinks as $menu)
+                    <li>
+                        <a class="hover:text-white" href="{{ $menu->url }}">
+                            {{ $menu->title }}
                         </a>
                     </li>
                 @endforeach

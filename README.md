@@ -1,19 +1,17 @@
 # Đàn Hương Chay
 
-Website Laravel cho quán chay **Đàn Hương Chay** với giao diện Blade + Tailwind CSS, dữ liệu mẫu, SEO meta, schema JSON-LD, sitemap, robots, form liên hệ và form đặt bàn lưu database.
-
-Project đã có Admin Panel tại `/admin` để quản trị settings, banner, danh mục, món ăn, bài viết, trang tĩnh, menu, đặt bàn, liên hệ, SEO và tài khoản admin.
+Website Laravel cho thương hiệu quán chay **Đàn Hương Chay**, dùng chung một thực đơn và hệ thống quản trị cho nhiều cơ sở. Dự án có frontend SEO, admin panel, quản lý nội dung động, đặt bàn, liên hệ, chat online, song ngữ Việt/Anh, phân quyền admin và tối ưu ảnh.
 
 ## Công nghệ
 
 - Laravel 13
 - PHP 8.3+
-- SQLite mặc định để chạy nhanh local
 - Blade template theo MVC
 - Tailwind CSS 4 qua Vite
+- SQLite mặc định cho local, có thể chuyển MySQL production
 - PHPUnit feature tests
 
-## Cài đặt
+## Cài đặt local
 
 ```bash
 composer install
@@ -32,13 +30,7 @@ Mặc định app chạy tại:
 http://127.0.0.1:8000
 ```
 
-Nếu dùng SQLite, Laravel đã cấu hình:
-
-```env
-DB_CONNECTION=sqlite
-```
-
-Nếu file database chưa tồn tại:
+Nếu dùng SQLite và file database chưa tồn tại:
 
 ```bash
 type nul > database/database.sqlite
@@ -52,42 +44,7 @@ npm run build
 php artisan optimize
 ```
 
-## Chạy test
-
-```bash
-php artisan test
-```
-
-## Route chính
-
-- `/` - Trang chủ
-- `/gioi-thieu` - Giới thiệu
-- `/thuc-don` - Thực đơn, tìm kiếm và lọc danh mục
-- `/mon-an/{slug}` - Chi tiết món ăn
-- `/blog` - Danh sách bài viết
-- `/blog/{slug}` - Chi tiết bài viết
-- `/dat-ban` - Form đặt bàn
-- `/lien-he` - Form liên hệ
-- `/sitemap.xml` - Sitemap tự động
-- `/robots.txt` - Robots.txt động
-- `/login` - Đăng nhập admin
-- `/admin/dashboard` - Dashboard quản trị
-- `/admin/settings` - Cài đặt website
-- `/admin/identity` - Logo và nhận diện
-- `/admin/branches` - Quản lý cơ sở, giờ mở cửa, giờ nhận đặt bàn và map
-- `/admin/banners` - Banner trang chủ
-- `/admin/testimonials` - Review khách hàng
-- `/admin/promotions` - Khuyến mãi, quảng cáo và popup
-- `/admin/categories` - Danh mục
-- `/admin/dishes` - Món ăn / sản phẩm
-- `/admin/posts` - Bài viết
-- `/admin/pages` - Trang tĩnh
-- `/admin/menus` - Menu điều hướng
-- `/admin/reservations` - Đặt bàn
-- `/admin/contacts` - Liên hệ
-- `/admin/chats` - Chat online
-- `/admin/seo` - SEO tổng thể
-- `/admin/users` - Tài khoản admin
+Nếu deploy shared host không chạy được command, build local rồi upload cả thư mục `public/build`.
 
 ## Tài khoản admin mẫu
 
@@ -95,119 +52,203 @@ php artisan test
 Email: admin@danhuongchay.vn
 Password: password
 Role: admin
+RBAC role: Super Admin
 ```
 
 Chỉ user có `role = admin` mới truy cập được `/admin`.
 
-## Database
+## Route chính
 
-Các bảng chính:
-
-- `categories`: danh mục menu/blog
-- `dishes`: món ăn, giá, ảnh, SEO riêng
-- `posts`: bài blog, nội dung, SEO riêng
-- `reservations`: yêu cầu đặt bàn
-- `contacts`: tin nhắn liên hệ
-- `site_settings`: cài đặt website, nhận diện, SEO
-- `branches`: cơ sở Hải Phòng/Buôn Ma Thuột, hotline, địa chỉ, khung giờ nhận đặt bàn, map và SEO local
-- `banners`: banner trang chủ
-- `testimonials`: review khách hàng hiển thị dạng slider ở trang chủ
-- `promotions`: chương trình nổi bật ở trang chủ và popup thông báo/quảng cáo
-- `pages`: trang tĩnh
-- `navigation_menus`: menu header/footer
-- `users`: tài khoản đăng nhập, có `role` và `avatar`
-
-Seeder tạo sẵn:
-
-- 8+ món chay mẫu
-- 5 bài blog mẫu
-- 10 review khách hàng mẫu
-- 3 khuyến mãi/quảng cáo mẫu, gồm popup bật/tắt được trong admin
-- Danh mục menu và blog
-
-## Cấu trúc đáng chú ý
-
-```text
-app/Http/Controllers/
-app/Http/Requests/
-app/Models/
-app/Services/SeoService.php
-app/Support/GeneratesSlugs.php
-database/migrations/
-database/seeders/
-resources/views/layouts/app.blade.php
-resources/views/partials/
-resources/views/admin/
-resources/views/menu/
-resources/views/blog/
-resources/css/app.css
-routes/web.php
-```
-
-## SEO đã triển khai
-
-- Title, meta description, meta keywords riêng từng trang
-- Canonical URL
-- Open Graph cho Facebook/Zalo
-- Twitter Card
-- Schema JSON-LD `Restaurant`
-- Schema JSON-LD `Menu`
-- Schema JSON-LD `Article`
-- Breadcrumb và Breadcrumb schema cho trang chi tiết
-- Sitemap tự động từ route, món ăn và bài viết
-- Robots.txt
-- Slug tự sinh trong model
-- Alt text cho ảnh
-- Lazy loading ảnh ngoài hero
-- Robots.txt có thể chỉnh trong admin SEO
-- Sitemap động lấy trang tĩnh, danh mục active, món active và bài active
+- `/` - Trang chủ
+- `/gioi-thieu` - Giới thiệu
+- `/khong-gian` - Không gian quán
+- `/thuc-don` - Thực đơn, tìm kiếm và lọc danh mục
+- `/mon-an/{slug}` - Chi tiết món ăn
+- `/blog` - Danh sách bài viết
+- `/blog/{slug}` - Chi tiết bài viết
+- `/dat-ban` - Form đặt bàn
+- `/lien-he` - Form liên hệ
+- `/quan-chay-hai-phong` - Landing SEO local Hải Phòng
+- `/quan-chay-buon-ma-thuot` - Landing SEO local Buôn Ma Thuột
+- `/dat-tiec-chay` - Trang trung gian đặt tiệc/mâm chay
+- `/dat-tiec-chay-hai-phong` - Landing đặt tiệc Hải Phòng
+- `/dat-tiec-chay-buon-ma-thuot` - Landing đặt tiệc Buôn Ma Thuột
+- `/sitemap.xml` - Sitemap động
+- `/robots.txt` - Robots động
+- `/login` - Đăng nhập admin
 
 ## Admin Panel
 
-Các nhóm quản trị:
+Admin nằm tại `/admin`, có sidebar, topbar, dashboard, bảng dữ liệu, form CRUD và thông báo session flash.
 
-- Cài đặt website: tên website, slogan, mô tả, hotline, email, địa chỉ, giờ mở cửa, mạng xã hội, map iframe, footer.
-- Logo & nhận diện: logo header, logo footer, favicon, OG image, ảnh nền mặc định.
-- Banner: CRUD, bật/tắt, thứ tự, upload ảnh.
-- Review khách hàng: CRUD, rating, avatar, bật/tắt, sắp xếp; frontend chạy slider tự động.
-- Khuyến mãi / Popup: CRUD chương trình sale/quảng cáo, chọn vị trí trang chủ hoặc popup, chọn mẫu `split`, `center`, `minimal`, bảng màu nhấn, link nhanh, thời gian bắt đầu/kết thúc, bật/tắt và chế độ popup chỉ hiện một lần. Thứ tự không được trùng trong cùng vị trí. Trang chủ ưu tiên hiển thị tối đa 4 khuyến mãi active theo thứ tự.
-- Danh mục: CRUD, loại `dish` hoặc `post`, slug, ảnh, SEO, trạng thái.
-- Món ăn: CRUD, tìm kiếm, lọc danh mục/trạng thái, ảnh đại diện, gallery nhiều ảnh, nổi bật, active, SEO.
-- Bài viết: CRUD, thumbnail, nội dung HTML qua textarea, nổi bật, active, hẹn ngày đăng, SEO.
-- Trang tĩnh: CRUD cho giới thiệu, chính sách, điều khoản.
-- Menu điều hướng: header/footer, menu cha/con đơn giản, thứ tự, mở tab mới.
-- Đặt bàn: xem chi tiết, đổi trạng thái `pending`, `confirmed`, `cancelled`, `completed`, ghi chú nội bộ.
-- Liên hệ: xem chi tiết, trạng thái `new`, `read`, `processed`, ghi chú nội bộ.
-- Chat online: xem hội thoại khách gửi từ widget, phản hồi tư vấn viên, trạng thái `open`, `pending`, `closed`.
-- Chuông thông báo admin: polling `/admin/notifications`, hiển thị tin chat chưa đọc, đặt bàn pending và liên hệ mới.
-- Sidebar badge: hiện số pending/new/unread ở Đặt bàn, Liên hệ và Chat online.
-- Dashboard: lọc theo khoảng thời gian, thẻ thống kê, biểu đồ tổng quan dễ đọc, xu hướng 14 ngày và danh sách có ảnh.
-- Tài khoản admin: thêm/sửa/xóa user, đổi mật khẩu, role `admin` hoặc `user`, không cho xóa chính mình.
+Các module chính:
+
+- `/admin/dashboard` - Dashboard, thống kê, lọc theo khoảng thời gian
+- `/admin/settings` - Cài đặt website
+- `/admin/identity` - Logo, favicon, OG image, ảnh nền mặc định
+- `/admin/branches` - Quản lý cơ sở, địa chỉ, hotline, giờ mở cửa, khung giờ đặt bàn, map
+- `/admin/banners` - Banner trang chủ
+- `/admin/categories` - Danh mục món ăn/bài viết
+- `/admin/dishes` - Món ăn/sản phẩm
+- `/admin/posts` - Bài viết
+- `/admin/pages` - Trang tĩnh
+- `/admin/menus` - Menu điều hướng
+- `/admin/gallery` - Không gian quán theo cơ sở
+- `/admin/promotions` - Ưu đãi, popup, quảng cáo
+- `/admin/testimonials` - Review khách hàng
+- `/admin/reservations` - Đặt bàn
+- `/admin/contacts` - Liên hệ
+- `/admin/chats` - Chat online
+- `/admin/seo` - SEO tổng thể
+- `/admin/translations/settings` - Cài đặt dịch tự động
+- `/admin/users` - Tài khoản admin
+- `/admin/roles` - Phân quyền admin
+
+## Phân quyền admin RBAC
+
+Dự án dùng RBAC tự code, không phụ thuộc package ngoài.
+
+Bảng liên quan:
+
+- `roles`: nhóm vai trò
+- `permissions`: từng quyền thao tác
+- `permission_role`: gán quyền cho vai trò
+- `users.role_id`: gán tài khoản với vai trò
+
+Role mẫu từ seeder:
+
+- `Super Admin`: toàn quyền
+- `Quản lý nội dung`: món ăn, danh mục, bài viết, trang tĩnh, banner, ưu đãi, gallery
+- `Lễ tân`: đặt bàn, liên hệ, chat online
+- `Marketing`: banner, ưu đãi, bài viết, SEO, dịch thuật
+- `Viewer`: chỉ xem
+
+Route admin được chặn theo từng action. Ví dụ:
+
+- `dishes.view`
+- `dishes.create`
+- `dishes.update`
+- `dishes.delete`
+
+Sidebar và một số nút quản trị cũng ẩn theo quyền hiện tại. Middleware `permission` được đăng ký trong `bootstrap/app.php`.
+
+## Database chính
+
+- `users`
+- `roles`
+- `permissions`
+- `permission_role`
+- `site_settings`
+- `branches`
+- `categories`
+- `dishes`
+- `posts`
+- `pages`
+- `navigation_menus`
+- `banners`
+- `promotions`
+- `testimonials`
+- `gallery_images`
+- `reservations`
+- `contacts`
+- `chat_sessions`
+- `chat_messages`
+- Các bảng translation cho category, dish, post, page, banner, promotion, testimonial, navigation menu, gallery
+
+## Multi-branch
+
+Website dùng chung thương hiệu, menu và bảng giá cho cả hai cơ sở. Những phần cần tách theo cơ sở nằm trong `/admin/branches`:
+
+- Tên cơ sở
+- Thành phố
+- Địa chỉ
+- Hotline, số điện thoại, email
+- Giờ mở cửa hiển thị
+- Khung giờ nhận đặt bàn, ví dụ `09:00-14:00,16:00-21:00`
+- Giờ cuối nhận đặt bàn, ví dụ `20:30`
+- Google Map iframe
+- Ảnh đại diện cơ sở
+- SEO local
+- Facebook URL và Zalo URL riêng cho các nút liên hệ nhanh theo cơ sở
+
+Form đặt bàn bắt buộc chọn cơ sở và validate theo khung giờ của cơ sở đã chọn.
+
+## Trang chủ editorial
+
+Trang chủ đã được nâng theo hướng editorial/restaurant:
+
+- Hero ảnh lớn, CTA rõ: `Đặt bàn`, `Xem thực đơn`, `Đặt tiệc / mâm chay`
+- Card giữ chỗ hiển thị các cơ sở để khách chọn đặt bàn
+- Section món yêu thích dạng “thực đơn đặc biệt”
+- Ưu đãi trang chủ dạng khối nổi bật, tối đa 4 ưu đãi active
+- Section “Vì sao chọn quán” với 4 card: nguyên liệu sạch, nêm nếm tinh tế, không gian yên, đặt bàn nhanh
+- Gallery không gian quán
+- Review khách hàng dạng slider
+- Blog mới nhất
+
+Các style chính nằm trong `resources/css/app.css`, view chính là `resources/views/home.blade.php`.
+
+## UX mobile và liên hệ nhanh
+
+Header mobile có nút đổi ngôn ngữ `VI/EN` hiển thị trực tiếp cạnh nút menu hamburger, không cần mở menu mới đổi ngôn ngữ.
+
+Trang `Giới thiệu` và `Liên hệ` dùng partial `resources/views/partials/branch-social-actions.blade.php` để hiển thị nút nhanh theo từng cơ sở:
+
+- Gọi điện theo hotline/số điện thoại cơ sở
+- Zalo theo `zalo_url` của cơ sở, fallback về setting chung
+- Facebook theo `facebook_url` của cơ sở, fallback về setting chung
+- Đặt bàn đúng cơ sở
+
+Footer vẫn giữ một bộ icon social chung cho toàn thương hiệu.
+
+## Đặt bàn
+
+Form đặt bàn lưu vào `reservations` với `status = pending`.
+
+Luồng đặt bàn hỗ trợ:
+
+- Chọn cơ sở
+- Validate ngày/giờ đặt theo cơ sở
+- Chặn giờ đã qua nếu đặt trong ngày hôm nay
+- Chỉ nhận giờ nằm trong khung mở cửa/khung nhận đặt bàn
+- Có thể cấu hình giờ mở cửa và giờ nhận đặt bàn trong admin cơ sở
+- Form đã bỏ email để gọn hơn
 
 ## Chat online
 
-Frontend có widget chat nổi ở góc dưới bên phải. Khách gửi tên, số điện thoại và nội dung cần tư vấn. Tin nhắn được lưu vào database:
+Frontend có widget chat nổi. Khách gửi tên, số điện thoại và nội dung cần tư vấn.
+
+Dữ liệu lưu vào:
 
 - `chat_sessions`
 - `chat_messages`
 
-Admin vào `/admin/chats` để xem hội thoại và phản hồi. Widget dùng AJAX polling nhẹ, không cần WebSocket nên chạy được ngay với `php artisan serve`.
+Admin quản lý tại `/admin/chats`.
 
-Chống spam chat:
+Cơ chế chống spam:
 
-- Rate limit bắt đầu chat: tối đa 3 lần/phút theo IP.
-- Rate limit gửi tin: tối đa 10 tin/phút theo IP + session chat.
-- Honeypot field ẩn để chặn bot form đơn giản.
+- Rate limit bắt đầu chat
+- Rate limit gửi tin nhắn
+- Honeypot field ẩn
+- Admin có polling để cập nhật tin nhắn
 
-Upload ảnh lưu ở `storage/app/public`, hiển thị qua `public/storage`. Chạy:
+Sidebar và chuông admin hiển thị số tin chat chưa đọc, đặt bàn pending và liên hệ mới.
 
-```bash
-php artisan storage:link
-```
+## Upload ảnh và tối ưu ảnh
 
-### Cau hinh upload anh lon
+Upload xử lý qua `App\Services\UploadService`.
 
-Gioi han upload mac dinh cua app la 10MB/anh. Anh JPG, PNG, WEBP se duoc tu resize toi da 1600x1600 va luu thanh WEBP de toi uu toc do tai trang; SVG duoc giu nguyen.
+Hỗ trợ:
+
+- Upload ảnh JPG, PNG, WEBP, SVG
+- Resize ảnh raster
+- Tạo WebP
+- Tạo nhiều kích thước responsive: `thumb`, `card`, `large`, `hero`
+- Fallback lưu ảnh gốc nếu host thiếu GD/WebP
+- Xóa ảnh cũ khi cập nhật ảnh mới
+- Helper hiển thị ảnh: `media_url`, `media_variant_url`, `media_srcset`
+
+Cấu hình trong `.env`:
 
 ```env
 UPLOAD_MAX_IMAGE_KB=10240
@@ -220,167 +261,199 @@ UPLOAD_LARGE_WIDTH=1200
 UPLOAD_HERO_VARIANT_WIDTH=1920
 ```
 
-Moi anh upload se sinh them cac ban WebP responsive nhu `thumb`, `card`, `large`, `hero` tuy profile upload. Frontend dung `srcset/sizes` de mobile tai anh nho hon, desktop tai anh lon hon.
-
-De tao lai thumbnail cho anh cu:
+Regenerate ảnh cũ:
 
 ```bash
 php artisan media:regenerate-responsive-images
-```
-
-Muon ghi de thumbnail da ton tai:
-
-```bash
 php artisan media:regenerate-responsive-images --force
 ```
 
-Neu chay bang PHP CLI / `php artisan serve`, can dam bao PHP cho phep nhan file lon hon 2MB. Chay local co the dung:
+## Shared hosting upload mode
 
-```bash
-php -d upload_max_filesize=12M -d post_max_size=16M -d memory_limit=256M artisan serve
+Nếu shared host không chạy được `php artisan storage:link` hoặc không hỗ trợ symlink, bật upload trực tiếp vào `public/uploads`:
+
+```env
+UPLOAD_DISK=public_uploads
+APP_URL=https://danhuongchay.com
 ```
 
-## Multi-branch setup
+Khi đó ảnh mới sẽ lưu vào:
 
-Website dung mot thuong hieu, mot menu va mot bang gia chung cho ca hai co so. Nhung phan can tach theo co so duoc quan ly trong `/admin/branches`:
-
-- Dia chi, hotline, so dien thoai, email va Google Map iframe rieng.
-- Gio mo cua hien thi rieng.
-- Khung gio nhan dat ban rieng, vi du `09:00-14:00,16:00-21:00`.
-- Gio cuoi nhan dat ban, vi du `20:30`.
-- Anh khong gian co the gan voi tung co so trong `/admin/gallery`.
-
-Form dat ban bat buoc chon co so va se validate theo khung gio cua co so da chon. Trang `/khong-gian` hien thi anh theo tung co so tu tren xuong duoi, giup khach xem khong gian ma khong bi bat chon co so qua som.
-
-## Form
-
-Form liên hệ lưu vào bảng `contacts`.
-
-Form đặt bàn lưu vào bảng `reservations` với `status = pending`.
-
-Cả hai form đều dùng Form Request để validate và hiển thị thông báo thành công sau khi submit.
-
-## SEO local va conversion tracking moi
-
-Route SEO local moi:
-
-- `/quan-chay-hai-phong`: landing page cho tu khoa quan chay Hai Phong.
-- `/quan-chay-buon-ma-thuot`: landing page cho tu khoa quan chay Buon Ma Thuot.
-- `/dat-tiec-chay-hai-phong`: landing page dat tiec chay / mam cung chay.
-- `/mam-cung-chay-hai-phong`: redirect ve `/dat-tiec-chay-hai-phong`.
-
-Schema moi:
-
-- `FAQPage` cho cac landing page SEO local.
-- `MenuItem` cho trang chi tiet mon an.
-
-Conversion tracking:
-
-Admin co the dan Google Analytics code va Facebook Pixel code trong `/admin/seo`. Frontend se tu gui event neu `gtag` hoac `fbq` da ton tai tren trang.
-
-Mot so event dang co:
-
-- `click_call`: click goi dien.
-- `click_zalo`: click Zalo.
-- `click_messenger`: click Messenger/Facebook.
-- `open_chat`: mo widget chat.
-- `start_chat`: bat dau chat.
-- `click_dish_card`: click vao card mon.
-- `view_dish`: xem trang chi tiet mon.
-- `click_dish_reservation`: click dat ban tu trang mon.
-- `click_dish_catering`: click dat tiec/mam chay tu trang mon.
-- `submit_reservation`: bam gui form dat ban.
-- `reservation_success`: dat ban thanh cong sau redirect.
-- `submit_contact`: bam gui form lien he.
-- `contact_success`: lien he thanh cong sau redirect.
-- `click_catering_reservation`: click CTA dat tiec chay.
-
-Co che tracking nam trong `resources/js/app.js` va dung cac attribute `data-track-*`, nen co the gan them vao nut moi ma khong can viet lai JS.
-
-## Song ngu Viet / Anh
-
-Website da co nen tang song ngu:
-
-- Tieng Viet giu route cu, vi du `/`, `/thuc-don`, `/mon-an/{slug}`.
-- Tieng Anh dung prefix `/en`, vi du `/en`, `/en/menu`, `/en/dishes/{english-slug}`, `/en/blog/{english-slug}`.
-- Middleware `locale` tu set ngon ngu theo route.
-- Text giao dien nam trong `resources/lang/vi/site.php` va `resources/lang/en/site.php`.
-- Noi dung dong co bang dich:
-  - `category_translations`
-  - `dish_translations`
-  - `post_translations`
-  - `page_translations`
-  - `banner_translations`
-  - `promotion_translations`
-  - `testimonial_translations`
-  - `navigation_menu_translations`
-- Seeder ban dich mau: `EnglishTranslationSeeder`.
-- Admin co tab `Tieng Viet` / `English` trong form danh muc, mon an, bai viet, trang tinh, banner, uu dai/popup, review, menu dieu huong, cai dat website va SEO tong the.
-- Nut `Copy tu tieng Viet` chi copy noi dung goc sang tab English de admin sua nhanh, khong goi API dich tu dong.
-- Admin co trang `/admin/translations/settings` de chon provider dich tu dong: DeepL hoac Microsoft Translator.
-- Khi cau hinh provider, tab English co nut `Dich tu dong`; ket qua chi do vao form de review, chua tu luu database.
-- Gallery khong can dich tu dong trong admin vi chu yeu la anh.
-- He thong kiem tra quota khi provider ho tro API usage. Microsoft Translator xem quota trong Azure Portal.
-
-Sau khi pull code moi tren host, chay:
-
-```bash
-php artisan migrate
-php artisan db:seed --class=EnglishTranslationSeeder
-php artisan db:seed --class=MarketingEnglishTranslationSeeder
-npm run build
-php artisan optimize:clear
+```text
+public/uploads
 ```
 
-Ghi chu: quota DeepL co the thay doi theo loai tai khoan, nen khong hard-code gia dinh theo thang trong web. Admin se doc usage tu DeepL API neu provider ho tro. Nen review lai cac ban dich seed mau va ban dich API truoc khi chay production chinh thuc.
+và hiển thị bằng URL:
 
-### Lay DeepL API key
+```text
+https://danhuongchay.com/uploads/...
+```
 
-1. Vao https://www.deepl.com/pro-api va chon goi `DeepL API Free`.
-2. Tao tai khoan DeepL va hoan tat buoc kich hoat theo yeu cau cua DeepL.
-3. Vao khu vuc account/API Keys de copy Authentication Key. Key API Free thuong co duoi `:fx`.
-4. Vao admin `/admin/translations/settings`, chon provider `DeepL API`, dan key vao `DeepL API key`, bat `Dich tu dong`, roi bam `Luu cai dat`.
-5. Bam `Kiem tra ket noi` hoac `Kiem tra quota` truoc khi dung nut `Dich tu dong` trong form noi dung.
+Trên host cần tạo thư mục `public/uploads` nếu chưa có và cấp quyền ghi cho PHP, thường là `755` hoặc `775`.
 
-### Lay Microsoft Translator key
+Nếu có ảnh cũ trong `storage/app/public`, copy các thư mục con như `settings`, `users`, `dishes`, `banners`, `posts`, `pages`, `categories`, `gallery`, `promotions` sang `public/uploads`.
 
-1. Vao Azure Portal va tao resource `Translator` trong Azure AI services.
-2. Chon pricing tier phu hop, vi du `F0` neu tai khoan/resource cua ban du dieu kien.
-3. Vao muc `Keys and Endpoint`, copy `Key`, `Region` va `Endpoint`.
-4. Vao admin `/admin/translations/settings`, chon provider `Microsoft Translator API`.
-5. Dien:
-   - `Microsoft Translator key`: key trong Azure.
-   - `Azure region`: vi du `southeastasia`, `eastasia`, tuy resource.
-   - `Endpoint`: thuong la `https://api.cognitive.microsofttranslator.com`.
-6. Bam `Luu cai dat`, sau do `Kiem tra ket noi`.
+Nếu host cache config Laravel mà không chạy được command, xóa thủ công:
 
-Neu gap loi local `cURL error 60: SSL certificate problem`, PHP/cURL dang thieu CA bundle. Cach dung:
+```text
+bootstrap/cache/config.php
+```
 
-1. Tai file https://curl.se/ca/cacert.pem
-2. Luu vao may, vi du `C:\php\extras\ssl\cacert.pem` hoac thu muc PHP dang dung.
-3. Mo file `php.ini` cua PHP dang chay Laravel va them/sua:
+Kiểm tra storage local/production:
+
+```bash
+php artisan app:check-storage --write
+```
+
+## SEO
+
+Đã triển khai:
+
+- Title, meta description, meta keywords riêng
+- Canonical URL
+- Open Graph cho Facebook/Zalo
+- Twitter Card
+- Schema JSON-LD `Restaurant`
+- Schema JSON-LD `Menu`
+- Schema JSON-LD `Article`
+- Schema JSON-LD `FAQPage` cho landing SEO local
+- Schema `MenuItem` cho chi tiết món
+- Breadcrumb và Breadcrumb schema
+- Sitemap động
+- Robots.txt động
+- Slug tự sinh
+- Alt text cho ảnh
+- Lazy loading ảnh ngoài hero
+- Landing SEO local cho Hải Phòng và Buôn Ma Thuột
+
+## Conversion tracking
+
+Admin có thể dán Google Analytics, Google Search Console verification và Facebook Pixel trong `/admin/seo`.
+
+Frontend tự gửi event nếu `gtag` hoặc `fbq` tồn tại.
+
+Một số event:
+
+- `click_call`
+- `click_zalo`
+- `click_facebook`
+- `open_chat`
+- `start_chat`
+- `click_dish_card`
+- `view_dish`
+- `click_dish_reservation`
+- `click_dish_catering`
+- `submit_reservation`
+- `reservation_success`
+- `submit_contact`
+- `contact_success`
+- `click_catering_reservation`
+
+## Song ngữ Việt / Anh
+
+Website có nền tảng song ngữ:
+
+- Tiếng Việt dùng route cũ: `/`, `/thuc-don`, `/mon-an/{slug}`
+- Tiếng Anh dùng prefix `/en`: `/en`, `/en/menu`, `/en/dishes/{slug}`
+- Middleware `locale` set ngôn ngữ theo route
+- Text giao diện nằm trong:
+  - `resources/lang/vi/site.php`
+  - `resources/lang/en/site.php`
+  - `resources/lang/vi/validation.php`
+  - `resources/lang/en/validation.php`
+- Nội dung động có bảng dịch riêng cho danh mục, món ăn, bài viết, trang tĩnh, banner, ưu đãi, review, menu điều hướng, gallery
+
+Admin có tab `Tiếng Việt` / `English` trong các form nội dung. Nút `Copy từ tiếng Việt` chỉ copy nội dung gốc sang tab English để admin sửa nhanh.
+
+## Dịch tự động
+
+Admin cấu hình tại:
+
+```text
+/admin/translations/settings
+```
+
+Provider hỗ trợ:
+
+- DeepL API
+- Microsoft Translator API
+
+Kết quả dịch tự động chỉ đổ vào form để admin review, không tự lưu thẳng database.
+
+### DeepL
+
+1. Vào https://www.deepl.com/pro-api
+2. Chọn gói DeepL API phù hợp
+3. Copy API key
+4. Dán vào `/admin/translations/settings`
+5. Kiểm tra kết nối/quota trước khi dịch
+
+### Microsoft Translator
+
+1. Vào Azure Portal
+2. Tạo resource `Translator`
+3. Vào `Keys and Endpoint`
+4. Copy `Key`, `Region`, `Endpoint`
+5. Dán vào `/admin/translations/settings`
+
+Nếu gặp lỗi local `cURL error 60`, cấu hình CA bundle trong `php.ini`:
 
 ```ini
 curl.cainfo="C:\php\extras\ssl\cacert.pem"
 openssl.cafile="C:\php\extras\ssl\cacert.pem"
 ```
 
-4. Restart PHP/server roi chay `php artisan optimize:clear`.
+## Validation tiếng Việt
 
-Tam thoi khi dev local co the them `DEEPL_VERIFY_SSL=false` vao `.env`, nhung khong nen dung tren production.
+Dự án đã thêm file dịch validation:
 
-## Multi-branch updates (May 2026)
+- `resources/lang/vi/validation.php`
+- `resources/lang/en/validation.php`
 
-- Added unique sorting guard for branches:
-  - Validation: `App\Http\Requests\Admin\BranchRequest` now enforces unique `sort_order`.
-  - Database: migration `2026_05_20_235900_add_unique_sort_order_to_branches_table.php` normalizes existing values and adds unique index.
-- Added catering hub route:
-  - `GET /dat-tiec-chay` (`local.vegetarian-catering`)
-  - `GET /dat-tiec-chay-hai-phong`
-  - `GET /dat-tiec-chay-buon-ma-thuot`
-- Added EN equivalents:
-  - `/en/vegetarian-catering`
-  - `/en/vegetarian-catering-hai-phong`
-  - `/en/vegetarian-catering-buon-ma-thuot`
-- About page now renders all active branches with branch-level map/address/contact blocks.
-- Reservation page redesigned with editorial/premium layout while keeping dynamic branch time-slot validation intact.
+Các lỗi như `validation.confirmed`, `validation.uploaded` sẽ hiển thị tiếng Việt rõ ràng, ví dụ:
+
+```text
+mật khẩu xác nhận không khớp.
+avatar tải lên thất bại. Vui lòng kiểm tra dung lượng file hoặc thử lại.
+```
+
+## Production notes
+
+Nếu sau khi deploy host mất CSS và browser báo đang tải Vite từ `http://[::1]:5173`, nguyên nhân là production vẫn đang dùng dev server Vite. Cần:
+
+```bash
+npm run build
+```
+
+Upload thư mục:
+
+```text
+public/build
+```
+
+Không chạy `npm run dev` trên production.
+
+Nếu đổi `.env`, config, lang hoặc view mà host vẫn chưa nhận:
+
+```bash
+php artisan optimize:clear
+```
+
+Nếu shared host không chạy command, xóa thủ công các file cache trong:
+
+```text
+bootstrap/cache/
+```
+
+## Test
+
+```bash
+php artisan test
+```
+
+Trước khi deploy các thay đổi frontend:
+
+```bash
+npm run build
+php artisan test
+```

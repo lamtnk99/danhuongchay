@@ -22,6 +22,7 @@ class UserRequest extends FormRequest
             'email' => ['required', 'email', 'max:180', Rule::unique('users', 'email')->ignore($userId)],
             'password' => [$this->isMethod('post') ? 'required' : 'nullable', 'confirmed', Password::min(8)],
             'role' => ['required', Rule::in(['admin', 'user'])],
+            'role_id' => ['nullable', 'exists:roles,id'],
             'avatar' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp', 'max:'.config('uploads.max_image_kb')],
         ];
     }

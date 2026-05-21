@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'disk' => env('UPLOAD_DISK', 'public'),
     'max_image_kb' => (int) env('UPLOAD_MAX_IMAGE_KB', 10240),
     'resize_width' => (int) env('UPLOAD_RESIZE_WIDTH', 1600),
     'resize_height' => (int) env('UPLOAD_RESIZE_HEIGHT', 1600),

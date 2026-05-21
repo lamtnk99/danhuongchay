@@ -30,7 +30,7 @@ if (! function_exists('media_url')) {
             return $path;
         }
 
-        return Storage::disk('public')->url($path);
+        return Storage::disk(config('uploads.disk', 'public'))->url($path);
     }
 }
 
@@ -47,7 +47,7 @@ if (! function_exists('media_variant_path')) {
 
         $exists = $isPublicPath
             ? file_exists(public_path(ltrim($variantPath, '/')))
-            : Storage::disk('public')->exists($variantPath);
+            : Storage::disk(config('uploads.disk', 'public'))->exists($variantPath);
 
         return $exists ? $variantPath : $path;
     }
