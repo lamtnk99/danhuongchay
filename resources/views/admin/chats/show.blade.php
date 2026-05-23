@@ -7,6 +7,7 @@
         <section class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
             <h2 class="text-xl font-bold text-slate-950">{{ $chat->visitor_name ?: 'Khách ghé thăm' }}</h2>
             <dl class="mt-5 space-y-4 text-sm">
+                <div><dt class="font-bold text-slate-500">Cơ sở</dt><dd>{{ $chat->branch?->name ?: 'Chưa chọn' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Số điện thoại</dt><dd>{{ $chat->phone ?: 'Không có' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Email</dt><dd>{{ $chat->email ?: 'Không có' }}</dd></div>
                 <div><dt class="font-bold text-slate-500">Trạng thái</dt><dd><span class="status-badge status-{{ $chat->status }}">{{ $chat->status }}</span></dd></div>

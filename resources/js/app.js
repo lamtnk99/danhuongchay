@@ -573,8 +573,17 @@ if (chatWidget) {
     const messagesBox = chatWidget.querySelector('[data-chat-messages]');
     const errorBox = chatWidget.querySelector('[data-chat-error]');
     const csrfToken = chatWidget.dataset.csrf;
+    const currentBranchId = chatWidget.dataset.branchId || '';
     let chatSessionId = window.sessionStorage.getItem('danhuong_chat_session_id');
+    let chatBranchId = window.sessionStorage.getItem('danhuong_chat_branch_id') || '';
     let pollTimer = null;
+
+    if (chatSessionId && currentBranchId && chatBranchId && currentBranchId !== chatBranchId) {
+        window.sessionStorage.removeItem('danhuong_chat_session_id');
+        window.sessionStorage.removeItem('danhuong_chat_branch_id');
+        chatSessionId = null;
+        chatBranchId = '';
+    }
 
     const request = async (url, options = {}) => {
         const response = await fetch(url, {
@@ -624,7 +633,9 @@ if (chatWidget) {
             sendForm.classList.remove('hidden');
         } catch {
             window.sessionStorage.removeItem('danhuong_chat_session_id');
+            window.sessionStorage.removeItem('danhuong_chat_branch_id');
             chatSessionId = null;
+            chatBranchId = '';
             if (pollTimer) {
                 clearInterval(pollTimer);
             }
@@ -678,7 +689,9 @@ if (chatWidget) {
             });
 
             chatSessionId = data.session_id;
+            chatBranchId = String(data.branch_id || formData.get('branch_id') || '');
             window.sessionStorage.setItem('danhuong_chat_session_id', chatSessionId);
+            window.sessionStorage.setItem('danhuong_chat_branch_id', chatBranchId);
             trackConversion('start_chat', {
                 event_category: 'chat',
                 event_label: 'Visitor started chat',
@@ -776,7 +789,10 @@ if (notificationHeader) {
                     <span class="text-xs font-semibold text-slate-400">${escapeNotificationHtml(item.time)}</span>
                 </div>
                 <p class="mt-1 line-clamp-2 text-sm text-slate-500">${escapeNotificationHtml(item.body)}</p>
-                <span class="mt-2 inline-flex rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold uppercase text-emerald-700">${escapeNotificationHtml(item.type)}</span>
+                <div class="mt-2 flex flex-wrap gap-2">
+                    <span class="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold uppercase text-emerald-700">${escapeNotificationHtml(item.type)}</span>
+                    ${item.branch ? `<span class="inline-flex rounded-full bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800">${escapeNotificationHtml(item.branch)}</span>` : ''}
+                </div>
             </a>
         `).join('');
     };

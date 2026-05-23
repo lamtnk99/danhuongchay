@@ -120,7 +120,7 @@
                     <a href="{{ route('admin.reservations.show', $reservation) }}" class="flex items-center justify-between gap-4 py-3">
                         <span>
                             <span class="block font-semibold">{{ $reservation->name }}</span>
-                            <span class="text-sm text-slate-500">{{ $reservation->phone }} - {{ $reservation->reservation_date->format('d/m/Y') }} {{ substr($reservation->reservation_time, 0, 5) }}</span>
+                            <span class="text-sm text-slate-500">{{ $reservation->branch?->name ? $reservation->branch->name.' - ' : '' }}{{ $reservation->phone }} - {{ $reservation->reservation_date->format('d/m/Y') }} {{ substr($reservation->reservation_time, 0, 5) }}</span>
                         </span>
                         <span class="status-badge status-{{ $reservation->status }}">{{ $reservation->status }}</span>
                     </a>
@@ -137,7 +137,7 @@
                     <a href="{{ route('admin.contacts.show', $contact) }}" class="flex items-center justify-between gap-4 py-3">
                         <span>
                             <span class="block font-semibold">{{ $contact->name }}</span>
-                            <span class="text-sm text-slate-500">{{ $contact->email ?: $contact->phone }}</span>
+                            <span class="text-sm text-slate-500">{{ $contact->branch?->name ? $contact->branch->name.' - ' : '' }}{{ $contact->email ?: $contact->phone }}</span>
                         </span>
                         <span class="status-badge status-{{ $contact->status }}">{{ $contact->status }}</span>
                     </a>

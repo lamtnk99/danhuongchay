@@ -132,6 +132,8 @@ Route admin được chặn theo từng action. Ví dụ:
 
 Sidebar và một số nút quản trị cũng ẩn theo quyền hiện tại. Middleware `permission` được đăng ký trong `bootstrap/app.php`.
 
+Ngoài quyền chức năng, tài khoản admin có thể bị giới hạn theo cơ sở bằng `users.branch_id` trong `/admin/users`. Nếu để trống, admin thấy dữ liệu toàn hệ thống; nếu chọn một cơ sở, admin chỉ thấy đặt bàn, liên hệ, chat, dashboard và thông báo của cơ sở đó.
+
 ## Database chính
 
 - `users`
@@ -215,6 +217,8 @@ Luồng đặt bàn hỗ trợ:
 - Form đã bỏ email để gọn hơn
 
 ## Chat online
+
+Cập nhật multi-branch: widget chat có trường chọn cơ sở; `chat_sessions.branch_id` lưu cơ sở phụ trách hội thoại. Admin `/admin/chats` có cột cơ sở và filter theo cơ sở, chuông thông báo hiển thị thêm badge cơ sở cho chat, đặt bàn và liên hệ.
 
 Frontend có widget chat nổi. Khách gửi tên, số điện thoại và nội dung cần tư vấn.
 
@@ -355,6 +359,7 @@ Website có nền tảng song ngữ:
 
 - Tiếng Việt dùng route cũ: `/`, `/thuc-don`, `/mon-an/{slug}`
 - Tiếng Anh dùng prefix `/en`: `/en`, `/en/menu`, `/en/dishes/{slug}`
+- Các landing local/đặt tiệc cũng có bản tiếng Anh: `/en/vegetarian-restaurant-hai-phong`, `/en/vegetarian-restaurant-buon-ma-thuot`, `/en/vegetarian-catering`, `/en/vegetarian-catering-hai-phong`, `/en/vegetarian-catering-buon-ma-thuot`
 - Middleware `locale` set ngôn ngữ theo route
 - Text giao diện nằm trong:
   - `resources/lang/vi/site.php`

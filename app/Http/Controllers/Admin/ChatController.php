@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\ChatSession;
+use App\Support\BranchAccess;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -14,6 +16,8 @@ class ChatController extends Controller
     public function index(Request $request): View
     {
         $chats = ChatSession::query()
+            ->with('branch')
+            ->tap(fn ($query) => BranchAccess::apply($query, $request->user()))
             ->withCount(['messages as unread_count' => fn ($query) => $query
                 ->where('sender', 'visitor')
                 ->where('is_read', false)])
@@ -24,28 +28,40 @@ class ChatController extends Controller
                         ->orWhere('email', 'like', '%'.$request->q.'%');
                 });
             })
+            ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
             ->latest('last_message_at')
             ->paginate(12)
             ->withQueryString();
 
-        return view('admin.chats.index', compact('chats'));
+        $branches = Branch::query()
+            ->active()
+            ->when($request->user()?->branch_id, fn ($query) => $query->where('id', $request->user()->branch_id))
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.chats.index', compact('chats', 'branches'));
     }
 
     public function show(ChatSession $chat): View
     {
+        BranchAccess::authorize(auth()->user(), $chat->branch_id);
+
         $chat->messages()
             ->where('sender', 'visitor')
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
-        $chat->load(['messages' => fn ($query) => $query->oldest()]);
+        $chat->load(['branch', 'messages' => fn ($query) => $query->oldest()]);
 
         return view('admin.chats.show', compact('chat'));
     }
 
     public function messages(ChatSession $chat): JsonResponse
     {
+        BranchAccess::authorize(auth()->user(), $chat->branch_id);
+
         $chat->messages()
             ->where('sender', 'visitor')
             ->where('is_read', false)
@@ -70,6 +86,8 @@ class ChatController extends Controller
 
     public function reply(Request $request, ChatSession $chat): RedirectResponse
     {
+        BranchAccess::authorize($request->user(), $chat->branch_id);
+
         $data = $request->validate([
             'message' => ['required', 'string', 'min:1', 'max:1200'],
         ]);
@@ -91,6 +109,8 @@ class ChatController extends Controller
 
     public function update(Request $request, ChatSession $chat): RedirectResponse
     {
+        BranchAccess::authorize($request->user(), $chat->branch_id);
+
         $data = $request->validate([
             'status' => ['required', 'in:open,pending,closed'],
         ]);
@@ -102,6 +122,8 @@ class ChatController extends Controller
 
     public function destroy(ChatSession $chat): RedirectResponse
     {
+        BranchAccess::authorize(auth()->user(), $chat->branch_id);
+
         $chat->delete();
 
         return redirect()->route('admin.chats.index')->with('success', 'Đã xóa hội thoại.');

@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\Dish;
 use App\Models\Post;
 use App\Models\Reservation;
+use App\Support\BranchAccess;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
@@ -26,17 +27,17 @@ class DashboardController extends Controller
             'endDate' => $endDate,
             'dishCount' => Dish::whereBetween('created_at', $between)->count(),
             'postCount' => Post::whereBetween('created_at', $between)->count(),
-            'reservationCount' => Reservation::whereBetween('created_at', $between)->count(),
-            'contactCount' => Contact::whereBetween('created_at', $between)->count(),
-            'chatCount' => ChatSession::whereBetween('created_at', $between)->count(),
-            'pendingReservationCount' => Reservation::where('status', 'pending')->count(),
-            'newContactCount' => Contact::where('status', 'new')->count(),
-            'unreadChatCount' => ChatMessage::where('sender', 'visitor')->where('is_read', false)->count(),
-            'latestReservations' => Reservation::whereBetween('created_at', $between)->latest()->limit(5)->get(),
-            'latestContacts' => Contact::whereBetween('created_at', $between)->latest()->limit(5)->get(),
+            'reservationCount' => BranchAccess::apply(Reservation::query(), $request->user())->whereBetween('created_at', $between)->count(),
+            'contactCount' => BranchAccess::apply(Contact::query(), $request->user())->whereBetween('created_at', $between)->count(),
+            'chatCount' => BranchAccess::apply(ChatSession::query(), $request->user())->whereBetween('created_at', $between)->count(),
+            'pendingReservationCount' => BranchAccess::apply(Reservation::query(), $request->user())->where('status', 'pending')->count(),
+            'newContactCount' => BranchAccess::apply(Contact::query(), $request->user())->where('status', 'new')->count(),
+            'unreadChatCount' => BranchAccess::applyViaRelation(ChatMessage::query(), $request->user(), 'chatSession')->where('sender', 'visitor')->where('is_read', false)->count(),
+            'latestReservations' => BranchAccess::apply(Reservation::with('branch'), $request->user())->whereBetween('created_at', $between)->latest()->limit(5)->get(),
+            'latestContacts' => BranchAccess::apply(Contact::with('branch'), $request->user())->whereBetween('created_at', $between)->latest()->limit(5)->get(),
             'featuredDishes' => Dish::with('category')->featured()->latest()->limit(5)->get(),
             'latestPosts' => Post::with('category')->latest('published_at')->limit(5)->get(),
-            'chartData' => $this->chartData($between[0], $between[1]),
+            'chartData' => $this->chartData($between[0], $between[1], $request->user()),
         ]);
     }
 
@@ -57,15 +58,15 @@ class DashboardController extends Controller
         return [$startDate, $endDate];
     }
 
-    private function chartData(Carbon $startDate, Carbon $endDate): array
+    private function chartData(Carbon $startDate, Carbon $endDate, $user): array
     {
         $days = collect(CarbonPeriod::create($startDate->copy()->startOfDay(), $endDate->copy()->startOfDay()))
             ->map(fn (Carbon $date): string => $date->toDateString())
             ->values();
 
-        $reservations = $this->dailyCounts(Reservation::class, $startDate, $endDate);
-        $contacts = $this->dailyCounts(Contact::class, $startDate, $endDate);
-        $chats = $this->dailyCounts(ChatSession::class, $startDate, $endDate);
+        $reservations = $this->dailyCounts(Reservation::class, $startDate, $endDate, $user);
+        $contacts = $this->dailyCounts(Contact::class, $startDate, $endDate, $user);
+        $chats = $this->dailyCounts(ChatSession::class, $startDate, $endDate, $user);
         $reservationSeries = $days->map(fn (string $day): int => $reservations[$day] ?? 0);
         $contactSeries = $days->map(fn (string $day): int => $contacts[$day] ?? 0);
         $chatSeries = $days->map(fn (string $day): int => $chats[$day] ?? 0);
@@ -98,9 +99,9 @@ class DashboardController extends Controller
         ];
     }
 
-    private function dailyCounts(string $modelClass, Carbon $startDate, Carbon $endDate)
+    private function dailyCounts(string $modelClass, Carbon $startDate, Carbon $endDate, $user)
     {
-        return $modelClass::query()
+        return BranchAccess::apply($modelClass::query(), $user)
             ->whereBetween('created_at', [$startDate, $endDate])
             ->get(['created_at'])
             ->groupBy(fn ($item): string => $item->created_at->toDateString())

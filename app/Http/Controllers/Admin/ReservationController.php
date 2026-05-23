@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Reservation;
+use App\Support\BranchAccess;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,6 +17,7 @@ class ReservationController extends Controller
     {
         $reservations = Reservation::query()
             ->with('branch')
+            ->tap(fn ($query) => BranchAccess::apply($query, $request->user()))
             ->when($request->filled('q'), function ($query) use ($request): void {
                 $query->where(function ($query) use ($request): void {
                     $query->where('name', 'like', '%'.$request->q.'%')
@@ -29,7 +31,12 @@ class ReservationController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        $branches = Branch::query()->active()->orderBy('sort_order')->orderBy('name')->get();
+        $branches = Branch::query()
+            ->active()
+            ->when($request->user()?->branch_id, fn ($query) => $query->where('id', $request->user()->branch_id))
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
 
         return view('admin.reservations.index', compact('reservations', 'branches'));
     }
@@ -37,12 +44,15 @@ class ReservationController extends Controller
     public function show(Reservation $reservation): View
     {
         $reservation->load('branch');
+        BranchAccess::authorize(auth()->user(), $reservation->branch_id);
 
         return view('admin.reservations.show', compact('reservation'));
     }
 
     public function update(Request $request, Reservation $reservation): RedirectResponse
     {
+        BranchAccess::authorize($request->user(), $reservation->branch_id);
+
         $data = $request->validate([
             'status' => ['required', Rule::in(['pending', 'confirmed', 'cancelled', 'completed'])],
             'admin_note' => ['nullable', 'string', 'max:2000'],
@@ -55,6 +65,8 @@ class ReservationController extends Controller
 
     public function destroy(Reservation $reservation): RedirectResponse
     {
+        BranchAccess::authorize(auth()->user(), $reservation->branch_id);
+
         $reservation->delete();
 
         return redirect()->route('admin.reservations.index')->with('success', 'Đã xóa đặt bàn.');

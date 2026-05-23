@@ -27,7 +27,7 @@ return [
     'menu' => [
         'eyebrow' => 'Thực đơn',
         'title' => 'Món chay thanh lành cho mọi bữa ăn',
-        'description' => 'Tìm món theo danh mục hoặc tên món. Mỗi món đều có mô tả, giá, nguyên liệu và trang SEO riêng.',
+        'description' => 'Chọn món theo khẩu vị hôm nay: món nhẹ để ăn một mình, món ấm cho bữa gia đình hoặc vài gợi ý thanh vị để cùng nhau dùng chậm hơn.',
         'search_placeholder' => 'Tìm món chay, nguyên liệu...',
         'search' => 'Tìm kiếm',
         'all' => 'Tất cả',
@@ -35,7 +35,7 @@ return [
     ],
     'blog' => [
         'title' => 'Ăn chay, sức khỏe và sống xanh',
-        'description' => 'Những bài viết giúp bạn hiểu hơn về món chay, dinh dưỡng thực vật và cách sống gần thiên nhiên.',
+        'description' => 'Những ghi chép nhỏ từ căn bếp chay: cách chọn món, chăm sóc bữa ăn và giữ nhịp sống nhẹ nhàng hơn mỗi ngày.',
     ],
     'dish' => [
         'sale' => 'Đang ưu đãi',
@@ -58,7 +58,7 @@ return [
     'home' => [
         'promo_kicker' => 'Ưu đãi hôm nay',
         'promo_title' => 'Món ngon đang được gợi ý',
-        'promo_description' => 'Các chương trình nổi bật, combo theo mùa và thông báo đặc biệt từ Đàn Hương Chay.',
+        'promo_description' => 'Những gợi ý món theo mùa, phần ăn dễ đi cùng nhau và ưu đãi nhỏ cho bàn ăn hôm nay.',
         'featured_eyebrow' => 'Món nổi bật',
         'featured_title' => 'Những món chay được yêu thích',
         'featured_description' => 'Thực đơn được xây dựng từ rau củ theo mùa, nấm tươi, đậu hũ và gia vị nhẹ để giữ trọn vị tự nhiên.',
@@ -72,7 +72,7 @@ return [
         'reason_space_title' => 'Không gian yên',
         'reason_space_text' => 'Ánh sáng ấm, chất liệu gỗ và mảng xanh tạo cảm giác thư giãn.',
         'reason_booking_title' => 'Đặt bàn nhanh',
-        'reason_booking_text' => 'Form đặt bàn đơn giản, lưu thông tin và phản hồi xác nhận rõ ràng.',
+        'reason_booking_text' => 'Chọn cơ sở, giờ ghé và số khách thật nhanh; quán sẽ liên hệ xác nhận để bạn yên tâm trước bữa ăn.',
         'gallery_eyebrow' => 'Không gian',
         'gallery_title' => 'Góc nhỏ để bữa chay chậm lại',
         'gallery_description' => 'Một vài góc quán được chọn lọc từ bộ ảnh không gian, đủ ấm để đi cùng gia đình và đủ yên cho những cuộc hẹn nhẹ.',
@@ -85,7 +85,7 @@ return [
         'blog_link' => 'Xem tất cả bài viết',
         'local_eyebrow' => 'Quán chay Hải Phòng',
         'local_title' => 'Tìm một bữa chay ngon, sạch và dễ đặt bàn tại Hải Phòng?',
-        'local_text' => 'Xem trang tổng hợp dành riêng cho khách đang tìm quán chay Hải Phòng, có thông tin địa chỉ, món nổi bật, FAQ, đặt bàn, tiệc chay và mâm cúng chay.',
+        'local_text' => 'Ghé cơ sở Hải Phòng khi bạn muốn một bữa chay thanh vị, có địa chỉ rõ ràng, món dễ chọn và hỗ trợ đặt bàn, tiệc chay hoặc mâm cúng chay.',
         'local_primary' => 'Xem gợi ý quán chay',
         'local_secondary' => 'Đặt tiệc/mâm chay',
     ],
@@ -114,7 +114,7 @@ return [
     'contact' => [
         'eyebrow' => 'Liên hệ',
         'title' => 'Gửi lời nhắn đến Đàn Hương Chay',
-        'description' => 'Chúng tôi luôn sẵn sàng hỗ trợ thông tin thực đơn, đặt bàn, sự kiện nhỏ và các nhu cầu ăn chay riêng.',
+        'description' => 'Cần giữ bàn, hỏi món hay chuẩn bị một bữa chay cho dịp riêng, cứ để lại lời nhắn để quán tư vấn nhẹ nhàng và đúng cơ sở.',
         'info_title' => 'Thông tin quán',
         'name' => 'Tên',
         'address' => 'Địa chỉ',
@@ -132,7 +132,7 @@ return [
     'gallery' => [
         'eyebrow' => 'Không gian',
         'title' => 'Những góc yên tại Đàn Hương Chay',
-        'description' => 'Xem các hình ảnh chọn lọc về không gian quán, góc bếp và những khoảnh khắc dùng bữa chay nhẹ nhàng.',
+        'description' => 'Một vài góc sáng, bàn ăn và khoảnh khắc trong quán để bạn cảm nhận trước nhịp dùng bữa tại Đàn Hương Chay.',
     ],
     'language' => [
         'label' => 'Ngôn ngữ',

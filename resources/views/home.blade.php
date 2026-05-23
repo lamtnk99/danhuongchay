@@ -183,7 +183,7 @@
                 </div>
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=900&q=80')">
                     <h3>Đặt bàn nhanh</h3>
-                    <p>Form đặt bàn đơn giản, chọn cơ sở rõ ràng và phản hồi xác nhận dễ theo dõi.</p>
+                    <p>Chọn cơ sở, giờ ghé và số khách thật nhanh; quán sẽ liên hệ xác nhận để bạn yên tâm trước bữa ăn.</p>
                 </div>
             </div>
         </div>

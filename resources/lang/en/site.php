@@ -27,7 +27,7 @@ return [
     'menu' => [
         'eyebrow' => 'Menu',
         'title' => 'Wholesome vegetarian dishes for every meal',
-        'description' => 'Browse by category or dish name. Each item includes description, price, ingredients and its own SEO-friendly page.',
+        'description' => 'Choose what feels right for today: a light solo meal, a warm family table or gentle vegetarian plates to share slowly.',
         'search_placeholder' => 'Search dishes or ingredients...',
         'search' => 'Search',
         'all' => 'All',
@@ -35,7 +35,7 @@ return [
     ],
     'blog' => [
         'title' => 'Vegetarian food, wellness and green living',
-        'description' => 'Practical articles about vegetarian cuisine, plant-based nutrition and a more mindful lifestyle.',
+        'description' => 'Small notes from our vegetarian kitchen, from choosing dishes to caring for daily meals and living a little more gently.',
     ],
     'dish' => [
         'sale' => 'On promotion',
@@ -58,7 +58,7 @@ return [
     'home' => [
         'promo_kicker' => 'Today’s offers',
         'promo_title' => 'Recommended vegetarian picks',
-        'promo_description' => 'Featured campaigns, seasonal combos and special notices from Dan Huong Chay.',
+        'promo_description' => 'Seasonal vegetarian picks, gentle pairings and little offers prepared for today’s table.',
         'featured_eyebrow' => 'Featured dishes',
         'featured_title' => 'Favorite vegetarian dishes',
         'featured_description' => 'A menu built from seasonal vegetables, fresh mushrooms, tofu and gentle seasoning to keep the natural flavors intact.',
@@ -72,7 +72,7 @@ return [
         'reason_space_title' => 'Peaceful space',
         'reason_space_text' => 'Warm light, wood details and greenery create a relaxed dining mood.',
         'reason_booking_title' => 'Easy booking',
-        'reason_booking_text' => 'A simple reservation form with clear confirmation and follow-up.',
+        'reason_booking_text' => 'Choose your branch, time and group size quickly; our team will confirm so your table is ready.',
         'gallery_eyebrow' => 'Space',
         'gallery_title' => 'Quiet corners for slower vegetarian meals',
         'gallery_description' => 'Selected corners from our restaurant gallery, warm enough for family meals and calm enough for gentle meetings.',
@@ -85,7 +85,7 @@ return [
         'blog_link' => 'View all posts',
         'local_eyebrow' => 'Vegetarian restaurant in Hai Phong',
         'local_title' => 'Looking for clean, delicious vegetarian food and easy booking in Hai Phong?',
-        'local_text' => 'View our guide for guests searching for vegetarian restaurants in Hai Phong, including address, featured dishes, FAQ, reservations, catering and vegetarian feast trays.',
+        'local_text' => 'Visit our Hai Phong branch for gentle vegetarian dishes, clear booking support and thoughtful options for family meals, catering and feast trays.',
         'local_primary' => 'View restaurant guide',
         'local_secondary' => 'Order catering / feast tray',
     ],
@@ -114,7 +114,7 @@ return [
     'contact' => [
         'eyebrow' => 'Contact',
         'title' => 'Send a message to Dan Huong Chay',
-        'description' => 'We are ready to help with menu information, reservations, small events and special vegetarian dining needs.',
+        'description' => 'Need a table, dish advice or a vegetarian meal for a special moment? Leave us a note and the right branch will get back to you.',
         'info_title' => 'Restaurant information',
         'name' => 'Name',
         'address' => 'Address',
@@ -132,7 +132,7 @@ return [
     'gallery' => [
         'eyebrow' => 'Space',
         'title' => 'Quiet corners at Dan Huong Chay',
-        'description' => 'Browse selected photos of the restaurant space, kitchen details and peaceful vegetarian dining moments.',
+        'description' => 'A glimpse of the light, tables and quiet details that shape the dining rhythm at Dan Huong Chay.',
     ],
     'language' => [
         'label' => 'Language',

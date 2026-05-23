@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role',
         'role_id',
+        'branch_id',
         'avatar',
     ];
 
@@ -42,6 +43,21 @@ class User extends Authenticatable
     public function adminRole(): BelongsTo
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function branch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class);
+    }
+
+    public function hasAllBranchAccess(): bool
+    {
+        return ! $this->branch_id;
+    }
+
+    public function canAccessBranch(?int $branchId): bool
+    {
+        return $this->hasAllBranchAccess() || (int) $this->branch_id === (int) $branchId;
     }
 
     public function hasPermission(string $permission): bool

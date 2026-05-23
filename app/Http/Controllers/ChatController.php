@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\ChatSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
 
 class ChatController extends Controller
 {
@@ -15,13 +17,20 @@ class ChatController extends Controller
 
         $data = $request->validate([
             'visitor_name' => ['nullable', 'string', 'max:120'],
+            'branch_id' => ['nullable', Rule::exists('branches', 'id')->where('is_active', true)],
             'phone' => ['nullable', 'string', 'max:20'],
             'email' => ['nullable', 'email', 'max:160'],
             'message' => ['required', 'string', 'min:2', 'max:1200'],
             'website' => ['nullable', 'prohibited'],
         ]);
 
+        $branchId = $data['branch_id'] ?? Branch::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->value('id');
+
         $chatSession = ChatSession::create([
+            'branch_id' => $branchId,
             'visitor_name' => $data['visitor_name'] ?? 'Khách ghé thăm',
             'phone' => $data['phone'] ?? null,
             'email' => $data['email'] ?? null,
@@ -39,6 +48,7 @@ class ChatController extends Controller
 
         return response()->json([
             'session_id' => $chatSession->public_id,
+            'branch_id' => $chatSession->branch_id,
             'messages' => $this->messagesPayload($chatSession),
         ]);
     }
@@ -49,6 +59,7 @@ class ChatController extends Controller
 
         return response()->json([
             'session_id' => $chatSession->public_id,
+            'branch_id' => $chatSession->branch_id,
             'status' => $chatSession->status,
             'messages' => $this->messagesPayload($chatSession),
         ]);

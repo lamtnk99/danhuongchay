@@ -68,6 +68,11 @@ class Branch extends Model
         return $this->hasMany(Contact::class);
     }
 
+    public function chatSessions(): HasMany
+    {
+        return $this->hasMany(ChatSession::class);
+    }
+
     public function galleryImages(): HasMany
     {
         return $this->hasMany(GalleryImage::class);

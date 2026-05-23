@@ -1,7 +1,28 @@
+@php
+    $chatBranches = \App\Models\Branch::query()
+        ->active()
+        ->orderBy('sort_order')
+        ->orderBy('name')
+        ->get();
+
+    $chatSelectedBranch = $selectedBranch ?? null;
+
+    if (! $chatSelectedBranch && isset($branch) && $branch instanceof \App\Models\Branch) {
+        $chatSelectedBranch = $branch;
+    }
+
+    if (! $chatSelectedBranch && request()->filled('branch')) {
+        $branchParam = request('branch');
+        $chatSelectedBranch = $chatBranches->first(fn ($branch) => (string) $branch->id === (string) $branchParam || $branch->slug === $branchParam);
+    }
+
+@endphp
+
 <div
     class="chat-widget"
     data-chat-widget
     data-start-url="{{ route('chat.start') }}"
+    data-branch-id="{{ $chatSelectedBranch?->id }}"
     data-csrf="{{ csrf_token() }}"
 >
     <button type="button" class="chat-toggle" data-chat-toggle aria-expanded="false">
@@ -30,6 +51,14 @@
         <form class="chat-start-form" data-chat-start-form>
             <div class="grid gap-2">
                 <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true">
+                @if ($chatBranches->isNotEmpty())
+                    <select name="branch_id" class="chat-input" required aria-label="Cơ sở cần tư vấn">
+                        <option value="" @selected(! $chatSelectedBranch)>Chọn cơ sở cần tư vấn</option>
+                        @foreach ($chatBranches as $branch)
+                            <option value="{{ $branch->id }}" @selected((string) $chatSelectedBranch?->id === (string) $branch->id)>{{ $branch->name }}</option>
+                        @endforeach
+                    </select>
+                @endif
                 <input name="visitor_name" class="chat-input" placeholder="Tên của bạn" autocomplete="name">
                 <input type="tel" name="phone" class="chat-input" placeholder="Số điện thoại" inputmode="tel" autocomplete="tel">
                 <textarea name="message" rows="3" class="chat-input" placeholder="Bạn cần tư vấn gì?" required></textarea>

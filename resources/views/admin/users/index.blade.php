@@ -22,6 +22,7 @@
                     <th>Email</th>
                     <th>Loại tài khoản</th>
                     <th>Vai trò quyền</th>
+                    <th>Cơ sở</th>
                     <th class="text-right">Thao tác</th>
                 </tr>
             </thead>
@@ -39,6 +40,7 @@
                         <td>{{ $user->email }}</td>
                         <td><span class="status-badge {{ $user->role === 'admin' ? 'status-active' : 'status-inactive' }}">{{ $user->role === 'admin' ? 'Admin' : 'Người dùng' }}</span></td>
                         <td>{{ $user->adminRole?->name ?? 'Toàn quyền mặc định' }}</td>
+                        <td>{{ $user->branch?->name ?: 'Tất cả cơ sở' }}</td>
                         <td>
                             <div class="flex justify-end gap-2">
                                 @permission('users.update')
@@ -55,7 +57,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center text-slate-500">Chưa có tài khoản.</td></tr>
+                    <tr><td colspan="7" class="text-center text-slate-500">Chưa có tài khoản.</td></tr>
                 @endforelse
             </tbody>
         </table>

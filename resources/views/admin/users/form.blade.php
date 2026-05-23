@@ -40,6 +40,19 @@
         @error('role_id') <p class="form-error">{{ $message }}</p> @enderror
     </div>
     <div>
+        <label class="admin-label" for="branch_id">Phạm vi cơ sở</label>
+        <select id="branch_id" name="branch_id" class="admin-input">
+            <option value="">Tất cả cơ sở</option>
+            @foreach ($branches as $branch)
+                <option value="{{ $branch->id }}" @selected((int) old('branch_id', $user->branch_id) === $branch->id)>
+                    {{ $branch->name }}
+                </option>
+            @endforeach
+        </select>
+        <p class="mt-2 text-sm text-slate-500">Nếu chọn một cơ sở, tài khoản chỉ thấy đặt bàn, liên hệ và chat của cơ sở đó.</p>
+        @error('branch_id') <p class="form-error">{{ $message }}</p> @enderror
+    </div>
+    <div>
         <label class="admin-label" for="avatar">Avatar</label>
         @if ($user->avatar)
             <img src="{{ media_url($user->avatar) }}" alt="{{ $user->name }}" class="mb-3 h-20 w-20 rounded-full object-cover">
