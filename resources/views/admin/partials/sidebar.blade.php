@@ -7,9 +7,9 @@
         ->implode('');
 
     $sidebarCounts = [
-        'reservations' => \App\Models\Reservation::where('status', 'pending')->count(),
-        'contacts' => \App\Models\Contact::where('status', 'new')->count(),
-        'chat' => \App\Models\ChatMessage::where('sender', 'visitor')->where('is_read', false)->count(),
+        'reservations' => \App\Support\BranchAccess::apply(\App\Models\Reservation::query(), $authUser)->where('status', 'pending')->count(),
+        'contacts' => \App\Support\BranchAccess::apply(\App\Models\Contact::query(), $authUser)->where('status', 'new')->count(),
+        'chat' => \App\Support\BranchAccess::applyViaRelation(\App\Models\ChatMessage::query(), $authUser, 'chatSession')->where('sender', 'visitor')->where('is_read', false)->count(),
     ];
 
     $items = [

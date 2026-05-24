@@ -752,6 +752,7 @@ if (notificationHeader) {
     const listNode = document.querySelector('[data-admin-notification-list]');
     const summaryNode = document.querySelector('[data-admin-notification-summary]');
     const sidebarBadges = document.querySelectorAll('[data-admin-badge]');
+    let previousReservationCount = null;
 
     const updateBadge = (node, count) => {
         if (!node) {
@@ -769,7 +770,27 @@ if (notificationHeader) {
         .replaceAll('"', '&quot;')
         .replaceAll("'", '&#039;');
 
+    const showAdminToast = (message) => {
+        const toast = document.createElement('div');
+        toast.className = 'admin-live-toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        window.setTimeout(() => {
+            toast.classList.add('is-hiding');
+            window.setTimeout(() => toast.remove(), 220);
+        }, 4200);
+    };
+
     const renderNotifications = (data) => {
+        const reservationCount = data.counts.reservations || 0;
+
+        if (previousReservationCount !== null && reservationCount > previousReservationCount) {
+            showAdminToast(`Có ${reservationCount - previousReservationCount} đơn đặt bàn mới cần xem`);
+        }
+
+        previousReservationCount = reservationCount;
+
         updateBadge(countNode, data.counts.total || 0);
         summaryNode.textContent = `${data.counts.total || 0} mục cần xem`;
 
@@ -783,7 +804,7 @@ if (notificationHeader) {
         }
 
         listNode.innerHTML = data.items.map((item) => `
-            <a href="${item.url}" class="admin-notification-item">
+            <a href="${item.url}" class="admin-notification-item ${item.urgent ? 'is-urgent' : ''}">
                 <div class="flex items-center justify-between gap-3">
                     <p class="font-bold text-slate-900">${escapeNotificationHtml(item.title)}</p>
                     <span class="text-xs font-semibold text-slate-400">${escapeNotificationHtml(item.time)}</span>

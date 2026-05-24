@@ -14,24 +14,32 @@ class NotificationController extends Controller
 {
     public function __invoke(): JsonResponse
     {
+        $user = auth()->user();
         $chatUnread = ChatMessage::query()
-            ->tap(fn ($query) => BranchAccess::applyViaRelation($query, auth()->user(), 'chatSession'))
+            ->tap(fn ($query) => BranchAccess::applyViaRelation($query, $user, 'chatSession'))
             ->where('sender', 'visitor')
             ->where('is_read', false)
             ->count();
 
-        $reservationPending = Reservation::query()
-            ->tap(fn ($query) => BranchAccess::apply($query, auth()->user()))
+        $pendingReservations = Reservation::query()
+            ->with('branch')
+            ->tap(fn ($query) => BranchAccess::apply($query, $user))
             ->where('status', 'pending')
-            ->count();
+            ->orderBy('reservation_date')
+            ->orderBy('reservation_time')
+            ->orderBy('created_at')
+            ->get();
+        $reservationPending = $pendingReservations->count();
+        $reservationUrgent = $pendingReservations->filter(fn (Reservation $reservation): bool => $reservation->needsUrgentCall())->count();
+
         $contactNew = Contact::query()
-            ->tap(fn ($query) => BranchAccess::apply($query, auth()->user()))
+            ->tap(fn ($query) => BranchAccess::apply($query, $user))
             ->where('status', 'new')
             ->count();
 
         $latestChats = ChatSession::query()
             ->with('branch')
-            ->tap(fn ($query) => BranchAccess::apply($query, auth()->user()))
+            ->tap(fn ($query) => BranchAccess::apply($query, $user))
             ->latest('last_message_at')
             ->limit(5)
             ->get()
@@ -45,28 +53,26 @@ class NotificationController extends Controller
                     'branch' => $chat->branch?->name,
                     'url' => route('admin.chats.show', $chat),
                     'time' => optional($chat->last_message_at)->format('H:i'),
+                    'urgent' => false,
                 ];
             });
 
-        $latestReservations = Reservation::query()
-            ->with('branch')
-            ->tap(fn ($query) => BranchAccess::apply($query, auth()->user()))
-            ->where('status', 'pending')
-            ->latest()
-            ->limit(3)
-            ->get()
+        $latestReservations = $pendingReservations
+            ->sortBy(fn (Reservation $reservation): string => ($reservation->needsUrgentCall() ? '0' : '1').'-'.$reservation->scheduledAt()->format('YmdHi'))
+            ->take(4)
             ->map(fn (Reservation $reservation): array => [
                 'type' => 'reservation',
                 'title' => $reservation->name,
-                'body' => 'Đặt bàn '.$reservation->reservation_date->format('d/m/Y').' lúc '.substr($reservation->reservation_time, 0, 5),
+                'body' => ($reservation->needsUrgentCall() ? 'Cần gọi ngay - ' : '').'Đặt bàn '.$reservation->reservation_date->format('d/m/Y').' lúc '.substr($reservation->reservation_time, 0, 5),
                 'branch' => $reservation->branch?->name,
                 'url' => route('admin.reservations.show', $reservation),
                 'time' => $reservation->created_at->format('H:i'),
+                'urgent' => $reservation->needsUrgentCall(),
             ]);
 
         $latestContacts = Contact::query()
             ->with('branch')
-            ->tap(fn ($query) => BranchAccess::apply($query, auth()->user()))
+            ->tap(fn ($query) => BranchAccess::apply($query, $user))
             ->where('status', 'new')
             ->latest()
             ->limit(3)
@@ -78,12 +84,14 @@ class NotificationController extends Controller
                 'branch' => $contact->branch?->name,
                 'url' => route('admin.contacts.show', $contact),
                 'time' => $contact->created_at->format('H:i'),
+                'urgent' => false,
             ]);
 
         return response()->json([
             'counts' => [
                 'chat' => $chatUnread,
                 'reservations' => $reservationPending,
+                'reservation_urgent' => $reservationUrgent,
                 'contacts' => $contactNew,
                 'total' => $chatUnread + $reservationPending + $contactNew,
             ],

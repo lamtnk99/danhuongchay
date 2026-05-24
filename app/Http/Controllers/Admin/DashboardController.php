@@ -21,6 +21,11 @@ class DashboardController extends Controller
     {
         [$startDate, $endDate] = $this->dateRange($request);
         $between = [$startDate->copy()->startOfDay(), $endDate->copy()->endOfDay()];
+        $todayReservations = BranchAccess::apply(Reservation::with('branch'), $request->user())
+            ->whereDate('reservation_date', now()->toDateString())
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->orderBy('reservation_time')
+            ->get();
 
         return view('admin.dashboard', [
             'startDate' => $startDate,
@@ -31,6 +36,11 @@ class DashboardController extends Controller
             'contactCount' => BranchAccess::apply(Contact::query(), $request->user())->whereBetween('created_at', $between)->count(),
             'chatCount' => BranchAccess::apply(ChatSession::query(), $request->user())->whereBetween('created_at', $between)->count(),
             'pendingReservationCount' => BranchAccess::apply(Reservation::query(), $request->user())->where('status', 'pending')->count(),
+            'todayReservationCount' => $todayReservations->count(),
+            'todayPendingReservationCount' => $todayReservations->where('status', 'pending')->count(),
+            'todayDueSoonReservationCount' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isDueSoon())->count(),
+            'todayPastReservationCount' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isPastServiceTime())->count(),
+            'nextReservations' => $todayReservations->take(6),
             'newContactCount' => BranchAccess::apply(Contact::query(), $request->user())->where('status', 'new')->count(),
             'unreadChatCount' => BranchAccess::applyViaRelation(ChatMessage::query(), $request->user(), 'chatSession')->where('sender', 'visitor')->where('is_read', false)->count(),
             'latestReservations' => BranchAccess::apply(Reservation::with('branch'), $request->user())->whereBetween('created_at', $between)->latest()->limit(5)->get(),

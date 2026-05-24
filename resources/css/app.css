@@ -1373,9 +1373,7 @@
 }
 
 .branch-social-action {
-    display: inline-grid;
-    grid-auto-flow: column;
-    grid-auto-columns: max-content;
+    display: inline-flex;
     min-width: 0;
     min-height: 2.2rem;
     align-items: center;
@@ -2339,6 +2337,250 @@
     background: #f8fafc;
 }
 
+.admin-notification-item.is-urgent {
+    background: #fff7ed;
+    box-shadow: inset 3px 0 0 #f97316;
+}
+
+.admin-live-toast {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 100;
+    max-width: min(24rem, calc(100vw - 2rem));
+    border-radius: 1rem;
+    background: #064e3b;
+    color: #fff;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 18px 40px rgb(15 23 42 / 24%);
+    font-size: 0.9rem;
+    font-weight: 800;
+    transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.admin-live-toast.is-hiding {
+    opacity: 0;
+    transform: translateY(0.4rem);
+}
+
+.reservation-shift-head {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-radius: 1.25rem;
+    background: #fff;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+    border: 1px solid #e2e8f0;
+}
+
+.reservation-shift-stats {
+    display: grid;
+    gap: 0.85rem;
+    margin-block: 1rem;
+}
+
+.reservation-shift-stat {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    background: #fff;
+    padding: 1rem;
+}
+
+.reservation-shift-stat span {
+    display: block;
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.reservation-shift-stat strong {
+    display: block;
+    margin-top: 0.4rem;
+    color: #0f172a;
+    font-size: 1.8rem;
+    line-height: 1;
+}
+
+.reservation-shift-stat-amber {
+    background: #fffbeb;
+}
+
+.reservation-shift-stat-red,
+.reservation-shift-stat-rose {
+    background: #fff1f2;
+}
+
+.reservation-shift-stat-sky {
+    background: #eff6ff;
+}
+
+.reservation-filter {
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    background: #fff;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+    border: 1px solid #e2e8f0;
+}
+
+.reservation-board {
+    display: grid;
+    gap: 1rem;
+}
+
+.reservation-lane {
+    min-width: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 1.1rem;
+    background: #f8fafc;
+    padding: 0.9rem;
+}
+
+.reservation-lane-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+}
+
+.reservation-lane-head h3 {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.reservation-lane-head p {
+    margin-top: 0.25rem;
+    color: #64748b;
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.reservation-lane-head strong {
+    display: grid;
+    min-width: 2rem;
+    height: 2rem;
+    place-items: center;
+    border-radius: 999px;
+    background: #fff;
+    color: #0f172a;
+    font-size: 0.85rem;
+    font-weight: 900;
+}
+
+.reservation-card-list {
+    display: grid;
+    gap: 0.85rem;
+}
+
+.reservation-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    background: #fff;
+    padding: 1rem;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 5%);
+}
+
+.reservation-card.is-urgent {
+    border-color: #fed7aa;
+    box-shadow: inset 3px 0 0 #f97316, 0 1px 2px rgb(15 23 42 / 5%);
+}
+
+.reservation-card.is-past {
+    border-color: #fecaca;
+    box-shadow: inset 3px 0 0 #ef4444, 0 1px 2px rgb(15 23 42 / 5%);
+}
+
+.reservation-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.reservation-card-top h4 {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.reservation-card-top p {
+    margin-top: 0.15rem;
+    color: #64748b;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.reservation-card-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-top: 0.9rem;
+}
+
+.reservation-card-meta dt {
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.reservation-card-meta dd {
+    margin-top: 0.15rem;
+    color: #0f172a;
+    font-size: 0.86rem;
+    font-weight: 800;
+}
+
+.reservation-card-note {
+    margin-top: 0.9rem;
+    border-radius: 0.85rem;
+    background: #f8fafc;
+    padding: 0.75rem;
+    color: #475569;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.reservation-card-alerts {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+}
+
+.reservation-card-alerts span {
+    border-radius: 0.75rem;
+    background: #fff7ed;
+    color: #9a3412;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.78rem;
+    font-weight: 900;
+}
+
+.reservation-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.9rem;
+}
+
+.reservation-card-actions form {
+    display: inline-flex;
+}
+
+.reservation-empty {
+    border: 1px dashed #cbd5e1;
+    border-radius: 1rem;
+    background: #fff;
+    padding: 1rem;
+    color: #64748b;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
 .admin-stat-card,
 .admin-alert-card {
     border-radius: 1rem;
@@ -2508,6 +2750,11 @@
 .status-upcoming {
     background: #fef3c7;
     color: #92400e;
+}
+
+.status-urgent {
+    background: #ffedd5;
+    color: #9a3412;
 }
 
 .status-open {
@@ -3160,6 +3407,43 @@ header.is-scrolled {
         padding-block: 3rem;
     }
 
+    .contact-editorial-section .section-block {
+        width: min(100% - 0.85rem, 80rem);
+    }
+
+    .contact-panel {
+        border-radius: 1.05rem;
+    }
+
+    .contact-panel.p-6,
+    .contact-panel.p-6.sm\:p-8 {
+        padding: 1rem;
+    }
+
+    .contact-branch-card {
+        border-radius: 0.95rem;
+        padding: 1rem;
+    }
+
+    .about-branch-card .branch-social-actions,
+    .contact-branch-card .branch-social-actions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.35rem;
+    }
+
+    .about-branch-card .branch-social-action,
+    .contact-branch-card .branch-social-action {
+        width: 100%;
+        padding: 0.44rem 0.3rem;
+        font-size: 0.72rem;
+    }
+
+    .contact-branch-card .branch-social-action svg {
+        width: 0.82rem;
+        height: 0.82rem;
+    }
+
     .reason-card,
     .commitment-card {
         border-radius: 1.05rem;
@@ -3448,6 +3732,27 @@ header.is-scrolled {
     .admin-filter {
         grid-template-columns: repeat(4, minmax(0, 1fr));
         align-items: center;
+    }
+
+    .reservation-shift-head {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .reservation-shift-stats {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .reservation-filter {
+        grid-template-columns: minmax(12rem, 1fr) minmax(10rem, 0.75fr) minmax(11rem, 0.8fr) minmax(11rem, 0.8fr) auto auto auto;
+    }
+}
+
+@media (min-width: 1280px) {
+    .reservation-board {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        align-items: start;
     }
 }
 

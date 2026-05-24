@@ -462,3 +462,15 @@ Trước khi deploy các thay đổi frontend:
 npm run build
 php artisan test
 ```
+
+## Vận hành đặt bàn trong admin
+
+Module `/admin/reservations` dùng như bảng trực ca cho lễ tân từng cơ sở:
+
+- Mặc định mở các đơn hôm nay ở trạng thái `pending` và `confirmed`.
+- Các nhóm ưu tiên gồm `Cần gọi ngay`, `Chờ gọi xác nhận`, `Sắp đến giờ`, `Đã giữ bàn`, `Đã qua giờ chưa chốt`, `Đã kết thúc`.
+- Đơn pending chờ quá 30 phút hoặc gần giờ dùng bữa trong 90 phút được đẩy vào nhóm cần gọi ngay.
+- Nhân viên có thể thao tác nhanh: gọi khách, đánh dấu đã gọi, giữ bàn, khách đã đến, hủy.
+- Mỗi thao tác được lưu vào `reservation_activities` để xem lịch sử xử lý trong trang chi tiết đặt bàn.
+- Dashboard admin có khối `Ca đặt bàn hôm nay`; chuông thông báo và badge sidebar đều lọc theo `users.branch_id`.
+- Các trường workflow mới trong `reservations`: `last_contacted_at`, `confirmed_at`, `completed_at`, `cancelled_at`, `contact_attempts`.
