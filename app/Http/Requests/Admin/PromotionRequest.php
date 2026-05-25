@@ -14,9 +14,6 @@ class PromotionRequest extends FormRequest
 
     public function rules(): array
     {
-        $promotion = $this->route('promotion');
-        $promotionId = is_object($promotion) ? $promotion->id : $promotion;
-
         return [
             'title' => ['required', 'string', 'max:180'],
             'subtitle' => ['nullable', 'string', 'max:180'],
@@ -32,9 +29,6 @@ class PromotionRequest extends FormRequest
                 'nullable',
                 'integer',
                 'min:0',
-                Rule::unique('promotions', 'sort_order')
-                    ->where(fn ($query) => $query->where('placement', $this->input('placement')))
-                    ->ignore($promotionId),
             ],
             'show_once' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
@@ -50,10 +44,4 @@ class PromotionRequest extends FormRequest
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'sort_order.unique' => 'Thứ tự này đã được dùng ở cùng vị trí hiển thị. Bạn chọn một số khác giúp mình nhé.',
-        ];
-    }
 }

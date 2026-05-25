@@ -86,16 +86,22 @@ class MarketingEnglishTranslationSeeder extends Seeder
             'Bếp chuẩn bị rau củ tươi' => ['Kitchen preparing fresh vegetables', 'Daily ingredient preparation with fresh vegetables and a clean workflow.', 'Fresh vegetables being prepared in the kitchen'],
         ];
 
-        GalleryImage::query()->get()->each(function (GalleryImage $image) use ($galleryMap): void {
+        GalleryImage::query()->with('branch')->get()->each(function (GalleryImage $image) use ($galleryMap): void {
             $mapped = $galleryMap[$image->title] ?? null;
             $title = $mapped[0] ?? Str::headline(Str::ascii($image->title));
+            $branchName = match ($image->branch?->slug) {
+                'buon-ma-thuot' => 'Buon Ma Thuot',
+                'hai-phong' => 'Hai Phong',
+                default => 'Vietnam',
+            };
+
             $image->translations()->updateOrCreate(['locale' => 'en'], [
                 'title' => $title,
-                'slug' => Str::slug(Str::ascii($title)),
-                'description' => $mapped[1] ?? 'A peaceful corner at Dan Huong Chay vegetarian restaurant in Hai Phong.',
-                'alt_text' => $mapped[2] ?? $title,
-                'meta_title' => "{$title} | Dan Huong Chay Space",
-                'meta_description' => "View {$title} at Dan Huong Chay vegetarian restaurant in Hai Phong.",
+                'slug' => Str::slug(Str::ascii($branchName.' '.$title)),
+                'description' => $mapped[1] ?? "A peaceful corner at Dan Huong Chay vegetarian restaurant in {$branchName}.",
+                'alt_text' => $mapped[2] ?? "{$title} at Dan Huong Chay {$branchName}",
+                'meta_title' => "{$title} | Dan Huong Chay {$branchName}",
+                'meta_description' => "View {$title} at Dan Huong Chay vegetarian restaurant in {$branchName}.",
             ]);
         });
     }

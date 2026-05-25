@@ -55,8 +55,8 @@ class BranchSeeder extends Seeder
             Branch::updateOrCreate(['slug' => $data['slug']], $data);
         }
 
-        $haiPhong = Branch::where('slug', 'hai-phong')->first();
-        if ($haiPhong) {
+        $buonMaThuot = Branch::where('slug', 'buon-ma-thuot')->first();
+        if ($buonMaThuot) {
             GalleryImage::query()
                 ->whereNull('branch_id')
                 ->whereIn('slug', [
@@ -65,10 +65,9 @@ class BranchSeeder extends Seeder
                     'khu-ban-nhom-gia-dinh',
                     'quay-tra-va-goc-cho',
                 ])
-                ->update(['branch_id' => $haiPhong->id]);
+                ->update(['branch_id' => $buonMaThuot->id]);
         }
 
-        $buonMaThuot = Branch::where('slug', 'buon-ma-thuot')->first();
         if ($buonMaThuot) {
             foreach ([
                 [

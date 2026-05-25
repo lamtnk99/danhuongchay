@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             NavigationMenuSeeder::class,
             GalleryImageSeeder::class,
             BranchSeeder::class,
+            HaiPhongGalleryImageSeeder::class,
             TestimonialSeeder::class,
             PromotionSeeder::class,
             DanHuongHaiPhongMenuSeeder::class,

@@ -34,17 +34,11 @@ class BranchRequest extends FormRequest
             'image' => ['nullable', 'file', 'mimes:jpg,jpeg,png,webp,svg', 'max:'.config('uploads.max_image_kb')],
             'facebook_url' => ['nullable', 'url', 'max:255'],
             'zalo_url' => ['nullable', 'url', 'max:255'],
-            'sort_order' => ['nullable', 'integer', 'min:0', Rule::unique('branches', 'sort_order')->ignore($branchId)],
+            'sort_order' => ['nullable', 'integer', 'min:0'],
             'is_active' => ['nullable', 'boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
         ];
     }
 
-    public function messages(): array
-    {
-        return [
-            'sort_order.unique' => 'Thứ tự hiển thị đã được dùng cho cơ sở khác. Vui lòng chọn số khác.',
-        ];
-    }
 }
