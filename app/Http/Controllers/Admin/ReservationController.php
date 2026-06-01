@@ -7,6 +7,7 @@ use App\Models\Branch;
 use App\Models\Reservation;
 use App\Models\ReservationActivity;
 use App\Support\BranchAccess;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,12 +19,12 @@ class ReservationController extends Controller
 {
     public function index(Request $request): View
     {
-        $selectedDate = $request->filled('date')
-            ? $request->date('date')->toDateString()
-            : ($request->filled('q') ? null : now()->toDateString());
+        [$selectedDate, $fromDate, $toDate] = $this->dateWindow($request);
 
         $status = $request->input('status');
-        $reservations = $this->filteredReservations($request, $selectedDate, $status)
+        $reservationQuery = $this->filteredReservations($request, $selectedDate, $fromDate, $toDate, $status);
+        $rangeStats = $this->rangeStats($reservationQuery);
+        $reservations = $reservationQuery
             ->limit(200)
             ->get();
 
@@ -37,10 +38,40 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'status', 'todayStats'));
+        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'fromDate', 'toDate', 'status', 'rangeStats', 'todayStats'));
     }
 
-    private function filteredReservations(Request $request, ?string $selectedDate, ?string $status): Builder
+    private function dateWindow(Request $request): array
+    {
+        if ($request->filled('date')) {
+            $selectedDate = $request->date('date')->toDateString();
+
+            return [$selectedDate, $selectedDate, $selectedDate];
+        }
+
+        if ($request->filled('from') || $request->filled('to')) {
+            $fromDate = $request->filled('from')
+                ? $request->date('from')->toDateString()
+                : now()->toDateString();
+            $toDate = $request->filled('to')
+                ? $request->date('to')->toDateString()
+                : $fromDate;
+
+            if (Carbon::parse($fromDate)->gt(Carbon::parse($toDate))) {
+                [$fromDate, $toDate] = [$toDate, $fromDate];
+            }
+
+            return [null, $fromDate, $toDate];
+        }
+
+        if ($request->filled('q')) {
+            return [null, null, null];
+        }
+
+        return [null, now()->toDateString(), now()->addDays(7)->toDateString()];
+    }
+
+    private function filteredReservations(Request $request, ?string $selectedDate, ?string $fromDate, ?string $toDate, ?string $status): Builder
     {
         return BranchAccess::apply(Reservation::query()->with('branch'), $request->user())
             ->when($request->filled('q'), function ($query) use ($request): void {
@@ -54,6 +85,8 @@ class ReservationController extends Controller
             ->when($status === 'active', fn ($query) => $query->whereIn('status', ['pending', 'confirmed']))
             ->when($request->filled('branch_id'), fn ($query) => $query->where('branch_id', $request->branch_id))
             ->when($selectedDate, fn ($query) => $query->whereDate('reservation_date', $selectedDate))
+            ->when(! $selectedDate && $fromDate, fn ($query) => $query->whereDate('reservation_date', '>=', $fromDate))
+            ->when(! $selectedDate && $toDate, fn ($query) => $query->whereDate('reservation_date', '<=', $toDate))
             ->orderBy('reservation_date')
             ->orderBy('reservation_time')
             ->orderBy('created_at');
@@ -119,6 +152,16 @@ class ReservationController extends Controller
                 'tone' => 'muted',
                 'items' => $reservations->whereIn('status', ['completed', 'cancelled']),
             ],
+        ];
+    }
+
+    private function rangeStats(Builder $query): array
+    {
+        return [
+            'total' => (clone $query)->count(),
+            'active' => (clone $query)->whereIn('status', ['pending', 'confirmed'])->count(),
+            'pending' => (clone $query)->where('status', 'pending')->count(),
+            'confirmed' => (clone $query)->where('status', 'confirmed')->count(),
         ];
     }
 

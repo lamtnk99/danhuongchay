@@ -26,6 +26,13 @@ class DashboardController extends Controller
             ->whereIn('status', ['pending', 'confirmed'])
             ->orderBy('reservation_time')
             ->get();
+        $upcomingReservations = BranchAccess::apply(Reservation::with('branch'), $request->user())
+            ->whereDate('reservation_date', '>=', now()->toDateString())
+            ->whereDate('reservation_date', '<=', now()->addDays(7)->toDateString())
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->orderBy('reservation_date')
+            ->orderBy('reservation_time')
+            ->get();
 
         return view('admin.dashboard', [
             'startDate' => $startDate,
@@ -41,6 +48,10 @@ class DashboardController extends Controller
             'todayDueSoonReservationCount' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isDueSoon())->count(),
             'todayPastReservationCount' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isPastServiceTime())->count(),
             'nextReservations' => $todayReservations->take(6),
+            'upcomingReservationCount' => $upcomingReservations->count(),
+            'upcomingPendingReservationCount' => $upcomingReservations->where('status', 'pending')->count(),
+            'upcomingConfirmedReservationCount' => $upcomingReservations->where('status', 'confirmed')->count(),
+            'upcomingReservations' => $upcomingReservations->take(8),
             'newContactCount' => BranchAccess::apply(Contact::query(), $request->user())->where('status', 'new')->count(),
             'unreadChatCount' => BranchAccess::applyViaRelation(ChatMessage::query(), $request->user(), 'chatSession')->where('sender', 'visitor')->where('is_read', false)->count(),
             'latestReservations' => BranchAccess::apply(Reservation::with('branch'), $request->user())->whereBetween('created_at', $between)->latest()->limit(5)->get(),

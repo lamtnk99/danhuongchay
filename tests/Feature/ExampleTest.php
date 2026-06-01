@@ -221,6 +221,166 @@ class ExampleTest extends TestCase
             ->assertSessionHasNoErrors();
     }
 
+    public function test_admin_reservations_default_to_the_next_seven_days(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 5, 18, 10, 0, 0, config('app.timezone')));
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        Reservation::create([
+            'name' => 'Default Today Guest',
+            'phone' => '0900000001',
+            'reservation_date' => now()->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+        Reservation::create([
+            'name' => 'Default Week Guest',
+            'phone' => '0900000002',
+            'reservation_date' => now()->addDays(7)->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+            'status' => 'confirmed',
+        ]);
+        Reservation::create([
+            'name' => 'Default Outside Guest',
+            'phone' => '0900000003',
+            'reservation_date' => now()->addDays(8)->toDateString(),
+            'reservation_time' => '19:00',
+            'guests' => 3,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.reservations.index'))
+            ->assertOk()
+            ->assertSee('Default Today Guest')
+            ->assertSee('Default Week Guest')
+            ->assertDontSee('Default Outside Guest');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_admin_reservations_date_filter_only_shows_that_day(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 5, 18, 10, 0, 0, config('app.timezone')));
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        Reservation::create([
+            'name' => 'Exact Date Guest',
+            'phone' => '0900000004',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+        Reservation::create([
+            'name' => 'Other Date Guest',
+            'phone' => '0900000005',
+            'reservation_date' => now()->addDays(2)->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.reservations.index', ['date' => now()->addDay()->toDateString(), 'status' => 'active']))
+            ->assertOk()
+            ->assertSee('Exact Date Guest')
+            ->assertDontSee('Other Date Guest');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_admin_reservations_from_to_filter_shows_the_selected_range(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 5, 18, 10, 0, 0, config('app.timezone')));
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        Reservation::create([
+            'name' => 'Range Inside Guest',
+            'phone' => '0900000006',
+            'reservation_date' => now()->addDays(4)->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+        Reservation::create([
+            'name' => 'Range Outside Guest',
+            'phone' => '0900000007',
+            'reservation_date' => now()->addDays(6)->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.reservations.index', [
+                'from' => now()->addDays(5)->toDateString(),
+                'to' => now()->addDays(3)->toDateString(),
+                'status' => 'active',
+            ]))
+            ->assertOk()
+            ->assertSee('Range Inside Guest')
+            ->assertDontSee('Range Outside Guest');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_admin_reservations_search_is_not_limited_to_the_default_week(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 5, 18, 10, 0, 0, config('app.timezone')));
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        Reservation::create([
+            'name' => 'Far Search Guest',
+            'phone' => '0900000008',
+            'reservation_date' => now()->addDays(30)->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'completed',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.reservations.index', ['q' => 'Far Search']))
+            ->assertOk()
+            ->assertSee('Far Search Guest');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_admin_dashboard_keeps_today_shift_and_shows_upcoming_week(): void
+    {
+        Carbon::setTestNow(Carbon::create(2026, 5, 18, 10, 0, 0, config('app.timezone')));
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        Reservation::create([
+            'name' => 'Dashboard Today Guest',
+            'phone' => '0900000009',
+            'reservation_date' => now()->toDateString(),
+            'reservation_time' => '18:00',
+            'guests' => 2,
+            'status' => 'pending',
+        ]);
+        Reservation::create([
+            'name' => 'Dashboard Upcoming Guest',
+            'phone' => '0900000010',
+            'reservation_date' => now()->addDays(5)->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+            'status' => 'confirmed',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.dashboard'))
+            ->assertOk()
+            ->assertSee('Dashboard Today Guest')
+            ->assertSee('Dashboard Upcoming Guest')
+            ->assertSee('Đặt bàn 7 ngày tới');
+
+        Carbon::setTestNow();
+    }
+
     public function test_uploaded_images_are_resized_and_converted_to_webp(): void
     {
         Storage::fake('public');

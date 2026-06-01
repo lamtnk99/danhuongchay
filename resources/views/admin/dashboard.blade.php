@@ -89,6 +89,43 @@
     <section class="mt-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
         <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
+                <h2 class="text-lg font-bold text-slate-950">Đặt bàn 7 ngày tới</h2>
+                <p class="text-sm text-slate-500">Theo dõi các đơn chờ gọi và đã giữ bàn từ hôm nay đến hết tuần tới.</p>
+            </div>
+            <a href="{{ route('admin.reservations.index', ['from' => now()->toDateString(), 'to' => now()->addDays(7)->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">Mở 7 ngày tới</a>
+        </div>
+
+        <div class="mt-4 grid gap-3 sm:grid-cols-3">
+            @foreach ([
+                ['label' => 'Tổng đang xử lý', 'value' => $upcomingReservationCount],
+                ['label' => 'Chờ gọi', 'value' => $upcomingPendingReservationCount],
+                ['label' => 'Đã giữ bàn', 'value' => $upcomingConfirmedReservationCount],
+            ] as $item)
+                <div class="rounded-2xl bg-slate-50 p-4">
+                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">{{ $item['label'] }}</p>
+                    <p class="mt-2 text-2xl font-black text-slate-950">{{ $item['value'] }}</p>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="mt-4 divide-y divide-slate-100">
+            @forelse ($upcomingReservations as $reservation)
+                <a href="{{ route('admin.reservations.show', $reservation) }}" class="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <span>
+                        <span class="block font-semibold text-slate-950">{{ $reservation->reservation_date->format('d/m') }} {{ substr($reservation->reservation_time, 0, 5) }} - {{ $reservation->name }}</span>
+                        <span class="text-sm text-slate-500">{{ $reservation->branch?->name ? $reservation->branch->name.' - ' : '' }}{{ $reservation->phone }} - {{ $reservation->guests }} khách</span>
+                    </span>
+                    <span class="status-badge status-{{ $reservation->statusTone() }}">{{ $reservation->statusLabel() }}</span>
+                </a>
+            @empty
+                <p class="py-4 text-sm text-slate-500">Chưa có đặt bàn đang xử lý trong 7 ngày tới.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <section class="mt-6 rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+        <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+            <div>
                 <h2 class="text-lg font-bold text-slate-950">Tổng quan tương tác</h2>
                 <p class="text-sm text-slate-500">Tách rõ tổng số và xu hướng 14 ngày gần nhất trong khoảng lọc.</p>
             </div>

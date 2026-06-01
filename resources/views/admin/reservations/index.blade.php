@@ -6,9 +6,9 @@
     <div class="reservation-shift-head">
         <div>
             <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">Bảng trực ca</p>
-            <h2 class="mt-2 text-2xl font-black text-slate-950">Theo dõi đặt bàn trong ngày</h2>
+            <h2 class="mt-2 text-2xl font-black text-slate-950">Theo dõi đặt bàn 7 ngày tới</h2>
             <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                Mặc định hiển thị đặt bàn hôm nay ở trạng thái chờ gọi và đã giữ bàn. Các đơn cần gọi ngay hoặc đã qua giờ sẽ được đẩy lên trước.
+                Mặc định hiển thị đặt bàn từ hôm nay đến 7 ngày tới ở trạng thái chờ gọi và đã giữ bàn. Dùng bộ lọc ngày để xem từng ca hoặc khoảng thời gian xa hơn.
             </p>
         </div>
         <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" class="admin-btn-primary">Ca hôm nay</a>
@@ -16,11 +16,25 @@
 
     <div class="reservation-shift-stats">
         @foreach ([
-            ['label' => 'Tổng bàn hôm nay', 'value' => $todayStats['total'], 'tone' => 'slate'],
-            ['label' => 'Chờ gọi', 'value' => $todayStats['pending'], 'tone' => 'amber'],
-            ['label' => 'Cần gọi ngay', 'value' => $todayStats['urgent'], 'tone' => 'red'],
-            ['label' => 'Sắp đến giờ', 'value' => $todayStats['due_soon'], 'tone' => 'sky'],
-            ['label' => 'Qua giờ chưa chốt', 'value' => $todayStats['past'], 'tone' => 'rose'],
+            ['label' => 'Tổng trong khoảng', 'value' => $rangeStats['total'], 'tone' => 'slate'],
+            ['label' => 'Đang xử lý', 'value' => $rangeStats['active'], 'tone' => 'amber'],
+            ['label' => 'Chờ gọi', 'value' => $rangeStats['pending'], 'tone' => 'red'],
+            ['label' => 'Đã giữ bàn', 'value' => $rangeStats['confirmed'], 'tone' => 'sky'],
+            ['label' => 'Ca hôm nay', 'value' => $todayStats['total'], 'tone' => 'rose'],
+        ] as $stat)
+            <div class="reservation-shift-stat reservation-shift-stat-{{ $stat['tone'] }}">
+                <span>{{ $stat['label'] }}</span>
+                <strong>{{ $stat['value'] }}</strong>
+            </div>
+        @endforeach
+    </div>
+
+    <div class="reservation-shift-stats">
+        @foreach ([
+            ['label' => 'Hôm nay chờ gọi', 'value' => $todayStats['pending'], 'tone' => 'amber'],
+            ['label' => 'Hôm nay cần gọi ngay', 'value' => $todayStats['urgent'], 'tone' => 'red'],
+            ['label' => 'Hôm nay sắp đến giờ', 'value' => $todayStats['due_soon'], 'tone' => 'sky'],
+            ['label' => 'Hôm nay qua giờ', 'value' => $todayStats['past'], 'tone' => 'rose'],
         ] as $stat)
             <div class="reservation-shift-stat reservation-shift-stat-{{ $stat['tone'] }}">
                 <span>{{ $stat['label'] }}</span>
@@ -31,7 +45,10 @@
 
     <form class="admin-filter reservation-filter" method="GET">
         <input name="q" value="{{ request('q') }}" placeholder="Tìm tên hoặc SĐT..." class="admin-input">
-        <input type="date" name="date" value="{{ $selectedDate }}" class="admin-input">
+        <label class="sr-only" for="reservation_from">Từ ngày</label>
+        <input id="reservation_from" type="date" name="from" value="{{ $selectedDate ? null : $fromDate }}" class="admin-input">
+        <label class="sr-only" for="reservation_to">Đến ngày</label>
+        <input id="reservation_to" type="date" name="to" value="{{ $selectedDate ? null : $toDate }}" class="admin-input">
         <select name="branch_id" class="admin-input">
             <option value="">Tất cả cơ sở</option>
             @foreach ($branches as $branch)
@@ -46,9 +63,18 @@
             <option value="cancelled" @selected($status === 'cancelled')>Đã hủy</option>
         </select>
         <button class="admin-btn-secondary">Lọc</button>
-        <a href="{{ route('admin.reservations.index', ['status' => 'active']) }}" class="admin-btn-secondary">Hôm nay</a>
+        <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">Ca hôm nay</a>
         <a href="{{ route('admin.reservations.index', ['date' => now()->addDay()->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">Ngày mai</a>
+        <a href="{{ route('admin.reservations.index', ['from' => now()->toDateString(), 'to' => now()->addDays(7)->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">7 ngày tới</a>
     </form>
+
+    @if ($selectedDate)
+        <p class="mt-3 text-sm font-semibold text-slate-500">Đang xem ngày {{ \Carbon\Carbon::parse($selectedDate)->format('d/m/Y') }}.</p>
+    @elseif ($fromDate && $toDate)
+        <p class="mt-3 text-sm font-semibold text-slate-500">Đang xem từ {{ \Carbon\Carbon::parse($fromDate)->format('d/m/Y') }} đến {{ \Carbon\Carbon::parse($toDate)->format('d/m/Y') }}.</p>
+    @elseif (request('q'))
+        <p class="mt-3 text-sm font-semibold text-slate-500">Đang tìm toàn bộ lịch sử theo từ khóa.</p>
+    @endif
 
     <div class="reservation-board">
         @foreach ($sections as $section)
