@@ -56,7 +56,7 @@
                             @error('branch_id') <p class="form-error">{{ $message }}</p> @enderror
                         </div>
 
-                        <div class="grid gap-4 sm:grid-cols-2">
+                        <div class="grid gap-4 sm:grid-cols-3">
                             <div>
                                 <label for="name" class="form-label">{{ is_english() ? 'Full name' : 'Họ tên' }}</label>
                                 <input id="name" name="name" value="{{ old('name') }}" class="form-input" autocomplete="name" required>
@@ -66,6 +66,12 @@
                                 <label for="phone" class="form-label">{{ is_english() ? 'Phone' : 'Số điện thoại' }}</label>
                                 <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" class="form-input" inputmode="tel" autocomplete="tel" required>
                                 @error('phone') <p class="form-error">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label for="email" class="form-label">{{ is_english() ? 'Email (optional)' : 'Email nhận xác nhận' }}</label>
+                                <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-input" inputmode="email" autocomplete="email" placeholder="{{ is_english() ? 'For confirmation email' : 'Không bắt buộc' }}">
+                                <p class="mt-1 text-xs text-stone-500">{{ is_english() ? 'We will send a confirmation summary if you leave an email.' : 'Nếu điền email, bạn sẽ nhận được tóm tắt đặt bàn thanh nhã từ Đàn Hương Chay.' }}</p>
+                                @error('email') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                         </div>
 

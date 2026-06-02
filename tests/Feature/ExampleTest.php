@@ -3,6 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\ChatSession;
+use App\Mail\ReservationAdminNotificationMail;
+use App\Mail\ReservationCustomerConfirmationMail;
+use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Dish;
 use App\Models\Post;
@@ -13,6 +16,7 @@ use App\Services\UploadService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -164,6 +168,172 @@ class ExampleTest extends TestCase
 
         $this->assertDatabaseHas(Reservation::class, [
             'name' => 'Trần Bình',
+            'phone' => '0987654321',
+            'status' => 'pending',
+        ]);
+    }
+
+    public function test_admin_branch_form_saves_reservation_notification_email(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $branch = Branch::firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('admin.branches.edit', $branch))
+            ->assertOk()
+            ->assertSee('Email nhận thông báo đặt bàn');
+
+        $this->actingAs($admin)
+            ->put(route('admin.branches.update', $branch), [
+                'name' => $branch->name,
+                'email' => $branch->email,
+                'reservation_notification_email' => 'reservations-branch@example.com',
+                'is_active' => '1',
+            ])
+            ->assertRedirect(route('admin.branches.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas(Branch::class, [
+            'id' => $branch->id,
+            'reservation_notification_email' => 'reservations-branch@example.com',
+        ]);
+    }
+
+    public function test_reservation_sends_admin_mail_to_branch_notification_email(): void
+    {
+        Mail::fake();
+
+        $branch = Branch::firstOrFail();
+        $branch->update([
+            'email' => 'public-branch@example.com',
+            'reservation_notification_email' => 'reservations-branch@example.com',
+        ]);
+
+        $this->post(route('reservations.store'), [
+            'name' => 'Khách báo mail cơ sở',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+        ])->assertRedirect(route('reservations.create'));
+
+        Mail::assertQueued(ReservationAdminNotificationMail::class, fn ($mail): bool => $mail->hasTo('reservations-branch@example.com'));
+        Mail::assertNotQueued(ReservationCustomerConfirmationMail::class);
+    }
+
+    public function test_reservation_admin_mail_falls_back_to_branch_email(): void
+    {
+        Mail::fake();
+
+        $branch = Branch::firstOrFail();
+        $branch->update([
+            'email' => 'public-branch@example.com',
+            'reservation_notification_email' => null,
+        ]);
+
+        $this->post(route('reservations.store'), [
+            'name' => 'Khách fallback mail',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+        ])->assertRedirect(route('reservations.create'));
+
+        Mail::assertQueued(ReservationAdminNotificationMail::class, fn ($mail): bool => $mail->hasTo('public-branch@example.com'));
+    }
+
+    public function test_reservation_sends_customer_confirmation_when_email_is_provided(): void
+    {
+        Mail::fake();
+
+        $branch = Branch::firstOrFail();
+        $branch->update(['reservation_notification_email' => 'reservations-branch@example.com']);
+
+        $this->post(route('reservations.store'), [
+            'name' => 'Khách nhận mail',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'email' => 'customer@gmail.com',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+        ])->assertRedirect(route('reservations.create'));
+
+        Mail::assertQueued(ReservationAdminNotificationMail::class, fn ($mail): bool => $mail->hasTo('reservations-branch@example.com'));
+        Mail::assertQueued(ReservationCustomerConfirmationMail::class, fn ($mail): bool => $mail->hasTo('customer@gmail.com'));
+    }
+
+    public function test_customer_confirmation_mail_shows_branch_hotline_and_phone(): void
+    {
+        $branch = Branch::firstOrFail();
+        $branch->update([
+            'hotline' => '0999 111 222',
+            'phone' => '0888 333 444',
+        ]);
+        $reservation = Reservation::create([
+            'name' => 'Khách hotline cơ sở',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'email' => 'customer@gmail.com',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+            'status' => 'pending',
+        ])->load('branch');
+
+        $html = (new ReservationCustomerConfirmationMail($reservation))->render();
+
+        $this->assertStringContainsString('0999 111 222', $html);
+        $this->assertStringContainsString('0888 333 444', $html);
+    }
+
+    public function test_customer_confirmation_mail_falls_back_to_branch_phone(): void
+    {
+        $branch = Branch::firstOrFail();
+        $branch->update([
+            'hotline' => null,
+            'phone' => '0888 333 444',
+        ]);
+        $reservation = Reservation::create([
+            'name' => 'Khách phone cơ sở',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'email' => 'customer@gmail.com',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+            'status' => 'pending',
+        ])->load('branch');
+
+        $html = (new ReservationCustomerConfirmationMail($reservation))->render();
+
+        $this->assertStringContainsString('0888 333 444', $html);
+    }
+
+    public function test_reservation_still_succeeds_when_mail_fails(): void
+    {
+        $branch = Branch::firstOrFail();
+        $branch->update(['reservation_notification_email' => 'reservations-branch@example.com']);
+
+        Mail::shouldReceive('to')
+            ->once()
+            ->andThrow(new \RuntimeException('SMTP down'));
+
+        $this->post(route('reservations.store'), [
+            'name' => 'Khách lỗi mail',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+        ])
+            ->assertRedirect(route('reservations.create'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas(Reservation::class, [
+            'name' => 'Khách lỗi mail',
             'phone' => '0987654321',
             'status' => 'pending',
         ]);

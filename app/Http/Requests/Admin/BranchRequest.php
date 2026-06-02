@@ -25,6 +25,7 @@ class BranchRequest extends FormRequest
             'phone' => ['nullable', 'string', 'max:40'],
             'hotline' => ['nullable', 'string', 'max:40'],
             'email' => ['nullable', 'email', 'max:180'],
+            'reservation_notification_email' => ['nullable', 'email', 'max:180'],
             'opening_hours' => ['nullable', 'string', 'max:255'],
             'reservation_time_slots' => ['nullable', 'string', 'max:500'],
             'reservation_last_booking_time' => ['nullable', 'date_format:H:i'],

@@ -37,7 +37,14 @@
     <div>
         <label class="admin-label" for="email">Email</label>
         <input id="email" type="email" name="email" value="{{ old('email', $branch->email) }}" class="admin-input">
+        <p class="mt-1 text-xs text-slate-500">Email công khai hiển thị cho khách liên hệ cơ sở.</p>
         @error('email') <p class="form-error">{{ $message }}</p> @enderror
+    </div>
+    <div>
+        <label class="admin-label" for="reservation_notification_email">Email nhận thông báo đặt bàn</label>
+        <input id="reservation_notification_email" type="email" name="reservation_notification_email" value="{{ old('reservation_notification_email', $branch->reservation_notification_email) }}" class="admin-input">
+        <p class="mt-1 text-xs text-slate-500">Nếu bỏ trống, hệ thống sẽ gửi về email cơ sở rồi đến email website chung.</p>
+        @error('reservation_notification_email') <p class="form-error">{{ $message }}</p> @enderror
     </div>
     <div>
         <label class="admin-label" for="opening_hours">Giờ mở cửa hiển thị</label>

@@ -20,6 +20,7 @@ class Branch extends Model
         'phone',
         'hotline',
         'email',
+        'reservation_notification_email',
         'opening_hours',
         'reservation_time_slots',
         'reservation_last_booking_time',

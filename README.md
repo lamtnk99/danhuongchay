@@ -164,7 +164,7 @@ Website dùng chung thương hiệu, menu và bảng giá cho cả hai cơ sở.
 - Tên cơ sở
 - Thành phố
 - Địa chỉ
-- Hotline, số điện thoại, email
+- Hotline, số điện thoại, email công khai và email nhận thông báo đặt bàn
 - Giờ mở cửa hiển thị
 - Khung giờ nhận đặt bàn, ví dụ `09:00-14:00,16:00-21:00`
 - Giờ cuối nhận đặt bàn, ví dụ `20:30`
@@ -214,7 +214,9 @@ Luồng đặt bàn hỗ trợ:
 - Chặn giờ đã qua nếu đặt trong ngày hôm nay
 - Chỉ nhận giờ nằm trong khung mở cửa/khung nhận đặt bàn
 - Có thể cấu hình giờ mở cửa và giờ nhận đặt bàn trong admin cơ sở
-- Form đã bỏ email để gọn hơn
+- Email khách là tùy chọn; nếu khách điền email, hệ thống gửi mail xác nhận đã nhận yêu cầu đặt bàn.
+- Khi có đặt bàn mới, hệ thống gửi mail thông báo cho email nhận đặt bàn của cơ sở; nếu cơ sở chưa cấu hình, fallback về email cơ sở rồi email website chung.
+- Mail đặt bàn được đẩy vào queue để form phản hồi nhanh. Local/dev có thể dùng `composer dev` hoặc chạy riêng `php artisan queue:work`; shared host không có daemon có thể dùng cron `php artisan queue:work --stop-when-empty --tries=3`.
 
 ## Chat online
 
