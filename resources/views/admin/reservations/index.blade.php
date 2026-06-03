@@ -46,6 +46,25 @@
         @endforeach
     </div>
 
+    @if ($overdueAlert)
+        <div class="mt-4 flex items-center justify-between gap-4 rounded-2xl bg-rose-50 border border-rose-200 px-5 py-4">
+            <div class="flex items-center gap-3">
+                <svg viewBox="0 0 24 24" class="h-5 w-5 shrink-0 fill-rose-600" aria-hidden="true">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+                <p class="text-sm font-bold text-rose-900">
+                    Có <strong class="text-rose-700">{{ $overdueAlert['count'] }}</strong> đơn chưa xử lý từ ngày trước.
+                    @if ($overdueAlert['count'] > 1)
+                        Sớm nhất từ <strong>{{ \Carbon\Carbon::parse($overdueAlert['earliest_date'])->format('d/m/Y') }}</strong>.
+                    @endif
+                </p>
+            </div>
+            <a href="{{ $overdueAlert['url'] }}" class="admin-btn-secondary whitespace-nowrap text-rose-700 border-rose-300 hover:bg-rose-100">
+                Xem đơn quá hạn →
+            </a>
+        </div>
+    @endif
+
     <form class="admin-filter reservation-filter" method="GET">
         <input name="q" value="{{ request('q') }}" placeholder="Tìm tên hoặc SĐT..." class="admin-input">
         <label class="sr-only" for="reservation_from">Từ ngày</label>

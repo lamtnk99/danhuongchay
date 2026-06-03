@@ -32,6 +32,7 @@ class ReservationController extends Controller
 
         $sections = $this->sections($reservations);
         $todayStats = $this->todayStats($request);
+        $overdueAlert = $this->overdueAlert($request);
 
         $branches = Branch::query()
             ->active()
@@ -49,7 +50,7 @@ class ReservationController extends Controller
             $quickFilter = 'week';
         }
 
-        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'fromDate', 'toDate', 'status', 'rangeStats', 'todayStats', 'quickFilter'));
+        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'fromDate', 'toDate', 'status', 'rangeStats', 'todayStats', 'quickFilter', 'overdueAlert'));
     }
 
     public function export(Request $request)
@@ -200,6 +201,30 @@ class ReservationController extends Controller
             'urgent' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->needsUrgentCall())->count(),
             'due_soon' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isDueSoon())->count(),
             'past' => $todayReservations->filter(fn (Reservation $reservation): bool => $reservation->isPastServiceTime())->count(),
+        ];
+    }
+
+    private function overdueAlert(Request $request): ?array
+    {
+        $query = BranchAccess::apply(Reservation::query(), $request->user())
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereDate('reservation_date', '<', now()->toDateString());
+
+        $count = $query->count();
+        if ($count === 0) {
+            return null;
+        }
+
+        $earliest = (clone $query)->orderBy('reservation_date')->first();
+
+        return [
+            'count' => $count,
+            'earliest_date' => $earliest->reservation_date->toDateString(),
+            'url' => route('admin.reservations.index', [
+                'from' => $earliest->reservation_date->toDateString(),
+                'to' => now()->copy()->subDay()->toDateString(),
+                'status' => 'active',
+            ]),
         ];
     }
 
