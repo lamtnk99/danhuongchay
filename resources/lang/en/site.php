@@ -3,6 +3,7 @@
 return [
     'skip' => 'Skip to content',
     'brand_suffix' => 'Vegetarian Kitchen',
+    'loading' => 'Loading...',
     'nav' => [
         'home' => 'Home',
         'about' => 'About',

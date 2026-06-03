@@ -911,20 +911,18 @@ if (adminChatMessages) {
     window.setInterval(loadAdminChat, 5000);
 }
 
-// ── Mobile page transition overlay ──
+// ── Page transition loader ──
 (function () {
     const loader = document.getElementById('page-loader');
     if (!loader) return;
 
-    const isMobile = () => window.innerWidth < 1024;
-
     const showLoader = () => {
-        if (isMobile()) loader.classList.add('is-active');
+        loader.classList.add('is-active');
     };
 
     document.addEventListener('click', (e) => {
         const a = e.target.closest('a');
-        if (!a || !isMobile()) return;
+        if (!a) return;
 
         const href = a.getAttribute('href');
         if (!href) return;
@@ -945,7 +943,6 @@ if (adminChatMessages) {
         showLoader();
     });
 
-    // Hide after new page finishes loading (covers both fresh nav and back/forward)
     window.addEventListener('pageshow', () => {
         loader.classList.remove('is-active');
     });

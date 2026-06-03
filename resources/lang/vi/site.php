@@ -3,6 +3,7 @@
 return [
     'skip' => 'Bỏ qua menu',
     'brand_suffix' => 'Vegetarian Kitchen',
+    'loading' => 'Đang tải...',
     'nav' => [
         'home' => 'Trang chủ',
         'about' => 'Giới thiệu',
