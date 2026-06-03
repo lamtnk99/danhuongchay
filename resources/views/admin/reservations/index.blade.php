@@ -5,13 +5,16 @@
 @section('content')
     <div class="reservation-shift-head">
         <div>
-            <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">Bảng trực ca</p>
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#667132]">Bảng trực ca</p>
             <h2 class="mt-2 text-2xl font-black text-slate-950">Theo dõi đặt bàn 7 ngày tới</h2>
             <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
                 Mặc định hiển thị đặt bàn từ hôm nay đến 7 ngày tới ở trạng thái chờ gọi và đã giữ bàn. Dùng bộ lọc ngày để xem từng ca hoặc khoảng thời gian xa hơn.
             </p>
         </div>
-        <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" class="admin-btn-primary">Ca hôm nay</a>
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('admin.reservations.export', request()->query()) }}" class="admin-btn-secondary">Xuất Excel</a>
+            <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" class="admin-btn-primary">Ca hôm nay</a>
+        </div>
     </div>
 
     <div class="reservation-shift-stats">
@@ -63,9 +66,9 @@
             <option value="cancelled" @selected($status === 'cancelled')>Đã hủy</option>
         </select>
         <button class="admin-btn-secondary">Lọc</button>
-        <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">Ca hôm nay</a>
-        <a href="{{ route('admin.reservations.index', ['date' => now()->addDay()->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">Ngày mai</a>
-        <a href="{{ route('admin.reservations.index', ['from' => now()->toDateString(), 'to' => now()->addDays(7)->toDateString(), 'status' => 'active']) }}" class="admin-btn-secondary">7 ngày tới</a>
+        <a href="{{ route('admin.reservations.index', ['date' => now()->toDateString(), 'status' => 'active']) }}" @class(['admin-btn-secondary', 'is-active' => $quickFilter === 'today'])>Ca hôm nay</a>
+        <a href="{{ route('admin.reservations.index', ['date' => now()->addDay()->toDateString(), 'status' => 'active']) }}" @class(['admin-btn-secondary', 'is-active' => $quickFilter === 'tomorrow'])>Ngày mai</a>
+        <a href="{{ route('admin.reservations.index', ['from' => now()->toDateString(), 'to' => now()->addDays(7)->toDateString(), 'status' => 'active']) }}" @class(['admin-btn-secondary', 'is-active' => $quickFilter === 'week'])>7 ngày tới</a>
     </form>
 
     @if ($selectedDate)

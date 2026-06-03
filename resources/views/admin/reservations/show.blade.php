@@ -17,7 +17,7 @@
 
     <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-            <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">Phiếu đặt bàn</p>
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#667132]">Phiếu đặt bàn</p>
             <h2 class="mt-2 text-2xl font-black text-slate-950">{{ $reservation->name }}</h2>
         </div>
         <div class="flex flex-wrap gap-2">
@@ -34,7 +34,7 @@
                     <h3 class="mt-4 text-3xl font-black text-slate-950">{{ $scheduledAt->format('H:i') }}</h3>
                     <p class="mt-1 text-sm font-semibold text-slate-500">{{ $scheduledAt->format('d/m/Y') }} - {{ $reservation->guests }} khách</p>
                 </div>
-                <div class="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+                <div class="rounded-2xl bg-[#667132]/8 px-4 py-3 text-sm font-bold text-[#3d4226]">
                     {{ $reservation->branch?->name ?: 'Chưa chọn cơ sở' }}
                 </div>
             </div>

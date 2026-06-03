@@ -31,7 +31,7 @@
                                 @if ($testimonial->avatar)
                                     <img src="{{ media_url($testimonial->avatar) }}" alt="{{ $testimonial->name }}" class="h-12 w-12 rounded-full object-cover">
                                 @else
-                                    <span class="grid h-12 w-12 place-items-center rounded-full bg-emerald-100 font-bold text-emerald-800">{{ mb_substr($testimonial->name, 0, 1) }}</span>
+                                    <span class="grid h-12 w-12 place-items-center rounded-full bg-[#667132]/10 font-bold text-[#667132]">{{ mb_substr($testimonial->name, 0, 1) }}</span>
                                 @endif
                                 <span>
                                     <span class="block font-semibold">{{ $testimonial->name }}</span>

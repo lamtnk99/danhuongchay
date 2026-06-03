@@ -58,7 +58,7 @@
             <img src="{{ media_url($user->avatar) }}" alt="{{ $user->name }}" class="mb-3 h-20 w-20 rounded-full object-cover">
         @endif
         <input id="avatar" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" class="sr-only" data-file-input data-file-target="avatar-file-name">
-        <label for="avatar" class="inline-flex min-h-12 cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition hover:border-emerald-500 hover:text-emerald-700">
+        <label for="avatar" class="inline-flex min-h-12 cursor-pointer items-center rounded-xl border border-slate-300 bg-white px-4 py-3 font-semibold text-slate-700 transition hover:border-[#667132] hover:text-[#667132]">
             Chọn ảnh
         </label>
         <span id="avatar-file-name" class="ml-3 text-sm text-slate-500">Chưa chọn file</span>

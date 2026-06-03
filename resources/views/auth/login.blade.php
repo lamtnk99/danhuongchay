@@ -7,10 +7,10 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="grid min-h-screen place-items-center bg-[#f1eadc] px-4">
-    <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-emerald-900/10">
+    <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl ring-1 ring-[#667132]/10">
         <div class="text-center">
-            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-emerald-800 text-xl font-bold text-white">ĐH</div>
-            <h1 class="mt-5 text-2xl font-bold text-emerald-950">Đăng nhập Admin</h1>
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-[#667132] text-xl font-bold text-white">ĐH</div>
+            <h1 class="mt-5 text-2xl font-bold text-[#3d4226]">Đăng nhập Admin</h1>
             <p class="mt-2 text-sm text-slate-500">Quản trị website Đàn Hương Chay</p>
         </div>
 
@@ -29,7 +29,7 @@
                 @error('password') <p class="form-error">{{ $message }}</p> @enderror
             </div>
             <label class="flex items-center gap-2 text-sm text-slate-600">
-                <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-emerald-700">
+                <input type="checkbox" name="remember" value="1" class="rounded border-slate-300 text-[#667132]">
                 Ghi nhớ đăng nhập
             </label>
             <button type="submit" class="btn-primary w-full justify-center">Đăng nhập</button>

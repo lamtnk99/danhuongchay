@@ -6,9 +6,11 @@
     $secondaryLabel = $secondaryLabel ?? __('site.dish.catering');
     $primaryUrl = $primaryUrl ?? localized_route('reservations.create');
     $secondaryUrl = $secondaryUrl ?? localized_route('local.vegetarian-catering-hai-phong');
-    $phoneLabel = $phoneLabel ?? (is_english() ? 'Call hotline' : 'Gọi hotline');
+    $phoneLabel = $phoneLabel ?? (is_english()
+        ? 'Call: '.setting('hotline', '0947 361 515').' / '.setting('phone', '094 234 55 15')
+        : 'Gọi: '.setting('hotline', '0947 361 515').' / '.setting('phone', '094 234 55 15'));
     $trackLabel = $trackLabel ?? $title;
-    $phoneHref = preg_replace('/\D+/', '', setting('hotline', setting('phone', '0947361515')));
+    $phoneHref = preg_replace('/\D+/', '', setting('hotline', '0947361515'));
 @endphp
 
 <section class="smart-cta" data-track-view="view_contextual_cta" data-track-category="{{ $context }}" data-track-label="{{ $trackLabel }}">

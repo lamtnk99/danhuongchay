@@ -28,7 +28,7 @@
     @case('zalo')
         <svg viewBox="0 0 24 24" aria-hidden="true" class="h-5 w-5">
             <rect x="3" y="4" width="18" height="16" rx="5" class="fill-current" />
-            <path d="M7.1 14.8 10 9.2H7.3V7.6h5.35l-2.9 5.6h2.85v1.6H7.1zm7.55 0h-1.7V7.6h1.7v7.2zm3.65.12a2.82 2.82 0 1 1 0-5.64 2.82 2.82 0 0 1 0 5.64zm0-1.55a1.27 1.27 0 1 0 0-2.54 1.27 1.27 0 0 0 0 2.54z" class="fill-emerald-950" />
+            <path d="M7.1 14.8 10 9.2H7.3V7.6h5.35l-2.9 5.6h2.85v1.6H7.1zm7.55 0h-1.7V7.6h1.7v7.2zm3.65.12a2.82 2.82 0 1 1 0-5.64 2.82 2.82 0 0 1 0 5.64zm0-1.55a1.27 1.27 0 1 0 0-2.54 1.27 1.27 0 0 0 0 2.54z" class="fill-[#3d4226]" />
         </svg>
         @break
 @endswitch

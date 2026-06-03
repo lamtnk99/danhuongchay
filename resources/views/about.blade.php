@@ -4,7 +4,7 @@
     <section class="subpage-hero about-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <p class="eyebrow">{{ __('site.about.eyebrow') }}</p>
-            <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ $page?->localized('title') ?: __('site.about.fallback_title') }}</h1>
+            <h1 class="mt-4 text-4xl font-semibold text-[#3d4226] sm:text-5xl">{{ $page?->localized('title') ?: __('site.about.fallback_title') }}</h1>
             <p class="mt-6 text-lg leading-8 text-stone-700">{{ $page?->localized('meta_description') ?: __('site.about.fallback_description') }}</p>
         </div>
     </section>
@@ -23,7 +23,7 @@
             </div>
             <div>
                 <p class="eyebrow">{{ __('site.about.philosophy_eyebrow') }}</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ __('site.about.philosophy_title') }}</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ __('site.about.philosophy_title') }}</h2>
                 @if ($page)
                     <div class="article-content mt-5">{!! $page->localized('content') !!}</div>
                 @else
@@ -75,7 +75,7 @@
             <div class="about-branches-layout">
                 <div>
                     <p class="eyebrow">{{ __('site.about.address_eyebrow') }}</p>
-                    <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'Two peaceful vegetarian spaces' : 'Hai điểm hẹn chay thanh lành' }}</h2>
+                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'Two peaceful vegetarian spaces' : 'Hai điểm hẹn chay thanh lành' }}</h2>
                     <p class="mt-5 leading-8 text-stone-700">
                         {{ is_english() ? 'Each branch keeps a calm dining rhythm, warm service and a menu built for family meals, gatherings and mindful vegetarian moments.' : 'Mỗi cơ sở là một không gian riêng để ghé ăn nhẹ, dùng bữa cùng gia đình hoặc đặt trước những mâm chay chỉn chu cho dịp quan trọng.' }}
                     </p>

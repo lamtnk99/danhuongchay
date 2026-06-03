@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <section class="relative isolate overflow-hidden bg-emerald-950 text-white">
+    <section class="relative isolate overflow-hidden bg-[#3d4226] text-white">
         <img
             src="{{ media_variant_url(setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1600&q=85') }}"
             @if (media_srcset(setting('default_background'), ['card', 'large', 'hero'])) srcset="{{ media_srcset(setting('default_background'), ['card', 'large', 'hero']) }}" @endif
@@ -10,14 +10,14 @@
             fetchpriority="high"
             sizes="100vw"
         >
-        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-950/90 via-emerald-950/72 to-emerald-900/35"></div>
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#3d4226]/90 via-[#3d4226]/72 to-[#3d4226]/35"></div>
         <div class="mx-auto grid min-h-[72vh] max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8">
             <div>
                 <p class="eyebrow text-amber-100">{{ is_english() ? 'Vegetarian restaurant in Hai Phong' : 'Quán chay Hải Phòng' }}</p>
                 <h1 class="mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
                     {{ is_english() ? 'Dan Huong Chay - gentle vegetarian dining in Hai Phong' : 'Đàn Hương Chay - quán chay ngon, sạch và an yên tại Hải Phòng' }}
                 </h1>
-                <p class="mt-6 max-w-2xl text-lg leading-8 text-emerald-50/90">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-[#f5f0e0]/90">
                     {{ is_english() ? 'Vegetarian fusion cuisine with approachable dishes, a calm dining space and convenient booking for families, friends, catering and ceremonial vegetarian trays.' : 'Ẩm thực chay fusion với menu sáng tạo, món chay dễ ăn, không gian nhẹ nhàng và dịch vụ đặt bàn thuận tiện cho gia đình, bạn bè, tiệc chay hoặc mâm cúng chay.' }}
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
@@ -29,7 +29,7 @@
             </div>
 
             <div class="rounded-[2rem] border border-white/15 bg-white/12 p-5 shadow-2xl backdrop-blur">
-                <dl class="grid gap-4 text-sm text-emerald-50 sm:grid-cols-2">
+                <dl class="grid gap-4 text-sm text-[#f5f0e0] sm:grid-cols-2">
                     <div class="rounded-2xl bg-white/12 p-4">
                         <dt class="font-semibold text-amber-100">{{ is_english() ? 'Address' : 'Địa chỉ' }}</dt>
                         <dd class="mt-2 leading-6">{{ setting('address') }}</dd>
@@ -55,7 +55,7 @@
         <div class="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
             <div>
                 <p class="eyebrow">{{ is_english() ? 'A peaceful dining stop' : 'Một điểm hẹn an yên' }}</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'For gentle vegetarian meals in Hai Phong' : 'Dành cho những bữa chay nhẹ nhàng tại Hải Phòng' }}</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'For gentle vegetarian meals in Hai Phong' : 'Dành cho những bữa chay nhẹ nhàng tại Hải Phòng' }}</h2>
                 <p class="mt-5 leading-8 text-stone-700">
                     {{ is_english() ? 'Choosing a vegetarian restaurant is not only about an address. A pleasant meal needs balanced flavors, a calm enough room, helpful service and clear booking for family meals, friends or special occasions.' : 'Khi chọn một quán chay, điều quan trọng không chỉ là địa chỉ. Một bữa ăn dễ chịu cần món vừa miệng, không gian đủ yên, nhân viên dễ trao đổi và cách đặt bàn rõ ràng cho gia đình, bạn bè hoặc những dịp cần chuẩn bị kỹ.' }}
                 </p>
@@ -64,20 +64,20 @@
                 </p>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Vegetarian fusion dishes' : 'Món chay fusion' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-white p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Vegetarian fusion dishes' : 'Món chay fusion' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Creative dishes combining vegetables, mushrooms, grains and modern cooking so vegetarian food feels fresh and satisfying.' : 'Menu sáng tạo, kết hợp rau củ, nấm, hạt và kỹ thuật nấu hiện đại để món chay không đơn điệu.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Peaceful space' : 'Không gian an yên' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-white p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Peaceful space' : 'Không gian an yên' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Suitable for family meals, meeting friends, hosting guests or days when you want something lighter.' : 'Phù hợp cho bữa ăn gia đình, gặp gỡ bạn bè, tiếp khách nhẹ nhàng hoặc các dịp muốn ăn thanh hơn.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Clear booking' : 'Đặt bàn rõ ràng' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-white p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Clear booking' : 'Đặt bàn rõ ràng' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Choose your preferred date and time, then our team confirms so your table can be prepared properly.' : 'Khách chọn trước ngày giờ ghé quán, đội ngũ sẽ xác nhận lại để bàn ăn được chuẩn bị gọn gàng.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Catering and feast trays' : 'Tiệc và mâm chay' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-white p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Catering and feast trays' : 'Tiệc và mâm chay' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'The restaurant can suggest dishes for groups, vegetarian catering or ceremonial trays based on your needs.' : 'Có thể tư vấn đặt món theo nhóm, đặt tiệc chay hoặc mâm cúng chay theo nhu cầu thực tế.' }}</p>
                 </article>
             </div>
@@ -99,12 +99,12 @@
         </section>
     @endif
 
-    <section class="bg-emerald-950 text-white">
+    <section class="bg-[#3d4226] text-white">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:items-center lg:px-8">
             <div>
                 <p class="eyebrow text-amber-100">{{ is_english() ? 'Quick reservation' : 'Đặt bàn nhanh' }}</p>
                 <h2 class="mt-3 text-3xl font-semibold sm:text-4xl">{{ is_english() ? 'Looking for a vegetarian table today?' : 'Bạn đang tìm quán chay cho hôm nay?' }}</h2>
-                <p class="mt-5 leading-8 text-emerald-50/80">
+                <p class="mt-5 leading-8 text-[#f5f0e0]/80">
                     {{ is_english() ? 'Booking ahead helps the restaurant prepare your seats, suggest suitable dishes and avoid times when the kitchen has stopped taking orders.' : 'Đặt bàn trước giúp quán chuẩn bị chỗ ngồi, tư vấn món phù hợp và tránh các khung giờ bếp đã ngừng nhận món.' }}
                 </p>
                 <div class="mt-7 flex flex-wrap gap-3">
@@ -124,15 +124,15 @@
         <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
                 <p class="eyebrow">{{ is_english() ? 'Questions' : 'Câu hỏi thường gặp' }}</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'Common questions about our Hai Phong vegetarian restaurant' : 'Câu hỏi thường gặp về quán chay Hải Phòng' }}</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'Common questions about our Hai Phong vegetarian restaurant' : 'Câu hỏi thường gặp về quán chay Hải Phòng' }}</h2>
                 <p class="mt-5 leading-8 text-stone-700">
                     {{ is_english() ? 'A few things guests often ask before booking, ordering dishes or preparing vegetarian catering at the Hai Phong branch.' : 'Một vài điều khách thường hỏi trước khi đặt bàn, gọi món hoặc chuẩn bị tiệc chay tại cơ sở Hải Phòng.' }}
                 </p>
             </div>
             <div class="space-y-4">
                 @foreach ($faqs as $faq)
-                    <details class="group rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm" @if ($loop->first) open @endif>
-                        <summary class="cursor-pointer list-none text-lg font-semibold text-emerald-950">
+                    <details class="group rounded-3xl border border-[#667132]/10 bg-white p-6 shadow-sm" @if ($loop->first) open @endif>
+                        <summary class="cursor-pointer list-none text-lg font-semibold text-[#3d4226]">
                             {{ $faq['question'] }}
                         </summary>
                         <p class="mt-4 leading-8 text-stone-700">{{ $faq['answer'] }}</p>
@@ -147,9 +147,9 @@
             <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
                 <div class="max-w-2xl">
                     <p class="eyebrow">{{ is_english() ? 'Read more' : 'Đọc thêm' }}</p>
-                    <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'Vegetarian notes and dining suggestions' : 'Kiến thức ăn chay và gợi ý chọn quán' }}</h2>
+                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'Vegetarian notes and dining suggestions' : 'Kiến thức ăn chay và gợi ý chọn quán' }}</h2>
                 </div>
-                <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-emerald-800 hover:text-emerald-950">{{ is_english() ? 'View blog' : 'Xem blog' }}</a>
+                <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-[#667132] hover:text-[#3d4226]">{{ is_english() ? 'View blog' : 'Xem blog' }}</a>
             </div>
             <div class="mt-10 grid gap-6 md:grid-cols-3">
                 @foreach ($latestPosts as $post)

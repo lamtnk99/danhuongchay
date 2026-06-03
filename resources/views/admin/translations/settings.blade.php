@@ -11,10 +11,10 @@
         $warningLimit = (int) (setting('translation_monthly_limit_warning') ?: 450000);
     @endphp
 
-    <div class="mb-6 rounded-2xl bg-emerald-950 p-6 text-white shadow-sm">
-        <p class="text-sm font-bold uppercase tracking-[0.25em] text-emerald-200">DeepL / Microsoft Translator</p>
+    <div class="mb-6 rounded-2xl bg-[#3d4226] p-6 text-white shadow-sm">
+        <p class="text-sm font-bold uppercase tracking-[0.25em] text-[#f5f0e0]">DeepL / Microsoft Translator</p>
         <h1 class="mt-2 text-2xl font-bold">Cài đặt dịch tự động</h1>
-        <p class="mt-2 max-w-3xl text-sm leading-7 text-emerald-50/80">
+        <p class="mt-2 max-w-3xl text-sm leading-7 text-[#f5f0e0]/80">
             Dịch tự động chỉ chạy khi admin bấm nút trong tab English. Kết quả đổ vào form để kiểm tra trước khi lưu, không tự ghi đè nội dung.
         </p>
     </div>
@@ -137,12 +137,12 @@
         </form>
 
         <aside class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-            <p class="text-sm font-bold uppercase tracking-[0.18em] text-emerald-700">Trạng thái quota</p>
+            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#667132]">Trạng thái quota</p>
             @if ($provider === 'deepl' && $usage && $limit)
-                <p class="mt-3 text-3xl font-black text-emerald-950">{{ number_format($count) }}</p>
+                <p class="mt-3 text-3xl font-black text-[#3d4226]">{{ number_format($count) }}</p>
                 <p class="text-sm text-slate-500">/ {{ number_format($limit) }} ký tự</p>
                 <div class="mt-4 h-3 overflow-hidden rounded-full bg-slate-100">
-                    <div class="h-full rounded-full bg-emerald-600" style="width: {{ $percent }}%"></div>
+                    <div class="h-full rounded-full bg-[#667132]" style="width: {{ $percent }}%"></div>
                 </div>
             @else
                 <p class="mt-3 text-sm leading-7 text-slate-600">Provider hiện tại chưa có usage hiển thị trong admin. Với Microsoft, kiểm tra quota trong Azure Portal.</p>

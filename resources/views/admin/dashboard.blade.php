@@ -232,7 +232,7 @@
                             <span class="block truncate font-semibold">{{ $dish->name }}</span>
                             <span class="text-sm text-slate-500">{{ $dish->category?->name }}</span>
                         </span>
-                        <span class="font-semibold text-emerald-800">{{ number_format($dish->price, 0, ',', '.') }}đ</span>
+                        <span class="font-semibold text-[#667132]">{{ number_format($dish->price, 0, ',', '.') }}đ</span>
                     </a>
                 @empty
                     <p class="py-4 text-sm text-slate-500">Chưa có món nổi bật.</p>

@@ -87,11 +87,11 @@ const setDeepLStatus = (element, message, type = 'info') => {
     }
 
     element.hidden = false;
-    element.classList.remove('hidden', 'border-red-200', 'bg-red-50', 'text-red-800', 'border-emerald-200', 'bg-emerald-50', 'text-emerald-800', 'border-slate-200', 'bg-slate-50', 'text-slate-700');
+    element.classList.remove('hidden', 'border-red-200', 'bg-red-50', 'text-red-800', 'border-[#667132]/20', 'bg-[#667132]/8', 'text-[#667132]', 'border-slate-200', 'bg-slate-50', 'text-slate-700');
 
     const classes = {
         error: ['border-red-200', 'bg-red-50', 'text-red-800'],
-        success: ['border-emerald-200', 'bg-emerald-50', 'text-emerald-800'],
+        success: ['border-[#667132]/20', 'bg-[#667132]/8', 'text-[#667132]'],
         info: ['border-slate-200', 'bg-slate-50', 'text-slate-700'],
     };
 
@@ -650,30 +650,33 @@ if (chatWidget) {
         pollTimer = window.setInterval(loadMessages, 6000);
     };
 
+    const actionsMenu = chatWidget.querySelector('[data-chat-actions]');
+
     toggleButton.addEventListener('click', () => {
         const expanded = toggleButton.getAttribute('aria-expanded') === 'true';
-        toggleButton.setAttribute('aria-expanded', String(!expanded));
-        panel.classList.toggle('hidden', expanded);
-
-        if (!expanded && chatSessionId) {
+        if (!expanded) {
+            toggleButton.setAttribute('aria-expanded', 'true');
+            actionsMenu.classList.remove('hidden');
+            panel.classList.add('hidden');
+        } else {
+            toggleButton.setAttribute('aria-expanded', 'false');
+            actionsMenu.classList.add('hidden');
+            panel.classList.remove('hidden');
             trackConversion('open_chat', {
                 event_category: 'chat',
                 event_label: 'Open chat widget',
                 facebook_event: 'OpenChat',
             });
-            loadMessages();
-            startPolling();
-        } else if (!expanded) {
-            trackConversion('open_chat', {
-                event_category: 'chat',
-                event_label: 'Open chat widget',
-                facebook_event: 'OpenChat',
-            });
+            if (chatSessionId) {
+                loadMessages();
+                startPolling();
+            }
         }
     });
 
     closeButton.addEventListener('click', () => {
         toggleButton.setAttribute('aria-expanded', 'false');
+        actionsMenu.classList.add('hidden');
         panel.classList.add('hidden');
     });
 
@@ -811,7 +814,7 @@ if (notificationHeader) {
                 </div>
                 <p class="mt-1 line-clamp-2 text-sm text-slate-500">${escapeNotificationHtml(item.body)}</p>
                 <div class="mt-2 flex flex-wrap gap-2">
-                    <span class="inline-flex rounded-full bg-emerald-50 px-2 py-1 text-xs font-bold uppercase text-emerald-700">${escapeNotificationHtml(item.type)}</span>
+                    <span class="inline-flex rounded-full bg-[#667132]/10 px-2 py-1 text-xs font-bold uppercase text-[#667132]">${escapeNotificationHtml(item.type)}</span>
                     ${item.branch ? `<span class="inline-flex rounded-full bg-amber-50 px-2 py-1 text-xs font-bold text-amber-800">${escapeNotificationHtml(item.branch)}</span>` : ''}
                 </div>
             </a>
@@ -874,7 +877,7 @@ if (adminChatMessages) {
         const html = messages.map((item) => {
             const isAdmin = item.sender === 'admin';
             return `
-                <div class="${isAdmin ? 'ml-auto bg-emerald-700 text-white' : 'bg-slate-100 text-slate-800'} max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-6">
+                <div class="${isAdmin ? 'ml-auto bg-[#667132] text-white' : 'bg-slate-100 text-slate-800'} max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-6">
                     <p class="text-xs font-bold opacity-75">${escapeHtml(item.sender_name)} - ${item.created_at}</p>
                     <p class="mt-1 whitespace-pre-line">${escapeHtml(item.message)}</p>
                 </div>
@@ -907,3 +910,43 @@ if (adminChatMessages) {
     loadAdminChat();
     window.setInterval(loadAdminChat, 5000);
 }
+
+// ── Mobile page transition overlay ──
+(function () {
+    const loader = document.getElementById('page-loader');
+    if (!loader) return;
+
+    const isMobile = () => window.innerWidth < 1024;
+
+    const showLoader = () => {
+        if (isMobile()) loader.classList.add('is-active');
+    };
+
+    document.addEventListener('click', (e) => {
+        const a = e.target.closest('a');
+        if (!a || !isMobile()) return;
+
+        const href = a.getAttribute('href');
+        if (!href) return;
+
+        if (
+            a.target === '_blank' ||
+            href.startsWith('tel:') ||
+            href.startsWith('mailto:') ||
+            (href.startsWith('http') && !href.startsWith(window.location.origin)) ||
+            href.startsWith('#') ||
+            a.hasAttribute('download') ||
+            a.dataset.noLoader
+        ) return;
+
+        const form = a.closest('form');
+        if (form && form.dataset.submitLoading) return;
+
+        showLoader();
+    });
+
+    // Hide after new page finishes loading (covers both fresh nav and back/forward)
+    window.addEventListener('pageshow', () => {
+        loader.classList.remove('is-active');
+    });
+})();

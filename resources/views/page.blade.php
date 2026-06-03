@@ -4,7 +4,7 @@
     <section class="subpage-hero page-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <p class="eyebrow">{{ __('site.page.eyebrow') }}</p>
-            <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ $page->localized('title') }}</h1>
+            <h1 class="mt-4 text-4xl font-semibold text-[#3d4226] sm:text-5xl">{{ $page->localized('title') }}</h1>
             @if ($page->localized('meta_description'))
                 <p class="mt-6 text-lg leading-8 text-stone-700">{{ $page->localized('meta_description') }}</p>
             @endif

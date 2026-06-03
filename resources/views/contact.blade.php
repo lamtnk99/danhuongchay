@@ -8,7 +8,7 @@
     <section class="subpage-hero contact-hero">
         <div class="mx-auto max-w-4xl px-4 py-16 text-center sm:px-6 lg:px-8">
             <p class="eyebrow">{{ __('site.contact.eyebrow') }}</p>
-            <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ __('site.contact.title') }}</h1>
+            <h1 class="mt-4 text-4xl font-semibold text-[#3d4226] sm:text-5xl">{{ __('site.contact.title') }}</h1>
             <p class="mt-6 text-lg leading-8 text-stone-700">{{ __('site.contact.description') }}</p>
         </div>
     </section>
@@ -18,26 +18,26 @@
         <div class="contact-editorial-grid">
             <div class="space-y-6">
                 <div class="contact-panel p-6">
-                    <h2 class="text-2xl font-semibold text-emerald-950">{{ is_english() ? 'Branches' : 'Các cơ sở Đàn Hương Chay' }}</h2>
+                    <h2 class="text-2xl font-semibold text-[#3d4226]">{{ is_english() ? 'Branches' : 'Các cơ sở Đàn Hương Chay' }}</h2>
                     <div class="mt-5 grid gap-4">
                         @forelse ($branches as $branch)
                             <article class="contact-branch-card">
-                                <h3 class="text-lg font-semibold text-emerald-950">{{ $branch->name }}</h3>
+                                <h3 class="text-lg font-semibold text-[#3d4226]">{{ $branch->name }}</h3>
                                 @if ($branch->address)
                                     <p class="mt-2 text-sm leading-6 text-stone-700">{{ $branch->address }}</p>
                                 @endif
                                 <dl class="mt-4 grid gap-2 text-sm text-stone-700">
                                     @if ($branch->hotline)
-                                        <div><dt class="inline font-semibold text-emerald-900">Hotline:</dt> <dd class="inline">{{ $branch->hotline }}</dd></div>
+                                        <div><dt class="inline font-semibold text-[#3d4226]">Hotline:</dt> <dd class="inline">{{ $branch->hotline }}</dd></div>
                                     @endif
                                     @if ($branch->phone && $branch->phone !== $branch->hotline)
-                                        <div><dt class="inline font-semibold text-emerald-900">{{ __('site.contact.phone') }}:</dt> <dd class="inline">{{ $branch->phone }}</dd></div>
+                                        <div><dt class="inline font-semibold text-[#3d4226]">{{ __('site.contact.phone') }}:</dt> <dd class="inline">{{ $branch->phone }}</dd></div>
                                     @endif
                                     @if ($branch->email)
-                                        <div><dt class="inline font-semibold text-emerald-900">Email:</dt> <dd class="inline">{{ $branch->email }}</dd></div>
+                                        <div><dt class="inline font-semibold text-[#3d4226]">Email:</dt> <dd class="inline">{{ $branch->email }}</dd></div>
                                     @endif
                                     @if ($branch->opening_hours)
-                                        <div><dt class="inline font-semibold text-emerald-900">{{ __('site.contact.opening_hours') }}:</dt> <dd class="inline">{{ $branch->opening_hours }}</dd></div>
+                                        <div><dt class="inline font-semibold text-[#3d4226]">{{ __('site.contact.opening_hours') }}:</dt> <dd class="inline">{{ $branch->opening_hours }}</dd></div>
                                     @endif
                                 </dl>
                                 @include('partials.branch-social-actions', ['branch' => $branch])
@@ -84,7 +84,7 @@
             <div class="contact-panel p-6 sm:p-8">
                 @if (session('success'))
                     <span class="sr-only" data-track-view="contact_success" data-track-category="lead" data-track-label="Contact form success" data-facebook-event="Lead"></span>
-                    <div class="mb-6 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-900">{{ session('success') }}</div>
+                    <div class="mb-6 rounded-2xl bg-[#667132]/8 px-4 py-3 text-sm font-medium text-[#3d4226]">{{ session('success') }}</div>
                 @endif
 
                 <form action="{{ localized_route('contact.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_contact" data-track-category="lead" data-track-label="Contact form" data-facebook-event="Lead">

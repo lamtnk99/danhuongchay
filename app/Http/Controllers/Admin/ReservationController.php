@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\ReservationsExport;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Reservation;
@@ -14,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReservationController extends Controller
 {
@@ -38,7 +40,27 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'fromDate', 'toDate', 'status', 'rangeStats', 'todayStats'));
+        $quickFilter = null;
+        if ($selectedDate === now()->toDateString() && !$fromDate && !$toDate) {
+            $quickFilter = 'today';
+        } elseif ($selectedDate === now()->copy()->addDay()->toDateString()) {
+            $quickFilter = 'tomorrow';
+        } elseif ($fromDate === now()->toDateString() && $toDate === now()->copy()->addDays(7)->toDateString()) {
+            $quickFilter = 'week';
+        }
+
+        return view('admin.reservations.index', compact('reservations', 'sections', 'branches', 'selectedDate', 'fromDate', 'toDate', 'status', 'rangeStats', 'todayStats', 'quickFilter'));
+    }
+
+    public function export(Request $request)
+    {
+        [$selectedDate, $fromDate, $toDate] = $this->dateWindow($request);
+        $status = $request->input('status');
+
+        $reservations = $this->filteredReservations($request, $selectedDate, $fromDate, $toDate, $status)
+            ->get();
+
+        return Excel::download(new ReservationsExport($reservations), 'dat-ban-'.now()->format('Y-m-d-His').'.xlsx');
     }
 
     private function dateWindow(Request $request): array

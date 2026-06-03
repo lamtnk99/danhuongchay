@@ -164,9 +164,9 @@
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
             <div>
                 <p class="eyebrow">Vì sao chọn quán</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">Một bữa chay tử tế bắt đầu từ nguyên liệu và sự chú tâm</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">Một bữa chay tử tế bắt đầu từ nguyên liệu và sự chú tâm</h2>
                 <p class="mt-5 leading-8 text-stone-700">Đàn Hương Chay ưu tiên món ăn vừa ngon miệng, vừa nhẹ nhàng cho cơ thể. Mỗi món được nấu để thực khách cảm nhận vị ngọt của rau củ và sự cân bằng trong từng phần ăn.</p>
-                <a href="{{ localized_route('about') }}" class="mt-7 inline-flex font-semibold text-emerald-800 hover:text-emerald-950">Tìm hiểu câu chuyện quán</a>
+                <a href="{{ localized_route('about') }}" class="mt-7 inline-flex font-semibold text-[#667132] hover:text-[#525c27]">Tìm hiểu câu chuyện quán</a>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80')">
@@ -273,9 +273,9 @@
         <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div class="max-w-2xl">
                 <p class="eyebrow">Blog mới nhất</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">Ăn chay, sống xanh và chăm sóc sức khỏe</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">Ăn chay, sống xanh và chăm sóc sức khỏe</h2>
             </div>
-            <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-emerald-800 hover:text-emerald-950">Xem tất cả bài viết</a>
+            <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-[#667132] hover:text-[#525c27]">Xem tất cả bài viết</a>
         </div>
         <div class="mt-10 grid gap-6 md:grid-cols-3">
             @foreach ($latestPosts as $post)

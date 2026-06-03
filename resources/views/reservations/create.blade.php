@@ -21,7 +21,7 @@
             <div class="reservation-luxury-card">
                 @if (session('success'))
                     <span class="sr-only" data-track-view="reservation_success" data-track-category="reservation" data-track-label="Reservation form success" data-facebook-event="SubmitReservation"></span>
-                    <div class="mb-5 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900">
+                    <div class="mb-5 rounded-2xl bg-[#667132]/8 px-4 py-3 text-sm font-semibold text-[#3d4226]">
                         {{ session('success') }}
                     </div>
                 @endif

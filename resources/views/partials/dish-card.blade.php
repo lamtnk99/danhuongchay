@@ -1,6 +1,6 @@
-<article class="dish-card group overflow-hidden rounded-2xl border border-emerald-900/10 bg-white shadow-sm">
+<article class="dish-card group overflow-hidden rounded-2xl border border-[#667132]/10 bg-white shadow-sm">
     <a href="{{ localized_route('menu.show', ['slug' => $dish->localizedSlug()]) }}" class="block" data-track-event="click_dish_card" data-track-category="dish" data-track-label="{{ $dish->localized('name') }}" data-facebook-event="ClickDish">
-        <div class="aspect-[4/3] overflow-hidden bg-emerald-50">
+        <div class="aspect-[4/3] overflow-hidden bg-[#f5f5ec]">
             <img
                 src="{{ media_variant_url($dish->image, 'card') }}"
                 @if (media_srcset($dish->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($dish->image, ['thumb', 'card', 'large']) }}" @endif
@@ -14,9 +14,9 @@
     <div class="p-5">
         <div class="flex items-start justify-between gap-4">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">{{ $dish->category->localized('name') }}</p>
-                <h3 class="mt-2 text-lg font-semibold text-emerald-950">
-                    <a href="{{ localized_route('menu.show', ['slug' => $dish->localizedSlug()]) }}" class="hover:text-emerald-700" data-track-event="click_dish_card" data-track-category="dish" data-track-label="{{ $dish->localized('name') }}" data-facebook-event="ClickDish">{{ $dish->localized('name') }}</a>
+                <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#667132]">{{ $dish->category->localized('name') }}</p>
+                <h3 class="mt-2 text-lg font-semibold text-[#3d4226]">
+                    <a href="{{ localized_route('menu.show', ['slug' => $dish->localizedSlug()]) }}" class="hover:text-[#525c27]" data-track-event="click_dish_card" data-track-category="dish" data-track-label="{{ $dish->localized('name') }}" data-facebook-event="ClickDish">{{ $dish->localized('name') }}</a>
                 </h3>
             </div>
             @if (show_dish_prices())

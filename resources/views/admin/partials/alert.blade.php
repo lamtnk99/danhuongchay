@@ -1,5 +1,5 @@
 @if (session('success'))
-    <div class="mb-5 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+    <div class="mb-5 rounded-2xl border border-[#667132]/20 bg-[#667132]/8 px-4 py-3 text-sm font-semibold text-[#3d4226]">
         {{ session('success') }}
     </div>
 @endif

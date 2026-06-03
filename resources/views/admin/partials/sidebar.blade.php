@@ -41,10 +41,10 @@
         @if ($authUser?->avatar)
             <img src="{{ media_url($authUser->avatar) }}" alt="{{ $authUser->name }}" class="h-10 w-10 rounded-xl object-cover">
         @else
-            <div class="grid h-10 w-10 place-items-center rounded-xl bg-emerald-700 font-bold text-white">{{ $initials ?: 'ĐH' }}</div>
+            <div class="grid h-10 w-10 place-items-center rounded-xl bg-[#667132] font-bold text-white">{{ $initials ?: 'ĐH' }}</div>
         @endif
         <div>
-            <p class="font-bold text-emerald-950">Đàn Hương Chay</p>
+            <p class="font-bold text-[#3d4226]">Đàn Hương Chay</p>
             <p class="text-xs text-slate-500">Admin Panel</p>
         </div>
     </div>
@@ -62,8 +62,8 @@
                 href="{{ route($item['route']) }}"
                 @class([
                     'flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm font-semibold transition',
-                    'bg-emerald-700 text-white shadow-sm' => request()->routeIs($item['active']),
-                    'text-slate-600 hover:bg-emerald-50 hover:text-emerald-800' => ! request()->routeIs($item['active']),
+                    'bg-[#667132] text-white shadow-sm' => request()->routeIs($item['active']),
+                    'text-slate-600 hover:bg-[#667132]/8 hover:text-[#667132]' => ! request()->routeIs($item['active']),
                 ])
             >
                 <span>{{ $item['label'] }}</span>

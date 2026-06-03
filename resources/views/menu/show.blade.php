@@ -15,7 +15,7 @@
     <section class="section-block pt-8">
         <div class="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div class="space-y-4">
-                <div class="overflow-hidden rounded-3xl border border-emerald-900/10 bg-white shadow-xl">
+                <div class="overflow-hidden rounded-3xl border border-[#667132]/10 bg-white shadow-xl">
                     <img
                         src="{{ media_variant_url($dish->image, 'large') }}"
                         @if (media_srcset($dish->image, ['card', 'large', 'hero'])) srcset="{{ media_srcset($dish->image, ['card', 'large', 'hero']) }}" @endif
@@ -29,7 +29,7 @@
                 @if ($displayImages->count() > 1)
                     <div class="grid grid-cols-4 gap-3">
                         @foreach ($displayImages as $image)
-                            <img src="{{ media_variant_url($image, 'thumb') }}" alt="{{ $dishName }} - {{ $loop->iteration }}" class="aspect-square rounded-2xl border border-emerald-900/10 object-cover" loading="lazy">
+                            <img src="{{ media_variant_url($image, 'thumb') }}" alt="{{ $dishName }} - {{ $loop->iteration }}" class="aspect-square rounded-2xl border border-[#667132]/10 object-cover" loading="lazy">
                         @endforeach
                     </div>
                 @endif
@@ -37,7 +37,7 @@
 
             <div>
                 <p class="eyebrow">{{ $dish->category->localized('name') }}</p>
-                <h1 class="mt-4 text-4xl font-semibold text-emerald-950 sm:text-5xl">{{ $dishName }}</h1>
+                <h1 class="mt-4 text-4xl font-semibold text-[#3d4226] sm:text-5xl">{{ $dishName }}</h1>
 
                 <div class="mt-5 flex flex-wrap items-center gap-3">
                     @if (show_dish_prices())
@@ -50,7 +50,7 @@
                         <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase text-amber-800">{{ __('site.dish.sale') }}</span>
                     @endif
                     @if ($dish->is_featured)
-                        <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold uppercase text-emerald-800">{{ __('site.dish.featured') }}</span>
+                        <span class="rounded-full bg-[#667132]/10 px-3 py-1 text-xs font-bold uppercase text-[#3d4226]">{{ __('site.dish.featured') }}</span>
                     @endif
                 </div>
 
@@ -60,8 +60,8 @@
                     <div class="article-content mt-6">{!! $dish->localized('content') !!}</div>
                 @endif
 
-                <div class="mt-8 rounded-2xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h2 class="text-xl font-semibold text-emerald-950">{{ __('site.dish.ingredients') }}</h2>
+                <div class="mt-8 rounded-2xl border border-[#667132]/10 bg-white p-6 shadow-sm">
+                    <h2 class="text-xl font-semibold text-[#3d4226]">{{ __('site.dish.ingredients') }}</h2>
                     <p class="mt-3 leading-8 text-stone-700">{{ $dish->localized('ingredients') }}</p>
                 </div>
             </div>

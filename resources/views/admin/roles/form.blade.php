@@ -35,10 +35,10 @@
     <div class="grid gap-4 xl:grid-cols-2">
         @foreach ($permissionGroups as $group)
             <section class="rounded-2xl border border-slate-200 bg-white p-4">
-                <h3 class="mb-3 font-bold text-emerald-950">{{ $group['label'] }}</h3>
+                <h3 class="mb-3 font-bold text-[#3d4226]">{{ $group['label'] }}</h3>
                 <div class="grid gap-2 sm:grid-cols-2">
                     @foreach ($group['permissions'] as $permission)
-                        <label class="flex items-start gap-2 rounded-xl border border-slate-100 p-3 text-sm hover:bg-emerald-50">
+                        <label class="flex items-start gap-2 rounded-xl border border-slate-100 p-3 text-sm hover:bg-[#667132]/8">
                             <input
                                 type="checkbox"
                                 name="permissions[]"

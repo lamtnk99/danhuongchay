@@ -33,7 +33,7 @@
                             @if ($user->avatar)
                                 <img src="{{ media_url($user->avatar) }}" alt="{{ $user->name }}" class="h-12 w-12 rounded-full object-cover">
                             @else
-                                <div class="grid h-12 w-12 place-items-center rounded-full bg-emerald-100 font-bold text-emerald-800">{{ mb_substr($user->name, 0, 1) }}</div>
+                                <div class="grid h-12 w-12 place-items-center rounded-full bg-[#667132]/10 font-bold text-[#667132]">{{ mb_substr($user->name, 0, 1) }}</div>
                             @endif
                         </td>
                         <td class="font-semibold">{{ $user->name }}</td>

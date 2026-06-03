@@ -8,7 +8,7 @@
                     @endif
 
                     @if (!empty($item['url']) && !$loop->last)
-                        <a href="{{ $item['url'] }}" class="hover:text-emerald-800">{{ $item['label'] }}</a>
+                        <a href="{{ $item['url'] }}" class="hover:text-[#667132]">{{ $item['label'] }}</a>
                     @else
                         <span class="font-medium text-stone-700">{{ $item['label'] }}</span>
                     @endif

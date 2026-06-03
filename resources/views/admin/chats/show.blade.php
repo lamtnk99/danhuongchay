@@ -37,7 +37,7 @@
                 @foreach ($chat->messages as $message)
                     <div @class([
                         'max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-6',
-                        'ml-auto bg-emerald-700 text-white' => $message->sender === 'admin',
+                        'ml-auto bg-[#667132] text-white' => $message->sender === 'admin',
                         'bg-slate-100 text-slate-800' => $message->sender !== 'admin',
                     ])>
                         <p class="text-xs font-bold opacity-75">{{ $message->sender_name ?: $message->sender }} - {{ $message->created_at->format('H:i') }}</p>

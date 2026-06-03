@@ -6,7 +6,7 @@
     <article class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
         <div class="text-center">
             <p class="eyebrow">{{ $post->category->localized('name') }}</p>
-            <h1 class="mt-4 text-4xl font-semibold leading-tight text-emerald-950 sm:text-5xl">{{ $post->localized('title') }}</h1>
+            <h1 class="mt-4 text-4xl font-semibold leading-tight text-[#3d4226] sm:text-5xl">{{ $post->localized('title') }}</h1>
             <time class="mt-5 block text-sm font-medium text-stone-500" datetime="{{ $post->published_at->toDateString() }}">
                 {{ $post->published_at->format('d/m/Y') }}
             </time>

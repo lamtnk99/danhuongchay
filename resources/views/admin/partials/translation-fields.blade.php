@@ -4,11 +4,11 @@
     $errorPrefix = "translations.{$locale}";
 @endphp
 
-<div class="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-4 text-sm text-emerald-900">
+<div class="rounded-2xl border border-[#667132]/20 bg-[#667132]/8 p-4 text-sm text-[#3d4226]">
     <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
             <p class="font-semibold">Bản dịch English</p>
-            <p class="mt-1 text-emerald-800/80">Điền nội dung tiếng Anh để frontend `/en` hiển thị chuẩn SEO. Có thể copy bản tiếng Việt rồi chỉnh lại.</p>
+            <p class="mt-1 text-[#667132]/70">Điền nội dung tiếng Anh để frontend `/en` hiển thị chuẩn SEO. Có thể copy bản tiếng Việt rồi chỉnh lại.</p>
         </div>
         <div class="flex flex-wrap gap-2">
             <button type="button" class="admin-btn-mini" data-deepl-translate data-deepl-url="{{ route('admin.translations.translate') }}">Dịch tự động</button>

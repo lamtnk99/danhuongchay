@@ -50,7 +50,7 @@
                         <td>{{ $dish->category?->name }}</td>
                         <td>
                             @if ($dish->sale_price)
-                                <span class="font-semibold text-emerald-800">{{ number_format($dish->sale_price, 0, ',', '.') }}đ</span>
+                                <span class="font-semibold text-[#667132]">{{ number_format($dish->sale_price, 0, ',', '.') }}đ</span>
                                 <span class="block text-xs text-slate-400 line-through">{{ number_format($dish->price, 0, ',', '.') }}đ</span>
                             @else
                                 {{ number_format($dish->price, 0, ',', '.') }}đ

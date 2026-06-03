@@ -18,6 +18,7 @@
 <body class="public-site min-h-screen bg-[#fbfaf5] font-sans text-stone-800 antialiased">
     <a href="#main-content" class="skip-link">{{ __('site.skip') }}</a>
 
+    @include('partials.mobile-page-loader')
     @include('partials.header')
 
     <main id="main-content">

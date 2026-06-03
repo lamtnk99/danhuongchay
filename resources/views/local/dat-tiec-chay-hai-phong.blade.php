@@ -16,14 +16,14 @@
             fetchpriority="high"
             sizes="100vw"
         >
-        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-emerald-950/92 via-emerald-950/72 to-amber-900/35"></div>
+        <div class="absolute inset-0 -z-10 bg-gradient-to-r from-[#3d4226]/92 via-[#3d4226]/72 to-amber-900/35"></div>
         <div class="mx-auto grid min-h-[70vh] max-w-7xl gap-10 px-4 py-20 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:px-8">
             <div>
                 <p class="eyebrow text-amber-100">{{ is_english() ? 'Vegetarian catering in Hai Phong' : 'Đặt tiệc chay Hải Phòng' }}</p>
                 <h1 class="mt-5 max-w-3xl text-4xl font-semibold leading-tight sm:text-5xl lg:text-6xl">
                     {{ is_english() ? 'Thoughtful vegetarian catering and feast trays with gentle flavors' : 'Đặt tiệc chay và mâm cúng chay chỉn chu, nhẹ vị, trang trọng' }}
                 </h1>
-                <p class="mt-6 max-w-2xl text-lg leading-8 text-emerald-50/90">
+                <p class="mt-6 max-w-2xl text-lg leading-8 text-[#f5f0e0]/90">
                     {{ is_english() ? 'Dan Huong Chay suggests menus by group size, taste and occasion: family gatherings, guest meals, birthdays, ceremonies or vegetarian tables that need extra care.' : 'Đàn Hương Chay tư vấn thực đơn theo số người, khẩu vị và mục đích sử dụng: tiệc gia đình, tiếp khách, sinh nhật, lễ cúng hoặc những bữa chay cần chuẩn bị kỹ hơn.' }}
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
@@ -36,7 +36,7 @@
                 <p class="text-sm font-semibold uppercase tracking-[0.22em] text-amber-100">{{ is_english() ? 'Best for' : 'Phù hợp cho' }}</p>
                 <div class="mt-5 grid gap-3">
                     @foreach ($fitItems as $item)
-                        <div class="rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-emerald-50">{{ $item }}</div>
+                        <div class="rounded-2xl bg-white/12 px-4 py-3 text-sm font-semibold text-[#f5f0e0]">{{ $item }}</div>
                     @endforeach
                 </div>
             </div>
@@ -60,26 +60,26 @@
         <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <div>
                 <p class="eyebrow">{{ is_english() ? 'How we advise' : 'Cách quán tư vấn' }}</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'It is not about ordering more dishes, but the right dishes' : 'Không cần gọi thật nhiều món, cần gọi đúng món' }}</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'It is not about ordering more dishes, but the right dishes' : 'Không cần gọi thật nhiều món, cần gọi đúng món' }}</h2>
                 <p class="mt-5 leading-8 text-stone-700">
                     {{ is_english() ? 'A beautiful vegetarian tray or catering table is about balance: main dishes, soup or hotpot, rolls or starters, vegetables and mushrooms, plus light drinks or dessert. We suggest by guest count and mealtime to avoid too much, too little or repeated flavors.' : 'Một mâm chay hoặc tiệc chay đẹp nằm ở sự cân đối: có món chính, món canh/lẩu, món cuốn hoặc khai vị, món rau/nấm và phần đồ uống hoặc tráng miệng nhẹ. Quán sẽ tư vấn theo số khách và thời gian dùng bữa để tránh thừa, thiếu hoặc món bị trùng vị.' }}
                 </p>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Neat and respectful' : 'Gọn và trang trọng' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-[#f5f5ec] p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Neat and respectful' : 'Gọn và trang trọng' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Clear dish layout and balanced colors, suitable for ceremonial trays or family tables.' : 'Bố cục món rõ ràng, màu sắc hài hòa, phù hợp mâm cúng hoặc bàn tiệc gia đình.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Easy to enjoy' : 'Dễ ăn cho nhiều người' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-[#f5f5ec] p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Easy to enjoy' : 'Dễ ăn cho nhiều người' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Gentle seasoning, not too oily, suitable even for guests new to vegetarian food.' : 'Ưu tiên vị thanh, không quá nặng dầu, phù hợp cả người mới ăn chay.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Sized for your group' : 'Tư vấn theo số khách' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-[#f5f5ec] p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Sized for your group' : 'Tư vấn theo số khách' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Dish quantities can be suggested for 2-4 guests, 5-8 guests or larger groups.' : 'Gợi ý số lượng món theo 2-4 người, 5-8 người hoặc nhóm đông hơn.' }}</p>
                 </article>
-                <article class="rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm">
-                    <h3 class="text-xl font-semibold text-emerald-950">{{ is_english() ? 'Book ahead' : 'Đặt trước để chuẩn bị tốt' }}</h3>
+                <article class="rounded-3xl border border-[#667132]/10 bg-[#f5f5ec] p-6 shadow-sm">
+                    <h3 class="text-xl font-semibold text-[#3d4226]">{{ is_english() ? 'Book ahead' : 'Đặt trước để chuẩn bị tốt' }}</h3>
                     <p class="mt-3 leading-7 text-stone-700">{{ is_english() ? 'Catering and ceremonial trays should be requested early so ingredients and kitchen timing can be arranged well.' : 'Tiệc và mâm cúng nên báo trước để quán chủ động nguyên liệu và thời gian bếp.' }}</p>
                 </article>
             </div>
@@ -101,12 +101,12 @@
         </section>
     @endif
 
-    <section class="bg-emerald-950 text-white">
+    <section class="bg-[#3d4226] text-white">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center lg:px-8">
             <div>
                 <p class="eyebrow text-amber-100">{{ is_english() ? 'Send a request' : 'Gửi yêu cầu' }}</p>
                 <h2 class="mt-3 text-3xl font-semibold sm:text-4xl">{{ is_english() ? 'Tell us your group size and occasion' : 'Cho quán biết số người và dịp dùng bữa' }}</h2>
-                <p class="mt-5 leading-8 text-emerald-50/80">
+                <p class="mt-5 leading-8 text-[#f5f0e0]/80">
                     {{ is_english() ? 'You can book a table and note “vegetarian catering” or “vegetarian feast tray”. The restaurant will contact you to confirm the details.' : 'Bạn có thể đặt bàn trước rồi ghi chú “đặt tiệc chay” hoặc “mâm cúng chay”. Quán sẽ liên hệ lại để xác nhận chi tiết.' }}
                 </p>
                 <div class="mt-7 flex flex-wrap gap-3">
@@ -126,12 +126,12 @@
         <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
             <div>
                 <p class="eyebrow">{{ is_english() ? 'Questions' : 'Câu hỏi thường gặp' }}</p>
-                <h2 class="mt-3 text-3xl font-semibold text-emerald-950 sm:text-4xl">{{ is_english() ? 'Questions about vegetarian catering and feast trays' : 'Câu hỏi về đặt tiệc và mâm cúng chay' }}</h2>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'Questions about vegetarian catering and feast trays' : 'Câu hỏi về đặt tiệc và mâm cúng chay' }}</h2>
             </div>
             <div class="space-y-4">
                 @foreach ($faqs as $faq)
-                    <details class="group rounded-3xl border border-emerald-900/10 bg-white p-6 shadow-sm" @if ($loop->first) open @endif>
-                        <summary class="cursor-pointer list-none text-lg font-semibold text-emerald-950">{{ $faq['question'] }}</summary>
+                    <details class="group rounded-3xl border border-[#667132]/10 bg-[#f5f5ec] p-6 shadow-sm" @if ($loop->first) open @endif>
+                        <summary class="cursor-pointer list-none text-lg font-semibold text-[#3d4226]">{{ $faq['question'] }}</summary>
                         <p class="mt-4 leading-8 text-stone-700">{{ $faq['answer'] }}</p>
                     </details>
                 @endforeach

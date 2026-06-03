@@ -112,6 +112,9 @@ Route::prefix('admin')
             ->middlewareFor(['create', 'store'], 'permission:gallery.create')
             ->middlewareFor(['edit', 'update'], 'permission:gallery.update')
             ->middlewareFor(['destroy'], 'permission:gallery.delete');
+        Route::get('/reservations/export', [AdminReservationController::class, 'export'])
+            ->middleware('permission:reservations.view')
+            ->name('reservations.export');
         Route::resource('reservations', AdminReservationController::class)->only(['index', 'show', 'update', 'destroy'])
             ->middlewareFor(['index', 'show'], 'permission:reservations.view')
             ->middlewareFor(['update'], 'permission:reservations.update')
