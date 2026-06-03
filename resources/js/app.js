@@ -1,3 +1,12 @@
+const isGalleryPage = document.body.classList.contains('page-gallery');
+
+if (isGalleryPage) {
+    const loader = document.querySelector('#page-loader');
+    if (loader) {
+        loader.remove();
+    }
+}
+
 const toggle = document.querySelector('.mobile-nav-toggle');
 const mobileNav = document.querySelector('#mobile-nav');
 
@@ -305,7 +314,7 @@ document.querySelectorAll('form[data-submit-loading]').forEach((form) => {
     });
 });
 
-const revealTargets = document.querySelectorAll('.section-block, .dish-card, .promo-card, .reason-card, .commitment-card, .home-gallery-card, .gallery-tile, .about-gallery-card, article.group');
+const revealTargets = document.querySelectorAll('.dish-card, .promo-card, .reason-card, .commitment-card, .home-gallery-card, .about-gallery-card, article.group');
 
 if ('IntersectionObserver' in window) {
     revealTargets.forEach((target) => target.classList.add('reveal-ready'));
