@@ -336,6 +336,30 @@ php artisan app:check-storage --write
 
 Admin có thể dán Google Analytics, Google Search Console verification và Facebook Pixel trong `/admin/seo`.
 
+**Mã đo lường GA4:** `G-3LBKHRGJRW`
+
+Để thêm hoặc cập nhật mã GA4:
+
+```bash
+# Chạy lại seeder để cập nhật setting mới
+php artisan db:seed --class=SiteSettingSeeder
+```
+
+Hoặc cập nhật trực tiếp trong database:
+
+```sql
+UPDATE site_settings 
+SET value = '<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YOUR_ID"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag(\'js\', new Date());
+  gtag(\'config\', \'G-YOUR_ID\');
+</script>'
+WHERE \`key\` = 'google_analytics_code';
+```
+
 Frontend tự gửi event nếu `gtag` hoặc `fbq` tồn tại.
 
 Một số event:

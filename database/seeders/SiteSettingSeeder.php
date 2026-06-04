@@ -34,7 +34,16 @@ class SiteSettingSeeder extends Seeder
             ['key' => 'default_meta_title', 'value' => 'Đàn Hương Chay - Hải Phòng | Ẩm thực chay fusion', 'group' => 'seo'],
             ['key' => 'default_meta_description', 'value' => 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với menu sáng tạo, nguyên liệu sạch, không gian an yên và dịch vụ đặt bàn tiện lợi.', 'group' => 'seo'],
             ['key' => 'default_meta_keywords', 'value' => 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy, ẩm thực chay fusion', 'group' => 'seo'],
-            ['key' => 'robots_txt_content', 'value' => "User-agent: *\nAllow: /\nSitemap: ".url('/sitemap.xml')."\n", 'group' => 'seo'],
+            ['key' => 'google_analytics_code', 'value' => '<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3LBKHRGJRW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag(\'js\', new Date());
+  gtag(\'config\', \'G-3LBKHRGJRW\');
+</script>', 'group' => 'seo'],
+            ['key' => 'google_search_console', 'value' => null, 'group' => 'seo'],
+            ['key' => 'facebook_pixel_code', 'value' => null, 'group' => 'seo'],
             ['key' => 'schema_restaurant_name', 'value' => 'Đàn Hương Chay', 'group' => 'seo'],
             ['key' => 'schema_address', 'value' => 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng', 'group' => 'seo'],
             ['key' => 'schema_phone', 'value' => '+84 947 361 515', 'group' => 'seo'],

@@ -45,4 +45,9 @@ return [
         'verify_ssl' => env('MICROSOFT_TRANSLATOR_VERIFY_SSL', true),
     ],
 
+    'google' => [
+        'analytics_id' => env('GA_MEASUREMENT_ID'),
+        'site_verification' => env('GOOGLE_SITE_VERIFICATION'),
+    ],
+
 ];

@@ -64,7 +64,9 @@ class BlogController extends Controller
             $post->localized('meta_keywords') ?: "{$post->localized('title')}, vegetarian restaurant Hai Phong, Dan Huong Chay",
             localized_route('blog.show', ['slug' => $post->localizedSlug()]),
             $post->thumbnail,
-            'article'
+            'article',
+            $post->localized('title'),
+            SeoService::routeAlternates('blog.show', ['post' => $post])
         );
 
         $schemas = [

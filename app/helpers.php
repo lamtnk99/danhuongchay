@@ -125,10 +125,6 @@ if (! function_exists('is_english')) {
 if (! function_exists('localized_route')) {
     function localized_route(string $name, mixed $parameters = [], bool $absolute = true): string
     {
-        if (is_english() && \Illuminate\Support\Facades\Route::has("localized.{$name}")) {
-            return route("localized.{$name}", $parameters, $absolute);
-        }
-
         if (is_array($parameters) && isset($parameters['slug'])) {
             $parameterNames = [
                 'menu.show' => 'dish',
@@ -137,8 +133,22 @@ if (! function_exists('localized_route')) {
             ];
 
             if (isset($parameterNames[$name])) {
-                $parameters = [$parameterNames[$name] => $parameters['slug']];
+                $englishParameterNames = [
+                    'menu.show' => 'slug',
+                    'blog.show' => 'slug',
+                    'pages.show' => 'page',
+                ];
+
+                $parameterName = is_english()
+                    ? ($englishParameterNames[$name] ?? $parameterNames[$name])
+                    : $parameterNames[$name];
+
+                $parameters = [$parameterName => $parameters['slug']];
             }
+        }
+
+        if (is_english() && \Illuminate\Support\Facades\Route::has("localized.{$name}")) {
+            return route("localized.{$name}", $parameters, $absolute);
         }
 
         return route($name, $parameters, $absolute);

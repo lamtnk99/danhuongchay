@@ -39,8 +39,14 @@ class PageController extends Controller
             $page?->image
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => $page?->localized('title') ?: __('site.about.fallback_title')],
+        ];
+
         $schemas = [
             SeoService::restaurantSchema(),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('about', compact('seo', 'schemas', 'page', 'galleryImages', 'branches'));
@@ -63,11 +69,20 @@ class PageController extends Controller
             $page->localized('meta_description'),
             $page->localized('meta_keywords') ?: "{$page->localized('title')}, Dan Huong Chay",
             localized_route('pages.show', ['slug' => $page->localizedSlug()]),
-            $page->image
+            $page->image,
+            'website',
+            $page->localized('title'),
+            SeoService::routeAlternates('pages.show', ['page' => $page])
         );
+
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => $page->localized('title')],
+        ];
 
         $schemas = [
             SeoService::restaurantSchema(),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('page', compact('page', 'seo', 'schemas'));

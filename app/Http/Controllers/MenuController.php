@@ -102,7 +102,9 @@ class MenuController extends Controller
             $dish->localized('meta_keywords') ?: "{$dish->localized('name')}, vegetarian restaurant Hai Phong, Dan Huong Chay",
             localized_route('menu.show', ['slug' => $dish->localizedSlug()]),
             $dish->image,
-            'article'
+            'article',
+            $dish->localized('name'),
+            SeoService::routeAlternates('menu.show', ['dish' => $dish])
         );
 
         $schemas = [

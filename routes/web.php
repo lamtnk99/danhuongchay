@@ -170,7 +170,7 @@ Route::post('/chat/{chatSession}/messages', [ChatController::class, 'send'])->na
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', function () {
-    $content = setting('robots_txt_content') ?: "User-agent: *\nAllow: /\nSitemap: ".route('sitemap')."\n";
+    $content = setting('robots_txt_content') ?: "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nSitemap: ".route('sitemap')."\n";
 
     return response(
         $content,

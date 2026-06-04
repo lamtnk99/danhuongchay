@@ -445,6 +445,145 @@ class ExampleTest extends TestCase
         $this->assertSame([], $violations);
     }
 
+    public function test_public_pages_render_core_seo_meta_and_hreflang(): void
+    {
+        $this->get(route('menu.index'))
+            ->assertOk()
+            ->assertSee('<title>', false)
+            ->assertSee('<meta name="description"', false)
+            ->assertSee('<link rel="canonical" href="'.route('menu.index').'">', false)
+            ->assertSee('<link rel="alternate" hreflang="vi" href="'.route('menu.index').'">', false)
+            ->assertSee('<link rel="alternate" hreflang="en" href="'.route('localized.menu.index').'">', false)
+            ->assertSee('<meta property="og:title"', false)
+            ->assertSee('<meta property="og:image:alt"', false)
+            ->assertSee('<meta name="twitter:image:alt"', false);
+
+        $this->get(route('localized.menu.index'))
+            ->assertOk()
+            ->assertSee('<link rel="canonical" href="'.route('localized.menu.index').'">', false)
+            ->assertSee('<link rel="alternate" hreflang="vi" href="'.route('menu.index').'">', false);
+    }
+
+    public function test_detail_pages_render_locale_aware_alternates(): void
+    {
+        $dish = Dish::with('translations')->firstOrFail();
+        $post = Post::published()->with('translations')->firstOrFail();
+
+        $this->get(route('menu.show', $dish))
+            ->assertOk()
+            ->assertSee('<link rel="alternate" hreflang="en" href="'.route('localized.menu.show', ['slug' => $dish->localizedSlug('en')]).'">', false);
+
+        $this->get(route('blog.show', $post))
+            ->assertOk()
+            ->assertSee('<link rel="alternate" hreflang="en" href="'.route('localized.blog.show', ['slug' => $post->localizedSlug('en')]).'">', false)
+            ->assertSee('"@type": "BreadcrumbList"', false);
+    }
+
+    public function test_sitemap_contains_public_localized_urls_and_excludes_private_or_filter_urls(): void
+    {
+        $dish = Dish::with('translations')->firstOrFail();
+        $post = Post::published()->with('translations')->firstOrFail();
+
+        $this->get(route('sitemap'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'application/xml')
+            ->assertSee('xmlns:xhtml="http://www.w3.org/1999/xhtml"', false)
+            ->assertSee(route('home'), false)
+            ->assertSee(route('localized.home'), false)
+            ->assertSee(route('localized.menu.index'), false)
+            ->assertSee(route('localized.menu.show', ['slug' => $dish->localizedSlug('en')]), false)
+            ->assertSee(route('localized.blog.show', ['slug' => $post->localizedSlug('en')]), false)
+            ->assertDontSee('/admin', false)
+            ->assertDontSee('/login', false)
+            ->assertDontSee('?category=', false);
+    }
+
+    public function test_robots_fallback_points_to_sitemap_and_blocks_private_paths(): void
+    {
+        SiteSetting::where('key', 'robots_txt_content')->delete();
+
+        $this->get(route('robots'))
+            ->assertOk()
+            ->assertSee('User-agent: *')
+            ->assertSee('Allow: /')
+            ->assertSee('Disallow: /admin')
+            ->assertSee('Disallow: /login')
+            ->assertSee('Sitemap: '.route('sitemap'));
+    }
+
+    public function test_restaurant_schema_is_multi_branch_and_dish_schema_has_product_offer(): void
+    {
+        $dish = Dish::with(['category.translations', 'translations'])->firstOrFail();
+        $branch = Branch::firstOrFail();
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('"@graph"', false)
+            ->assertSee('"LocalBusiness"', false)
+            ->assertSee($branch->name, false);
+
+        $this->get(route('menu.show', $dish))
+            ->assertOk()
+            ->assertSee('"@type": "MenuItem"', false)
+            ->assertSee('"@type": "Product"', false)
+            ->assertSee('"@type": "Offer"', false)
+            ->assertSee('"@type": "BreadcrumbList"', false);
+    }
+
+    public function test_google_tracking_uses_admin_settings_before_env_fallback(): void
+    {
+        config([
+            'services.google.analytics_id' => 'G-FALLBACK123',
+            'services.google.site_verification' => 'fallback-verification-token',
+        ]);
+
+        SiteSetting::set('google_analytics_code', null, 'text', 'seo');
+        SiteSetting::set('google_search_console', null, 'text', 'seo');
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('gtag/js?id=G-FALLBACK123', false)
+            ->assertSee('content="fallback-verification-token"', false);
+
+        SiteSetting::set('google_analytics_code', '<script>window.adminGa = true;</script>', 'text', 'seo');
+        SiteSetting::set('google_search_console', '<meta name="google-site-verification" content="admin-token">', 'text', 'seo');
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('window.adminGa = true;', false)
+            ->assertSee('content="admin-token"', false)
+            ->assertDontSee('G-FALLBACK123', false)
+            ->assertDontSee('fallback-verification-token', false);
+    }
+
+    public function test_public_pages_keep_a_single_h1(): void
+    {
+        $dish = Dish::firstOrFail();
+        $post = Post::published()->firstOrFail();
+
+        foreach ([
+            route('home'),
+            route('about'),
+            route('gallery.index'),
+            route('menu.index'),
+            route('menu.show', $dish),
+            route('blog.index'),
+            route('blog.show', $post),
+            route('reservations.create'),
+            route('contact'),
+            route('local.vegetarian-restaurant-hai-phong'),
+            route('local.vegetarian-catering-hai-phong'),
+            route('localized.home'),
+            route('localized.menu.index'),
+            route('localized.reservations.create'),
+        ] as $url) {
+            $html = $this->get($url)->assertOk()->getContent();
+            preg_match_all('/<h1\b/i', $html, $matches);
+
+            $this->assertCount(1, $matches[0], "Expected exactly one H1 on {$url}.");
+        }
+    }
+
     public function test_reservation_still_succeeds_when_mail_fails(): void
     {
         $branch = Branch::firstOrFail();

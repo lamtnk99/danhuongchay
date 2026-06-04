@@ -24,8 +24,14 @@ class LocalSeoController extends Controller
             localized_route('local.vegetarian-catering')
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.auto.auto_ed75d636940b'), 'url' => localized_route('local.vegetarian-catering')],
+        ];
+
         $schemas = [
             SeoService::restaurantSchema(),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('local.dat-tiec-chay', compact('branches', 'seo', 'schemas'));
@@ -59,9 +65,15 @@ class LocalSeoController extends Controller
             localized_route('local.vegetarian-restaurant-hai-phong')
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.auto.auto_9b8af8176082'), 'url' => localized_route('local.vegetarian-restaurant-hai-phong')],
+        ];
+
         $schemas = [
-            SeoService::restaurantSchema(),
+            SeoService::restaurantSchema($branch),
             SeoService::faqSchema($faqs),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('local.quan-chay-hai-phong', compact('branch', 'featuredDishes', 'latestPosts', 'faqs', 'seo', 'schemas'));
@@ -88,9 +100,15 @@ class LocalSeoController extends Controller
             localized_route('local.vegetarian-catering-hai-phong')
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.auto.auto_2b5073fadb8f'), 'url' => localized_route('local.vegetarian-catering-hai-phong')],
+        ];
+
         $schemas = [
-            SeoService::restaurantSchema(),
+            SeoService::restaurantSchema($branch),
             SeoService::faqSchema($faqs),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('local.dat-tiec-chay-hai-phong', compact('branch', 'suggestedDishes', 'faqs', 'seo', 'schemas'));
@@ -124,9 +142,15 @@ class LocalSeoController extends Controller
             $branch?->image
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.auto.auto_e9e82c322a92'), 'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot')],
+        ];
+
         $schemas = [
-            SeoService::restaurantSchema(),
+            SeoService::restaurantSchema($branch),
             SeoService::faqSchema($faqs),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('local.quan-chay-buon-ma-thuot', compact('branch', 'featuredDishes', 'latestPosts', 'faqs', 'seo', 'schemas'));
@@ -154,9 +178,15 @@ class LocalSeoController extends Controller
             $branch?->image
         );
 
+        $breadcrumbs = [
+            ['label' => __('site.nav.home'), 'url' => localized_route('home')],
+            ['label' => __('site.auto.auto_be2fcf7a242c'), 'url' => localized_route('local.vegetarian-catering-buon-ma-thuot')],
+        ];
+
         $schemas = [
-            SeoService::restaurantSchema(),
+            SeoService::restaurantSchema($branch),
             SeoService::faqSchema($faqs),
+            SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
         return view('local.dat-tiec-chay-buon-ma-thuot', compact('branch', 'suggestedDishes', 'faqs', 'seo', 'schemas'));
