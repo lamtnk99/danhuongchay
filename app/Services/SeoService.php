@@ -24,9 +24,9 @@ class SeoService
         string $type = 'website'
     ): array {
         return [
-            'title' => $title ?: (is_english() ? 'Dan Huong Chay - Hai Phong | Vegetarian fusion kitchen' : setting('default_meta_title', 'Đàn Hương Chay - Hải Phòng | Ẩm thực chay fusion')),
-            'description' => $description ?: (is_english() ? 'Dan Huong Chay serves vegetarian fusion cuisine in Hai Phong with creative dishes, clean ingredients, a peaceful space and easy table booking.' : setting('default_meta_description', 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với menu sáng tạo, nguyên liệu sạch, không gian an yên và dịch vụ đặt bàn tiện lợi.')),
-            'keywords' => $keywords ?: (is_english() ? 'vegetarian restaurant Hai Phong, vegetarian food, vegan food Hai Phong, vegetarian menu, Dan Huong Chay' : setting('default_meta_keywords', 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy, ẩm thực chay fusion')),
+            'title' => $title ?: localized_setting('default_meta_title', __('site.seo_fallback.default_title')),
+            'description' => $description ?: localized_setting('default_meta_description', __('site.seo_fallback.default_description')),
+            'keywords' => $keywords ?: localized_setting('default_meta_keywords', __('site.seo_fallback.default_keywords')),
             'canonical' => $canonical ?: url()->current(),
             'image' => media_url($image, self::defaultImage()),
             'type' => $type,
@@ -81,7 +81,7 @@ class SeoService
         return [
             '@context' => 'https://schema.org',
             '@type' => 'Menu',
-            'name' => is_english() ? 'Dan Huong Chay Menu' : 'Thực đơn Đàn Hương Chay',
+            'name' => __('site.seo_fallback.menu_schema_name'),
             'url' => localized_route('menu.index'),
             'hasMenuSection' => $categories->map(function (Category $category): array {
                 return [
@@ -148,12 +148,12 @@ class SeoService
             'dateModified' => $post->updated_at->toAtomString(),
             'author' => [
                 '@type' => 'Organization',
-                'name' => 'Đàn Hương Chay',
+                'name' => __('site.email.customer_reservation.brand'),
                 'url' => localized_route('home'),
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => 'Đàn Hương Chay',
+                'name' => __('site.email.customer_reservation.brand'),
                 'logo' => [
                     '@type' => 'ImageObject',
                     'url' => self::defaultImage(),

@@ -32,9 +32,9 @@ class PageController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            $page?->localized('meta_title') ?: (is_english() ? 'About Dan Huong Chay | Vegetarian restaurant in Hai Phong' : 'Giới thiệu quán chay Hải Phòng | Câu chuyện Đàn Hương Chay'),
-            $page?->localized('meta_description') ?: (is_english() ? 'Learn about Dan Huong Chay, our vegetarian fusion philosophy, peaceful restaurant space and commitment to clean ingredients in Hai Phong.' : 'Tìm hiểu câu chuyện thương hiệu Đàn Hương Chay, triết lý ẩm thực chay fusion, không gian quán và cam kết nguyên liệu sạch tại Hải Phòng.'),
-            $page?->localized('meta_keywords') ?: (is_english() ? 'about Dan Huong Chay, vegetarian restaurant Hai Phong, vegetarian fusion cuisine' : 'giới thiệu quán chay Hải Phòng, nhà hàng chay Hải Phòng, triết lý ăn chay, ẩm thực chay fusion, Đàn Hương Chay'),
+            $page?->localized('meta_title') ?: (__('site.auto.auto_9b3bebffdbd8')),
+            $page?->localized('meta_description') ?: (__('site.auto.auto_9f82ed8d864b')),
+            $page?->localized('meta_keywords') ?: (__('site.auto.auto_ed5a3cf0da43')),
             localized_route('about'),
             $page?->image
         );

@@ -79,7 +79,7 @@
         </div>
 
         <div class="mobile-header-actions lg:hidden">
-            <div class="mobile-language-switcher" aria-label="{{ is_english() ? 'Language' : 'Ngôn ngữ' }}">
+            <div class="mobile-language-switcher" aria-label="{{ __('site.auto.auto_b24285834f1c') }}">
                 @foreach ($languageLinks as $locale => $url)
                     <a href="{{ $url }}" @class(['is-active' => current_locale() === $locale])>{{ strtoupper($locale) }}</a>
                 @endforeach

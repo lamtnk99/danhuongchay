@@ -14,13 +14,13 @@
             <section class="rounded-[2rem] bg-stone-50 p-5 ring-1 ring-[#667132]/10 sm:p-8">
                 <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
                     <div class="max-w-3xl">
-                        <p class="eyebrow">{{ $branch->city ?: (is_english() ? 'Branch' : 'Cơ sở') }}</p>
+                        <p class="eyebrow">{{ $branch->city ?: __('site.gallery.branch') }}</p>
                         <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ $branch->name }}</h2>
                         @if ($branch->description || $branch->address)
                             <p class="mt-4 leading-8 text-stone-700">{{ $branch->description ?: $branch->address }}</p>
                         @endif
                     </div>
-                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-primary self-start md:self-auto">{{ is_english() ? 'Book this branch' : 'Đặt bàn tại đây' }}</a>
+                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-primary self-start md:self-auto">{{ __('site.gallery.book_branch') }}</a>
                 </div>
 
                 @if ($branch->galleryImages->isNotEmpty())
@@ -44,18 +44,18 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="mt-8 rounded-2xl bg-white p-5 text-stone-600">{{ is_english() ? 'Space photos for this branch are being updated.' : 'Ảnh không gian của cơ sở này đang được cập nhật.' }}</p>
+                    <p class="mt-8 rounded-2xl bg-white p-5 text-stone-600">{{ __('site.gallery.branch_photos_updating') }}</p>
                 @endif
             </section>
         @empty
-            <p class="text-center text-stone-600">{{ is_english() ? 'No branch space is currently displayed.' : 'Chưa có không gian cơ sở hiển thị.' }}</p>
+            <p class="text-center text-stone-600">{{ __('site.gallery.empty_branches') }}</p>
         @endforelse
 
         @if ($sharedImages->isNotEmpty())
             <section>
                 <div class="mb-8">
-                    <p class="eyebrow">{{ is_english() ? 'Shared moments' : 'Khoảnh khắc chung' }}</p>
-                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226]">{{ is_english() ? 'Dan Huong Chay details' : 'Những góc nhỏ Đàn Hương Chay' }}</h2>
+                    <p class="eyebrow">{{ __('site.gallery.shared_moments') }}</p>
+                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226]">{{ __('site.gallery.details_title') }}</h2>
                 </div>
                 <div class="gallery-masonry">
                     @foreach ($sharedImages as $image)

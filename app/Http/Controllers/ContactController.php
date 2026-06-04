@@ -23,9 +23,9 @@ class ContactController extends Controller
         $selectedBranch = $branches->first(fn (Branch $branch): bool => $branch->slug === $request->query('branch') || (string) $branch->id === (string) $request->query('branch'));
 
         $seo = SeoService::page(
-            is_english() ? 'Contact Dan Huong Chay | Vegetarian restaurant' : 'Liên hệ Đàn Hương Chay',
-            is_english() ? 'Find Dan Huong Chay branches, opening hours, hotline and contact form for vegetarian dining.' : 'Thông tin liên hệ, địa chỉ các cơ sở, giờ mở cửa và form gửi tin nhắn cho Đàn Hương Chay.',
-            is_english() ? 'contact vegetarian restaurant, Dan Huong Chay address, vegetarian restaurant phone' : 'liên hệ quán chay, địa chỉ quán chay, số điện thoại quán chay, nhà hàng chay',
+            __('site.seo_fallback.contact_title'),
+            __('site.seo_fallback.contact_description'),
+            __('site.seo_fallback.contact_keywords'),
             localized_route('contact')
         );
 
@@ -42,6 +42,6 @@ class ContactController extends Controller
 
         return redirect()
             ->to(localized_route('contact'))
-            ->with('success', is_english() ? 'Thank you for contacting us. Dan Huong Chay will respond as soon as possible.' : 'Cảm ơn bạn đã liên hệ. Đàn Hương Chay sẽ phản hồi trong thời gian sớm nhất.');
+            ->with('success', __('site.contact.success'));
     }
 }

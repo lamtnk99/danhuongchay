@@ -44,9 +44,9 @@ class MenuController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            is_english() ? 'Vegetarian menu in Hai Phong | Dan Huong Chay' : 'Thực đơn quán chay Hải Phòng | Món chay ngon Đàn Hương Chay',
-            is_english() ? 'Explore Dan Huong Chay vegetarian menu in Hai Phong with appetizers, signature dishes, hot pots, rice, noodles and mindful drinks.' : 'Khám phá thực đơn quán chay Hải Phòng với món khai vị, món chính, lẩu chay, cơm mì bún chay và đồ uống thanh lành.',
-            is_english() ? 'vegetarian menu Hai Phong, vegetarian restaurant Hai Phong, vegan food, vegetarian hot pot, healthy vegetarian food' : 'thực đơn chay, quán chay Hải Phòng, món chay ngon, nhà hàng chay Hải Phòng, lẩu chay, cơm chay, đặt bàn quán chay',
+            __('site.auto.auto_00cee6077395'),
+            __('site.auto.auto_28dfc3a9cb23'),
+            __('site.auto.auto_00744082b024'),
             localized_route('menu.index')
         );
 

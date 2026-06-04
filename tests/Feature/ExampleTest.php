@@ -312,6 +312,139 @@ class ExampleTest extends TestCase
         $this->assertStringContainsString('0888 333 444', $html);
     }
 
+    public function test_public_english_pages_use_translated_client_copy(): void
+    {
+        foreach (['/en/reservation', '/en/contact', '/en/vegetarian-catering', '/en/vegetarian-restaurant-buon-ma-thuot'] as $uri) {
+            $this->get($uri)
+                ->assertOk()
+                ->assertDontSee('Gửi yêu cầu giữ bàn', false)
+                ->assertDontSee('Cơ sở cần liên hệ', false)
+                ->assertDontSee('Thông tin cơ sở', false);
+        }
+
+        $this->get('/en/reservation')
+            ->assertSee('Reserve a calm vegetarian table')
+            ->assertSee('Send request');
+
+        $this->get('/en/contact')
+            ->assertSee('Branches')
+            ->assertSee('General contact');
+    }
+
+    public function test_public_vietnamese_reservation_page_keeps_vietnamese_copy(): void
+    {
+        $this->get(route('reservations.create'))
+            ->assertOk()
+            ->assertSee('Giữ chỗ cho một bữa chay an yên')
+            ->assertSee('Gửi yêu cầu giữ bàn');
+    }
+
+    public function test_english_reservation_submit_uses_english_flash_and_validation(): void
+    {
+        Mail::fake();
+
+        $branch = Branch::firstOrFail();
+
+        $this->post(route('localized.reservations.store'), [
+            'name' => 'English Guest',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 2,
+        ])
+            ->assertRedirect(route('localized.reservations.create'))
+            ->assertSessionHas('success', 'Your reservation request has been sent. Dan Huong Chay will contact you to confirm.');
+
+        $this->followingRedirects()
+            ->from(route('localized.reservations.create'))
+            ->post(route('localized.reservations.store'), [
+                'phone' => 'bad',
+            ])
+            ->assertOk()
+            ->assertSee('Please enter your full name.')
+            ->assertSee('The phone number format is invalid.');
+    }
+
+    public function test_english_contact_submit_uses_english_flash_and_validation(): void
+    {
+        $this->post(route('localized.contact.store'), [
+            'name' => 'English Contact',
+            'email' => 'contact@gmail.com',
+            'message' => 'I would like to ask about vegetarian catering this weekend.',
+        ])
+            ->assertRedirect(route('localized.contact'))
+            ->assertSessionHas('success', 'Thank you for contacting us. Dan Huong Chay will respond as soon as possible.');
+
+        $this->followingRedirects()
+            ->from(route('localized.contact'))
+            ->post(route('localized.contact.store'), [
+                'email' => 'not-an-email',
+                'message' => 'short',
+            ])
+            ->assertOk()
+            ->assertSee('Please enter your full name.')
+            ->assertSee('The email format is invalid.')
+            ->assertSee('The message must be at least 10 characters.');
+    }
+
+    public function test_customer_confirmation_mail_renders_by_locale(): void
+    {
+        $branch = Branch::firstOrFail();
+        $branch->update([
+            'hotline' => '0999 111 222',
+            'phone' => '0888 333 444',
+        ]);
+
+        $reservation = Reservation::create([
+            'name' => 'Locale Guest',
+            'branch_id' => $branch->id,
+            'phone' => '0987654321',
+            'email' => 'customer@gmail.com',
+            'reservation_date' => now()->addDay()->toDateString(),
+            'reservation_time' => '18:30',
+            'guests' => 4,
+            'status' => 'pending',
+        ])->load('branch');
+
+        app()->setLocale('en');
+        $englishHtml = (new ReservationCustomerConfirmationMail($reservation))->render();
+
+        app()->setLocale('vi');
+        $vietnameseHtml = (new ReservationCustomerConfirmationMail($reservation))->render();
+
+        $this->assertStringContainsString('Thank you for sending your reservation request', $englishHtml);
+        $this->assertStringContainsString('If you need to adjust your reservation details', $englishHtml);
+        $this->assertStringNotContainsString('Cần điều chỉnh thông tin đặt bàn', $englishHtml);
+        $this->assertStringContainsString('Cảm ơn bạn đã gửi yêu cầu đặt bàn', $vietnameseHtml);
+        $this->assertStringContainsString('Cần điều chỉnh thông tin đặt bàn', $vietnameseHtml);
+    }
+
+    public function test_public_views_do_not_use_text_ternary_translation_pattern(): void
+    {
+        $violations = [];
+        $root = resource_path('views');
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+
+        foreach ($files as $file) {
+            if (! $file->isFile() || ! str_ends_with($file->getFilename(), '.blade.php')) {
+                continue;
+            }
+
+            $path = str_replace('\\', '/', $file->getPathname());
+
+            if (str_contains($path, '/views/admin/') || str_contains($path, '/views/auth/') || str_contains($path, '/views/emails/reservations/admin-notification.blade.php')) {
+                continue;
+            }
+
+            if (str_contains(file_get_contents($path), 'is_english() ?')) {
+                $violations[] = str_replace(str_replace('\\', '/', base_path()).'/', '', $path);
+            }
+        }
+
+        $this->assertSame([], $violations);
+    }
+
     public function test_reservation_still_succeeds_when_mail_fails(): void
     {
         $branch = Branch::firstOrFail();

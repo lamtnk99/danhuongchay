@@ -71,10 +71,10 @@
             @include('partials.contextual-cta', [
                 'context' => 'dish',
                 'kicker' => __('site.dish.reservation_eyebrow'),
-                'title' => is_english() ? 'Want to try '.$dishName.' today?' : 'Muốn thử '.$dishName.' hôm nay?',
-                'text' => is_english() ? 'Book ahead so the restaurant can keep your table and suggest suitable dishes for your group.' : 'Đặt bàn trước để quán giữ chỗ và tư vấn món đi kèm phù hợp với số người.',
-                'primaryLabel' => is_english() ? 'Book to try this dish' : 'Đặt bàn thử món này',
-                'secondaryLabel' => is_english() ? 'Ask about catering' : 'Tư vấn mâm cúng/tiệc chay',
+                'title' => __('site.dish.reservation_title_named', ['dish' => $dishName]),
+                'text' => __('site.dish.reservation_text_named'),
+                'primaryLabel' => __('site.dish.book_to_try'),
+                'secondaryLabel' => __('site.dish.ask_catering'),
                 'trackLabel' => $dishName,
             ])
         </div>

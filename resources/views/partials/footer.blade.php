@@ -10,8 +10,8 @@
         if ($footerMenus->isEmpty()) {
             $footerMenus = collect([
                 (object) ['title' => __('site.nav.about'), 'url' => localized_route('about'), 'open_new_tab' => false],
-                (object) ['title' => is_english() ? 'Vegetarian restaurant Hai Phong' : 'Quán chay Hải Phòng', 'url' => localized_route('local.vegetarian-restaurant-hai-phong'), 'open_new_tab' => false],
-                (object) ['title' => is_english() ? 'Vegetarian restaurant Buon Ma Thuot' : 'Quán chay Buôn Ma Thuột', 'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot'), 'open_new_tab' => false],
+                (object) ['title' => __('site.auto.auto_68bdb9147851'), 'url' => localized_route('local.vegetarian-restaurant-hai-phong'), 'open_new_tab' => false],
+                (object) ['title' => __('site.auto.auto_b82881a47f27'), 'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.catering'), 'url' => localized_route('local.vegetarian-catering-hai-phong'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.gallery'), 'url' => localized_route('gallery.index'), 'open_new_tab' => false],
                 (object) ['title' => __('site.nav.menu'), 'url' => localized_route('menu.index'), 'open_new_tab' => false],
@@ -27,7 +27,7 @@
 
         $requiredFooterLinks = collect([
             (object) [
-                'title' => is_english() ? 'Vegetarian restaurant Buon Ma Thuot' : 'Quán chay Buôn Ma Thuột',
+                'title' => __('site.auto.auto_b82881a47f27'),
                 'url' => localized_route('local.vegetarian-restaurant-buon-ma-thuot'),
                 'open_new_tab' => false,
             ],
@@ -103,12 +103,12 @@
         </div>
 
         <div>
-            <p class="text-sm font-bold uppercase tracking-wider text-[#667132]">{{ is_english() ? 'Reserve a table' : 'Đặt bàn' }}</p>
+            <p class="text-sm font-bold uppercase tracking-wider text-[#667132]">{{ __('site.auto.auto_c8c784a2a41c') }}</p>
             <p class="mt-4 text-sm leading-relaxed text-stone-500">
-                {{ is_english() ? 'Reserve your table quickly by phone or through the online form.' : 'Giữ chỗ nhanh qua điện thoại hoặc biểu mẫu trực tuyến.' }}
+                {{ __('site.auto.auto_d5edfb90e89d') }}
             </p>
             <a href="{{ localized_route('reservations.create') }}" class="mt-5 inline-flex min-h-[2.75rem] items-center justify-center rounded-full bg-[#667132] px-6 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#788240] hover:shadow-md">
-                {{ is_english() ? 'Book now' : 'Đặt bàn ngay' }}
+                {{ __('site.auto.auto_64a2210d034c') }}
             </a>
         </div>
     </div>

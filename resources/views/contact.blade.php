@@ -18,7 +18,7 @@
         <div class="contact-editorial-grid">
             <div class="space-y-6">
                 <div class="contact-panel p-6">
-                    <h2 class="text-2xl font-semibold text-[#3d4226]">{{ is_english() ? 'Branches' : 'Các cơ sở Đàn Hương Chay' }}</h2>
+                    <h2 class="text-2xl font-semibold text-[#3d4226]">{{ __('site.contact.branches') }}</h2>
                     <div class="mt-5 grid gap-4">
                         @forelse ($branches as $branch)
                             <article class="contact-branch-card">
@@ -42,14 +42,14 @@
                                 </dl>
                                 @include('partials.branch-social-actions', ['branch' => $branch])
                                 <div class="mt-4 flex flex-wrap gap-3">
-                                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-primary py-3 text-sm">{{ is_english() ? 'Book this branch' : 'Đặt bàn cơ sở này' }}</a>
+                                    <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-primary py-3 text-sm">{{ __('site.contact.book_branch') }}</a>
                                     @if ($branch->hotline || $branch->phone)
-                                        <a href="tel:{{ preg_replace('/\D+/', '', $branch->hotline ?: $branch->phone) }}" class="btn-ghost py-3 text-sm">{{ is_english() ? 'Call' : 'Gọi' }}</a>
+                                        <a href="tel:{{ preg_replace('/\D+/', '', $branch->hotline ?: $branch->phone) }}" class="btn-ghost py-3 text-sm">{{ __('site.contact.call') }}</a>
                                     @endif
                                 </div>
                             </article>
                         @empty
-                            <p class="text-stone-600">{{ is_english() ? 'Branch information is being updated.' : 'Thông tin cơ sở đang được cập nhật.' }}</p>
+                            <p class="text-stone-600">{{ __('site.contact.branches_updating') }}</p>
                         @endforelse
                     </div>
                 </div>
@@ -57,7 +57,7 @@
                 @if ($mapBranches->isNotEmpty())
                     <div class="about-map-feature contact-map-feature" data-map-slider>
                         <div class="about-map-copy">
-                            <p>{{ is_english() ? 'Map' : 'Bản đồ' }}</p>
+                            <p>{{ __('site.contact.map') }}</p>
                             <h3 data-map-title>{{ $mapBranches->first()->name }}</h3>
                             @if ($mapBranches->count() > 1)
                                 <div class="about-map-tabs">
@@ -90,9 +90,9 @@
                 <form action="{{ localized_route('contact.store') }}" method="POST" class="grid gap-5" data-submit-loading data-track-submit="submit_contact" data-track-category="lead" data-track-label="Contact form" data-facebook-event="Lead">
                     @csrf
                     <div>
-                        <label for="branch_id" class="form-label">{{ is_english() ? 'Branch' : 'Cơ sở cần liên hệ' }}</label>
+                        <label for="branch_id" class="form-label">{{ __('site.contact.branch_field') }}</label>
                         <select id="branch_id" name="branch_id" class="form-input">
-                            <option value="">{{ is_english() ? 'General contact' : 'Liên hệ chung' }}</option>
+                            <option value="">{{ __('site.contact.general_contact') }}</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}" @selected((string) old('branch_id', $selectedBranch?->id) === (string) $branch->id)>{{ $branch->name }}</option>
                             @endforeach

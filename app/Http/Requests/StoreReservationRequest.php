@@ -54,13 +54,13 @@ class StoreReservationRequest extends FormRequest
             $openingHours = OpeningHours::fromBranch($branch);
 
             if (! $openingHours->isWithin($time)) {
-                $validator->errors()->add('reservation_time', $openingHours->message().' Vui lòng chọn giờ phù hợp.');
+                $validator->errors()->add('reservation_time', $openingHours->message().' '.__('site.reservation.opening_hours_extra'));
 
                 return;
             }
 
             if ($openingHours->isPastToday($date, $time)) {
-                $validator->errors()->add('reservation_time', 'Giờ đặt bàn đã qua. Nếu đặt trong hôm nay, vui lòng chọn giờ muộn hơn thời điểm hiện tại.');
+                $validator->errors()->add('reservation_time', __('site.reservation.past_time'));
             }
         });
     }
@@ -68,20 +68,20 @@ class StoreReservationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Vui lòng nhập họ tên.',
-            'branch_id.required' => 'Vui lòng chọn cơ sở.',
-            'branch_id.exists' => 'Cơ sở đã chọn không hợp lệ hoặc đang tạm ẩn.',
-            'phone.required' => 'Vui lòng nhập số điện thoại.',
-            'phone.regex' => 'Số điện thoại chưa đúng định dạng.',
-            'email.email' => 'Email chưa đúng định dạng.',
-            'reservation_date.required' => 'Vui lòng chọn ngày đặt bàn.',
-            'reservation_date.date_format' => 'Ngày đặt bàn chưa đúng định dạng.',
-            'reservation_date.after_or_equal' => 'Ngày đặt bàn không được ở quá khứ.',
-            'reservation_time.required' => 'Vui lòng chọn giờ đặt bàn.',
-            'reservation_time.date_format' => 'Giờ đặt bàn chưa đúng định dạng.',
-            'guests.required' => 'Vui lòng nhập số người.',
-            'guests.min' => 'Số người tối thiểu là :min.',
-            'guests.max' => 'Số người tối đa là :max.',
+            'name.required' => __('site.reservation.validation.name_required'),
+            'branch_id.required' => __('site.reservation.validation.branch_required'),
+            'branch_id.exists' => __('site.reservation.validation.branch_exists'),
+            'phone.required' => __('site.reservation.validation.phone_required'),
+            'phone.regex' => __('site.reservation.validation.phone_regex'),
+            'email.email' => __('site.reservation.validation.email_email'),
+            'reservation_date.required' => __('site.reservation.validation.date_required'),
+            'reservation_date.date_format' => __('site.reservation.validation.date_format'),
+            'reservation_date.after_or_equal' => __('site.reservation.validation.date_future'),
+            'reservation_time.required' => __('site.reservation.validation.time_required'),
+            'reservation_time.date_format' => __('site.reservation.validation.time_format'),
+            'guests.required' => __('site.reservation.validation.guests_required'),
+            'guests.min' => __('site.reservation.validation.guests_min'),
+            'guests.max' => __('site.reservation.validation.guests_max'),
         ];
     }
 }

@@ -29,8 +29,8 @@
     @if ($relatedPosts->isNotEmpty())
         <section class="section-block pt-0">
             <div class="section-heading">
-                <p class="eyebrow">{{ is_english() ? 'Related posts' : 'Bài viết liên quan' }}</p>
-                <h2>{{ is_english() ? 'Read more' : 'Đọc thêm' }}</h2>
+                <p class="eyebrow">{{ __('site.blog.related_posts') }}</p>
+                <h2>{{ __('site.blog.read_more') }}</h2>
             </div>
             <div class="mt-10 grid gap-6 md:grid-cols-3">
                 @foreach ($relatedPosts as $post)

@@ -17,9 +17,9 @@ class BlogController extends Controller
             ->paginate(6);
 
         $seo = SeoService::page(
-            is_english() ? 'Vegetarian blog | Dan Huong Chay Hai Phong' : 'Blog quán chay Hải Phòng | Ăn chay, sống xanh, dinh dưỡng',
-            is_english() ? 'Practical articles about vegetarian food in Hai Phong, plant-based wellness, green lifestyle and mindful dining at Dan Huong Chay.' : 'Bài viết thực tế về quán chay Hải Phòng, nhà hàng chay, món chay ngon, ăn chay healthy, thực đơn chay và phong cách sống xanh.',
-            is_english() ? 'vegetarian blog Hai Phong, vegetarian food, vegan lifestyle, healthy eating, green living' : 'blog quán chay Hải Phòng, ăn chay, sống xanh, dinh dưỡng chay, món chay ngon, nhà hàng chay Hải Phòng',
+            __('site.auto.auto_48c9fe5895d3'),
+            __('site.auto.auto_3a133bf698f5'),
+            __('site.auto.auto_13855245ebf3'),
             localized_route('blog.index')
         );
 

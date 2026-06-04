@@ -68,9 +68,9 @@ class HomeController extends Controller
             ->get();
 
         $seo = SeoService::page(
-            is_english() ? 'Dan Huong Chay - Hai Phong | Vegetarian fusion kitchen' : setting('default_meta_title', 'Đàn Hương Chay - Hải Phòng | Quán chay ngon, món chay fusion, đặt bàn'),
-            is_english() ? 'Dan Huong Chay serves vegetarian fusion cuisine in Hai Phong with creative dishes, clean ingredients, a peaceful space and easy table booking.' : setting('default_meta_description', 'Đàn Hương Chay phục vụ ẩm thực chay fusion tại Hải Phòng, với món chay ngon, thực đơn đa dạng, không gian an yên và đặt bàn tiện lợi.'),
-            is_english() ? 'vegetarian restaurant Hai Phong, vegetarian food, vegan food Hai Phong, vegetarian menu, Dan Huong Chay' : setting('default_meta_keywords', 'quán chay Hải Phòng, nhà hàng chay Hải Phòng, món chay ngon, thực đơn chay, đặt bàn quán chay, tiệc chay, mâm cúng chay, ăn chay healthy'),
+            localized_setting('default_meta_title', __('site.seo_fallback.default_title')),
+            localized_setting('default_meta_description', __('site.seo_fallback.default_description')),
+            localized_setting('default_meta_keywords', __('site.seo_fallback.default_keywords')),
             localized_route('home')
         );
 

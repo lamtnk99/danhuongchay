@@ -30,9 +30,9 @@ class ReservationController extends Controller
         $openingHours = OpeningHours::fromBranch($selectedBranch);
 
         $seo = SeoService::page(
-            is_english() ? 'Book a table | Dan Huong Chay' : 'Đặt bàn quán chay | Đàn Hương Chay',
-            is_english() ? 'Book a table at Dan Huong Chay to enjoy vegetarian fusion cuisine in a peaceful restaurant space.' : 'Đặt bàn trước tại Đàn Hương Chay để thưởng thức món chay ngon, không gian an yên và khung giờ phục vụ linh hoạt.',
-            is_english() ? 'book vegetarian restaurant, Dan Huong Chay reservation, vegetarian catering' : 'đặt bàn quán chay, nhà hàng chay, tiệc chay, mâm cúng chay',
+            __('site.seo_fallback.reservation_title'),
+            __('site.seo_fallback.reservation_description'),
+            __('site.seo_fallback.reservation_keywords'),
             localized_route('reservations.create')
         );
 
@@ -53,7 +53,7 @@ class ReservationController extends Controller
 
         return redirect()
             ->to(localized_route('reservations.create'))
-            ->with('success', is_english() ? 'Your reservation request has been sent. Dan Huong Chay will contact you to confirm.' : 'Đặt bàn thành công. Đàn Hương Chay sẽ gọi xác nhận thông tin của bạn.');
+            ->with('success', __('site.reservation.success'));
     }
 
     private function sendReservationEmails(Reservation $reservation): void
@@ -70,7 +70,9 @@ class ReservationController extends Controller
 
         if (filled($reservation->email)) {
             $this->sendMailSafely(
-                fn () => Mail::to($reservation->email)->queue(new ReservationCustomerConfirmationMail($reservation)),
+                fn () => Mail::to($reservation->email)
+                    ->locale(current_locale())
+                    ->queue(new ReservationCustomerConfirmationMail($reservation)),
                 $reservation,
                 'customer_confirmation'
             );

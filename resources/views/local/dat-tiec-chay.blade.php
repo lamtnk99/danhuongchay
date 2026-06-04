@@ -4,16 +4,16 @@
     <section class="catering-hub-hero">
         <img
             src="{{ media_variant_url(setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=85') }}"
-            alt="{{ is_english() ? 'Vegetarian catering at Dan Huong Chay' : 'Đặt tiệc chay Đàn Hương Chay' }}"
+            alt="{{ __('site.auto.auto_e9324810c831') }}"
             class="catering-hub-bg"
             fetchpriority="high"
         >
         <div class="catering-hub-overlay"></div>
         <div class="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
             <div class="max-w-3xl text-white">
-                <p class="eyebrow text-amber-100">{{ is_english() ? 'Vegetarian catering' : 'Đặt tiệc & mâm cúng chay' }}</p>
-                <h1>{{ is_english() ? 'Vegetarian trays for intimate, meaningful gatherings' : 'Mâm chay chỉn chu cho những dịp cần sự an yên' }}</h1>
-                <p>{{ is_english() ? 'Dan Huong Chay prepares vegetarian meals for family gatherings, ceremonies and small private tables at each branch.' : 'Đàn Hương Chay nhận tư vấn mâm cúng chay, bàn tiệc gia đình và những bữa chay cần chuẩn bị kỹ tại từng cơ sở.' }}</p>
+                <p class="eyebrow text-amber-100">{{ __('site.auto.auto_6137f2ef34fc') }}</p>
+                <h1>{{ __('site.auto.auto_ed75d636940b') }}</h1>
+                <p>{{ __('site.auto.auto_c1cf8f9a741f') }}</p>
             </div>
         </div>
     </section>
@@ -38,8 +38,8 @@
                         <h2>{{ $branch->name }}</h2>
                         <span>{{ $branch->address }}</span>
                         <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                            <a href="{{ $detailUrl }}" class="btn-primary">{{ is_english() ? 'View branch service' : 'Xem dịch vụ cơ sở' }}</a>
-                            <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-secondary">{{ is_english() ? 'Send request' : 'Gửi yêu cầu' }}</a>
+                            <a href="{{ $detailUrl }}" class="btn-primary">{{ __('site.auto.auto_17dabdfd0eb5') }}</a>
+                            <a href="{{ localized_route('reservations.create', ['branch' => $branch->slug]) }}" class="btn-secondary">{{ __('site.auto.auto_50ddbd8a5806') }}</a>
                         </div>
                     </div>
                 </article>

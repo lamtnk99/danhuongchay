@@ -31,7 +31,7 @@ class ChatController extends Controller
 
         $chatSession = ChatSession::create([
             'branch_id' => $branchId,
-            'visitor_name' => $data['visitor_name'] ?? 'Khách ghé thăm',
+            'visitor_name' => $data['visitor_name'] ?? __('site.chat.visitor_default'),
             'phone' => $data['phone'] ?? null,
             'email' => $data['email'] ?? null,
             'status' => 'open',
@@ -76,7 +76,7 @@ class ChatController extends Controller
 
         $chatSession->messages()->create([
             'sender' => 'visitor',
-            'sender_name' => $chatSession->visitor_name ?: 'Khách ghé thăm',
+            'sender_name' => $chatSession->visitor_name ?: __('site.chat.visitor_default'),
             'message' => $data['message'],
         ]);
 
@@ -99,7 +99,7 @@ class ChatController extends Controller
     {
         if (RateLimiter::tooManyAttempts($key, $maxAttempts)) {
             abort(response()->json([
-                'message' => 'Bạn gửi hơi nhanh. Vui lòng chờ một chút rồi thử lại.',
+                'message' => __('site.chat.rate_limited'),
             ], 429));
         }
 

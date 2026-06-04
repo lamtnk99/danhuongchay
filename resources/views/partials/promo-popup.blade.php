@@ -11,7 +11,7 @@
     >
         <div class="promo-popup-backdrop" data-promo-close></div>
         <div @class(['promo-popup-card', 'promo-popup-'.$promotion->template])>
-            <button type="button" class="promo-popup-close" data-promo-close aria-label="Đóng thông báo">×</button>
+            <button type="button" class="promo-popup-close" data-promo-close aria-label="{{ __('site.js.close_notification') }}">×</button>
 
             @if ($promotion->image && $promotion->template !== 'minimal')
                 <img

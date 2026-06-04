@@ -75,9 +75,9 @@
             <div class="about-branches-layout">
                 <div>
                     <p class="eyebrow">{{ __('site.about.address_eyebrow') }}</p>
-                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ is_english() ? 'Two peaceful vegetarian spaces' : 'Hai điểm hẹn chay thanh lành' }}</h2>
+                    <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ __('site.about.branches_title') }}</h2>
                     <p class="mt-5 leading-8 text-stone-700">
-                        {{ is_english() ? 'Each branch keeps a calm dining rhythm, warm service and a menu built for family meals, gatherings and mindful vegetarian moments.' : 'Mỗi cơ sở là một không gian riêng để ghé ăn nhẹ, dùng bữa cùng gia đình hoặc đặt trước những mâm chay chỉn chu cho dịp quan trọng.' }}
+                        {{ __('site.about.branches_description') }}
                     </p>
 
                     <div class="mt-7 grid gap-4">
@@ -93,7 +93,7 @@
                         @empty
                             <article class="about-branch-card">
                                 <div>
-                                    <p>{{ is_english() ? 'Main branch' : 'Cơ sở chính' }}</p>
+                                    <p>{{ __('site.about.main_branch') }}</p>
                                     <h3>{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}</h3>
                                     <span>{{ localized_setting('address', 'Villa 01-B4 Hoàng Mậu - Gia Viên, TP. Hải Phòng') }}</span>
                                 </div>
@@ -104,7 +104,7 @@
 
                 <div class="about-map-feature" data-map-slider>
                     <div class="about-map-copy">
-                        <p>{{ is_english() ? 'Map' : 'Bản đồ cơ sở' }}</p>
+                        <p>{{ __('site.about.branch_map') }}</p>
                         <h3 data-map-title>{{ $branches->first()?->name ?: localized_setting('restaurant_name', 'Đàn Hương Chay') }}</h3>
                         @if ($branches->count() > 1)
                             <div class="about-map-tabs">

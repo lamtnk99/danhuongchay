@@ -19,7 +19,7 @@ class ReservationCustomerConfirmationMail extends Mailable implements ShouldQueu
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Đàn Hương Chay đã nhận yêu cầu đặt bàn của bạn',
+            subject: __('site.email.customer_reservation.subject'),
         );
     }
 

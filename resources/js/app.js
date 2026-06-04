@@ -1,3 +1,14 @@
+const i18n = window.danHuongI18n || {};
+const i18nMessage = (key, replacements = {}, fallback = '') => {
+    let message = i18n[key] || fallback;
+
+    Object.entries(replacements).forEach(([name, value]) => {
+        message = message.replaceAll(`:${name}`, value);
+    });
+
+    return message;
+};
+
 const isGalleryPage = document.body.classList.contains('page-gallery');
 
 if (isGalleryPage) {
@@ -13,7 +24,7 @@ const mobileNav = document.querySelector('#mobile-nav');
 if (toggle && mobileNav) {
     const closeMobileNav = () => {
         toggle.setAttribute('aria-expanded', 'false');
-        toggle.setAttribute('aria-label', 'Mở menu');
+        toggle.setAttribute('aria-label', i18nMessage('openMenu', {}, 'Open menu'));
         mobileNav.classList.remove('is-open');
         document.body.classList.remove('mobile-nav-open');
 
@@ -35,7 +46,7 @@ if (toggle && mobileNav) {
         mobileNav.hidden = false;
         window.requestAnimationFrame(() => {
             toggle.setAttribute('aria-expanded', 'true');
-            toggle.setAttribute('aria-label', 'Đóng menu');
+            toggle.setAttribute('aria-label', i18nMessage('closeMenu', {}, 'Close menu'));
             mobileNav.classList.add('is-open');
             document.body.classList.add('mobile-nav-open');
         });
@@ -309,7 +320,7 @@ document.querySelectorAll('form[data-submit-loading]').forEach((form) => {
 
         if (submitButton.tagName === 'BUTTON') {
             submitButton.dataset.originalText = submitButton.textContent.trim();
-            submitButton.textContent = submitButton.dataset.loadingText || 'Đang gửi...';
+            submitButton.textContent = submitButton.dataset.loadingText || i18nMessage('submitLoading', {}, 'Sending...');
         }
     });
 });
@@ -463,11 +474,11 @@ if (reservationDateInput && reservationTimeInput) {
 
     const updateReservationTimeLimits = () => {
         let minTime = opensAt;
-        let message = `Quán nhận đặt bàn trong khung ${opensAt} - ${closesAt}.`;
+        let message = i18nMessage('reservationWindow', { opens: opensAt, closes: closesAt }, `The restaurant accepts reservations from ${opensAt} to ${closesAt}.`);
 
         if (reservationDateInput.value === today) {
             minTime = [opensAt, currentTime()].sort().at(-1);
-            message = `Hôm nay chỉ nhận giờ từ ${minTime} đến ${closesAt}.`;
+            message = i18nMessage('reservationTodayWindow', { min: minTime, closes: closesAt }, `For today, please choose a time from ${minTime} to ${closesAt}.`);
         }
 
         reservationTimeInput.min = minTime;
@@ -505,7 +516,7 @@ document.querySelectorAll('input[type="file"]').forEach((input) => {
         const error = document.createElement('p');
         error.className = 'form-error';
         error.dataset.uploadClientError = 'true';
-        error.textContent = `Ảnh vượt quá ${maxMb}MB nên chưa thể tải lên. Vui lòng chọn ảnh nhỏ hơn, hệ thống sẽ tự nén sau khi lưu.`;
+        error.textContent = i18nMessage('uploadTooLarge', { maxMb }, `The image is larger than ${maxMb}MB, so it cannot be uploaded. Please choose a smaller image; the system will compress it after saving.`);
         input.insertAdjacentElement('afterend', error);
     });
 });
@@ -606,7 +617,7 @@ if (chatWidget) {
         });
 
         if (!response.ok) {
-            throw new Error('Không gửi được tin nhắn. Bạn thử lại giúp mình nhé.');
+            throw new Error(i18nMessage('chatSendFailed', {}, 'We could not send the message. Please try again.'));
         }
 
         return response.json();

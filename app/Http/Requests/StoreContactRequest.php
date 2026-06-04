@@ -26,12 +26,12 @@ class StoreContactRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Vui lòng nhập họ tên.',
-            'branch_id.exists' => 'Cơ sở đã chọn không hợp lệ hoặc đang tạm ẩn.',
-            'phone.regex' => 'Số điện thoại chưa đúng định dạng.',
-            'email.email' => 'Email chưa đúng định dạng.',
-            'message.required' => 'Vui lòng nhập nội dung liên hệ.',
-            'message.min' => 'Nội dung liên hệ cần ít nhất :min ký tự.',
+            'name.required' => __('site.contact.validation.name_required'),
+            'branch_id.exists' => __('site.contact.validation.branch_exists'),
+            'phone.regex' => __('site.contact.validation.phone_regex'),
+            'email.email' => __('site.contact.validation.email_email'),
+            'message.required' => __('site.contact.validation.message_required'),
+            'message.min' => __('site.contact.validation.message_min'),
         ];
     }
 }

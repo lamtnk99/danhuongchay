@@ -7,6 +7,18 @@
 
     @include('partials.seo')
 
+    <script>
+        window.danHuongI18n = {!! json_encode([
+            'openMenu' => __('site.js.open_menu'),
+            'closeMenu' => __('site.js.close_menu'),
+            'submitLoading' => __('site.js.submit_loading'),
+            'reservationWindow' => __('site.js.reservation_window'),
+            'reservationTodayWindow' => __('site.js.reservation_today_window'),
+            'uploadTooLarge' => __('site.js.upload_too_large'),
+            'chatSendFailed' => __('site.chat.send_failed'),
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!};
+    </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @isset($schemas)

@@ -15,7 +15,7 @@
 
 <section class="smart-cta" data-track-view="view_contextual_cta" data-track-category="{{ $context }}" data-track-label="{{ $trackLabel }}">
     <div>
-        <p class="smart-cta-kicker">{{ $kicker ?? (is_english() ? 'Need a suggestion?' : 'Cần tư vấn nhanh?') }}</p>
+        <p class="smart-cta-kicker">{{ $kicker ?? (__('site.auto.auto_f70019bb7a75')) }}</p>
         <h2>{{ $title }}</h2>
         <p>{{ $text }}</p>
     </div>

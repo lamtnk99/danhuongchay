@@ -13,7 +13,7 @@
         <img
             src="{{ media_variant_url($heroImage, 'hero', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1800&q=86') }}"
             @if (media_srcset($heroImage, ['card', 'large', 'hero'])) srcset="{{ media_srcset($heroImage, ['card', 'large', 'hero']) }}" @endif
-            alt="{{ $hero?->localized('title') ?: localized_setting('restaurant_name', 'Đàn Hương Chay') }}"
+            alt="{{ $hero?->localized('title') ?: localized_setting('restaurant_name', __('site.email.customer_reservation.default_branch')) }}"
             class="editorial-hero-bg"
             fetchpriority="high"
             sizes="100vw"
@@ -22,23 +22,23 @@
 
         <div class="editorial-hero-inner">
             <div class="editorial-hero-copy">
-                <p class="editorial-kicker">{{ $hero?->localized('subtitle') ?: 'Đàn Hương Chay' }}</p>
-                <h1>{{ $hero?->localized('title') ?: 'Ẩm thực chay fusion trong không gian an yên' }}</h1>
-                <p>{{ $hero?->localized('description') ?: 'Món chay Việt hiện đại, nguyên liệu tươi sạch và trải nghiệm dùng bữa nhẹ nhàng cho gia đình, bạn bè, tiệc chay và mâm cúng.' }}</p>
+                <p class="editorial-kicker">{{ $hero?->localized('subtitle') ?: __('site.email.customer_reservation.default_branch') }}</p>
+                <h1>{{ $hero?->localized('title') ?: __('site.home.hero_default_title') }}</h1>
+                <p>{{ $hero?->localized('description') ?: __('site.home.hero_default_description') }}</p>
                 <div class="editorial-hero-actions">
                     <a href="{{ localized_route('reservations.create') }}" class="btn-primary" data-track-event="click_reservation_cta" data-track-category="reservation" data-track-label="Home editorial hero">
-                        Đặt bàn
+                        {{ __('site.hero.reservation') }}
                     </a>
-                    <a href="{{ localized_route('menu.index') }}" class="btn-secondary">Xem thực đơn</a>
+                    <a href="{{ localized_route('menu.index') }}" class="btn-secondary">{{ __('site.hero.menu') }}</a>
                     <a href="{{ localized_route('local.vegetarian-catering') }}" class="btn-ghost" data-track-event="click_catering_cta" data-track-category="catering" data-track-label="Home editorial hero">
-                        Đặt tiệc / mâm chay
+                        {{ __('site.home.hero_catering') }}
                     </a>
                 </div>
             </div>
 
-            <aside class="editorial-hero-card" aria-label="Thông tin đặt bàn nhanh">
-                <p>Giữ chỗ hôm nay</p>
-                <h2>Chọn cơ sở đặt bàn</h2>
+            <aside class="editorial-hero-card" aria-label="{{ __('site.home.hero_quick_info') }}">
+                <p>{{ __('site.home.hero_today') }}</p>
+                <h2>{{ __('site.home.hero_choose_branch') }}</h2>
                 <div class="hero-branch-list">
                     @forelse ($branches->take(2) as $branch)
                         <a href="{{ localized_route('reservations.create') }}?branch={{ $branch->id }}" data-track-event="click_reservation_cta" data-track-category="reservation" data-track-label="Home hero {{ $branch->name }}">
@@ -46,20 +46,20 @@
                                 <strong>{{ $branch->city ?: $branch->name }}</strong>
                                 <small>{{ $branch->hotline ?: $branch->phone ?: setting('hotline', '0947 361 515') }}</small>
                             </span>
-                            <b>Đặt bàn</b>
+                            <b>{{ __('site.hero.reservation') }}</b>
                         </a>
                     @empty
                         <a href="{{ localized_route('reservations.create') }}">
                             <span>
-                                <strong>{{ localized_setting('restaurant_name', 'Đàn Hương Chay') }}</strong>
+                                <strong>{{ localized_setting('restaurant_name', __('site.email.customer_reservation.default_branch')) }}</strong>
                                 <small>{{ setting('hotline', '0947 361 515') }}</small>
                             </span>
-                            <b>Đặt bàn</b>
+                            <b>{{ __('site.hero.reservation') }}</b>
                         </a>
                     @endforelse
                 </div>
                 <div class="hero-opening-note">
-                    <span>Giờ mở cửa</span>
+                    <span>{{ __('site.about.opening_hours') }}</span>
                     <strong>{{ setting('opening_hours', '09:00 - 21:00') }}</strong>
                 </div>
             </aside>
@@ -69,9 +69,9 @@
     @if ($signatureDish || $featuredDishes->isNotEmpty())
         <section class="editorial-menu-section">
             <div class="editorial-section-head">
-                <p class="editorial-kicker">Thực đơn đặc biệt</p>
-                <h2>Món chay được yêu thích tại Đàn Hương</h2>
-                <p>Những món signature được chọn để khách dễ gọi khi đến lần đầu: vị thanh, trình bày đẹp và phù hợp cho cả dùng riêng lẫn chia sẻ theo bàn.</p>
+                <p class="editorial-kicker">{{ __('site.home.special_menu_eyebrow') }}</p>
+                <h2>{{ __('site.home.special_menu_title') }}</h2>
+                <p>{{ __('site.home.special_menu_description') }}</p>
             </div>
 
             <div class="editorial-menu-layout">
@@ -96,7 +96,7 @@
                                         @if (show_dish_prices())
                                             <strong>{{ number_format($dish->sale_price ?: $dish->price, 0, ',', '.') }}đ</strong>
                                         @endif
-                                        <a href="{{ localized_route('menu.show', ['slug' => $dish->localizedSlug()]) }}">Xem món</a>
+                                        <a href="{{ localized_route('menu.show', ['slug' => $dish->localizedSlug()]) }}">{{ __('site.home.view_dish') }}</a>
                                     </div>
                                 </div>
                             </article>
@@ -119,7 +119,7 @@
                             </a>
                         </article>
                     @endforeach
-                    <a href="{{ localized_route('menu.index') }}" class="editorial-menu-more">Xem toàn bộ thực đơn</a>
+                    <a href="{{ localized_route('menu.index') }}" class="editorial-menu-more">{{ __('site.home.view_full_menu') }}</a>
                 </div>
             </div>
         </section>
@@ -128,8 +128,8 @@
     @if ($homePromotions->isNotEmpty())
         <section class="editorial-promo-section">
             <div class="editorial-section-head">
-                <p class="editorial-kicker">Ưu đãi hôm nay</p>
-                <h2>Gợi ý cho bữa chay trọn vị hơn</h2>
+                <p class="editorial-kicker">{{ __('site.home.promo_kicker') }}</p>
+                <h2>{{ __('site.home.today_offer_title') }}</h2>
             </div>
 
             <div class="editorial-promo-grid">
@@ -163,27 +163,27 @@
     <section class="reason-section-visual">
         <div class="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
             <div>
-                <p class="eyebrow">Vì sao chọn quán</p>
-                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">Một bữa chay tử tế bắt đầu từ nguyên liệu và sự chú tâm</h2>
-                <p class="mt-5 leading-8 text-stone-700">Đàn Hương Chay ưu tiên món ăn vừa ngon miệng, vừa nhẹ nhàng cho cơ thể. Mỗi món được nấu để thực khách cảm nhận vị ngọt của rau củ và sự cân bằng trong từng phần ăn.</p>
-                <a href="{{ localized_route('about') }}" class="mt-7 inline-flex font-semibold text-[#667132] hover:text-[#525c27]">Tìm hiểu câu chuyện quán</a>
+                <p class="eyebrow">{{ __('site.home.reason_eyebrow') }}</p>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ __('site.home.reason_title') }}</h2>
+                <p class="mt-5 leading-8 text-stone-700">{{ __('site.home.reason_description') }}</p>
+                <a href="{{ localized_route('about') }}" class="mt-7 inline-flex font-semibold text-[#667132] hover:text-[#525c27]">{{ __('site.home.about_link') }}</a>
             </div>
             <div class="grid gap-4 sm:grid-cols-2">
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80')">
-                    <h3>Nguyên liệu sạch</h3>
-                    <p>Rau củ, nấm và hạt được chọn lọc mỗi ngày từ nhà cung cấp đáng tin cậy.</p>
+                    <h3>{{ __('site.home.reason_clean_title') }}</h3>
+                    <p>{{ __('site.home.reason_clean_text') }}</p>
                 </div>
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80')">
-                    <h3>Nêm nếm tinh tế</h3>
-                    <p>Giảm dầu, giảm vị gắt, giữ hậu vị thanh và hương thơm tự nhiên.</p>
+                    <h3>{{ __('site.home.reason_flavor_title') }}</h3>
+                    <p>{{ __('site.home.reason_flavor_text') }}</p>
                 </div>
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80')">
-                    <h3>Không gian yên</h3>
-                    <p>Ánh sáng ấm, chất liệu gỗ và mảng xanh tạo cảm giác thư giãn.</p>
+                    <h3>{{ __('site.home.reason_space_title') }}</h3>
+                    <p>{{ __('site.home.reason_space_text') }}</p>
                 </div>
                 <div class="reason-card has-card-bg" style="--card-bg: url('https://images.unsplash.com/photo-1556745757-8d76bdb6984b?auto=format&fit=crop&w=900&q=80')">
-                    <h3>Đặt bàn nhanh</h3>
-                    <p>Chọn cơ sở, giờ ghé và số khách thật nhanh; quán sẽ liên hệ xác nhận để bạn yên tâm trước bữa ăn.</p>
+                    <h3>{{ __('site.home.reason_booking_title') }}</h3>
+                    <p>{{ __('site.home.reason_booking_text') }}</p>
                 </div>
             </div>
         </div>
@@ -192,9 +192,9 @@
     @if ($homeGalleryImages->isNotEmpty())
         <section class="editorial-gallery-section">
             <div class="editorial-section-head">
-                <p class="editorial-kicker">Không gian</p>
-                <h2>Những góc yên cho một bữa chay chậm lại</h2>
-                <p>Ảnh không gian được chọn lọc theo từng cơ sở, giúp khách cảm nhận rõ hơn trước khi đặt bàn.</p>
+                <p class="editorial-kicker">{{ __('site.home.gallery_eyebrow') }}</p>
+                <h2>{{ __('site.home.gallery_title_editorial') }}</h2>
+                <p>{{ __('site.home.gallery_description_editorial') }}</p>
             </div>
             <div class="home-gallery-grid mt-10">
                 @foreach ($homeGalleryImages as $image)
@@ -216,15 +216,15 @@
                 @endforeach
             </div>
             <div class="mt-8 text-center">
-                <a href="{{ localized_route('gallery.index') }}" class="btn-primary">Xem không gian quán</a>
+                <a href="{{ localized_route('gallery.index') }}" class="btn-primary">{{ __('site.home.gallery_link_editorial') }}</a>
             </div>
         </section>
     @endif
 
     <section class="section-block">
         <div class="section-heading">
-            <p class="eyebrow">Cảm nhận</p>
-            <h2>Khách hàng nói gì</h2>
+            <p class="eyebrow">{{ __('site.home.testimonials_eyebrow') }}</p>
+            <h2>{{ __('site.home.testimonials_title') }}</h2>
         </div>
         @if ($testimonials->isNotEmpty())
             <div class="testimonial-slider mt-10" data-testimonial-slider>
@@ -257,13 +257,13 @@
                 </div>
 
                 <div class="testimonial-controls">
-                    <button type="button" data-testimonial-prev aria-label="Review trước">‹</button>
+                    <button type="button" data-testimonial-prev aria-label="{{ __('site.home.review_prev') }}">‹</button>
                     <div class="testimonial-dots" data-testimonial-dots>
                         @foreach ($testimonials as $testimonial)
                             <button type="button" data-testimonial-dot data-index="{{ $loop->index }}" aria-label="Review {{ $loop->iteration }}" @class(['is-active' => $loop->first])></button>
                         @endforeach
                     </div>
-                    <button type="button" data-testimonial-next aria-label="Review sau">›</button>
+                    <button type="button" data-testimonial-next aria-label="{{ __('site.home.review_next') }}">›</button>
                 </div>
             </div>
         @endif
@@ -272,10 +272,10 @@
     <section class="section-block pt-0">
         <div class="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div class="max-w-2xl">
-                <p class="eyebrow">Blog mới nhất</p>
-                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">Ăn chay, sống xanh và chăm sóc sức khỏe</h2>
+                <p class="eyebrow">{{ __('site.home.blog_eyebrow') }}</p>
+                <h2 class="mt-3 text-3xl font-semibold text-[#3d4226] sm:text-4xl">{{ __('site.home.blog_title') }}</h2>
             </div>
-            <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-[#667132] hover:text-[#525c27]">Xem tất cả bài viết</a>
+            <a href="{{ localized_route('blog.index') }}" class="inline-flex font-semibold text-[#667132] hover:text-[#525c27]">{{ __('site.home.blog_link') }}</a>
         </div>
         <div class="mt-10 grid gap-6 md:grid-cols-3">
             @foreach ($latestPosts as $post)

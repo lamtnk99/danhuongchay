@@ -3,11 +3,11 @@
 @endphp
 
 @if ($primaryPhoneHref)
-    <div class="mobile-floating-actions lg:hidden" aria-label="Liên hệ nhanh">
+    <div class="mobile-floating-actions lg:hidden" aria-label="{{ __('site.common.quick_contact') }}">
         <a
             href="tel:{{ preg_replace('/\D+/', '', $primaryPhoneHref) }}"
             class="mobile-floating-action is-call"
-            aria-label="{{ is_english() ? 'Call hotline' : 'Gọi hotline' }}"
+            aria-label="{{ __('site.auto.auto_5cab6ab48928') }}"
             data-track-event="click_call"
             data-track-category="contact"
             data-track-label="Mobile floating call"

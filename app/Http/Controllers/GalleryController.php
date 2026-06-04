@@ -36,9 +36,9 @@ class GalleryController extends Controller
         $firstImage = $branches->flatMap->galleryImages->first() ?: $sharedImages->first();
 
         $seo = SeoService::page(
-            is_english() ? 'Dan Huong Chay Space | Branch interiors' : 'Không gian Đàn Hương Chay | Các cơ sở',
-            is_english() ? 'Explore Dan Huong Chay spaces by branch with wood, greenery, soft light and peaceful corners for vegetarian meals.' : 'Khám phá không gian Đàn Hương Chay theo từng cơ sở với chất liệu gỗ, cây xanh, ánh sáng dịu và góc ngồi an yên.',
-            is_english() ? 'Dan Huong Chay space, vegetarian restaurant photos, vegetarian restaurant Vietnam' : 'không gian Đàn Hương Chay, ảnh quán chay, nhà hàng chay đẹp, quán chay Hải Phòng, quán chay Buôn Ma Thuột',
+            __('site.auto.auto_c0ef90365a5c'),
+            __('site.auto.auto_bca592df214d'),
+            __('site.auto.auto_625d2c25a446'),
             localized_route('gallery.index'),
             $firstImage?->image
         );

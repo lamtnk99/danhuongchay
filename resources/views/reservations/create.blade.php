@@ -5,7 +5,7 @@
         <div class="reservation-luxury-media">
             <img
                 src="{{ media_variant_url(setting('default_background'), 'hero', 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1800&q=85') }}"
-                alt="{{ is_english() ? 'Dan Huong Chay reservation space' : 'Không gian đặt bàn Đàn Hương Chay' }}"
+                alt="{{ __('site.reservation.image_alt') }}"
                 fetchpriority="high"
             >
         </div>
@@ -13,9 +13,9 @@
 
         <div class="reservation-luxury-inner">
             <div class="reservation-luxury-copy">
-                <p>{{ is_english() ? 'Reservation' : 'Đặt bàn' }}</p>
-                <h1>{{ is_english() ? 'Reserve a calm vegetarian table' : 'Giữ chỗ cho một bữa chay an yên' }}</h1>
-                <span>{{ is_english() ? 'Choose the branch and time. Dan Huong Chay will confirm by hotline.' : 'Chọn cơ sở và khung giờ phù hợp. Đàn Hương Chay sẽ gọi xác nhận trước khi giữ bàn.' }}</span>
+                <p>{{ __('site.reservation.eyebrow') }}</p>
+                <h1>{{ __('site.reservation.title') }}</h1>
+                <span>{{ __('site.reservation.description') }}</span>
             </div>
 
             <div class="reservation-luxury-card">
@@ -30,13 +30,13 @@
                     @csrf
 
                     <div class="reservation-form-head">
-                        <p>{{ is_english() ? 'Booking details' : 'Thông tin giữ bàn' }}</p>
-                        <h2>{{ is_english() ? 'Tell us your preferred experience' : 'Cho quán biết thời gian bạn muốn ghé' }}</h2>
+                        <p>{{ __('site.reservation.form_eyebrow') }}</p>
+                        <h2>{{ __('site.reservation.form_title') }}</h2>
                     </div>
 
                     <div class="mt-6 grid gap-4">
                         <div>
-                            <label for="branch_id" class="form-label">{{ is_english() ? 'Branch' : 'Cơ sở' }}</label>
+                            <label for="branch_id" class="form-label">{{ __('site.reservation.branch') }}</label>
                             <select id="branch_id" name="branch_id" class="form-input" required>
                                 @foreach ($branches as $branch)
                                     @php($branchHours = \App\Support\OpeningHours::fromBranch($branch))
@@ -58,52 +58,52 @@
 
                         <div class="grid gap-4 sm:grid-cols-3">
                             <div>
-                                <label for="name" class="form-label">{{ is_english() ? 'Full name' : 'Họ tên' }}</label>
+                                <label for="name" class="form-label">{{ __('site.reservation.full_name') }}</label>
                                 <input id="name" name="name" value="{{ old('name') }}" class="form-input" autocomplete="name" required>
                                 @error('name') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="phone" class="form-label">{{ is_english() ? 'Phone' : 'Số điện thoại' }}</label>
+                                <label for="phone" class="form-label">{{ __('site.reservation.phone') }}</label>
                                 <input id="phone" type="tel" name="phone" value="{{ old('phone') }}" class="form-input" inputmode="tel" autocomplete="tel" required>
                                 @error('phone') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="email" class="form-label">{{ is_english() ? 'Email (optional)' : 'Email nhận xác nhận' }}</label>
-                                <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-input" inputmode="email" autocomplete="email" placeholder="{{ is_english() ? 'For confirmation email' : 'Không bắt buộc' }}">
-                                <p class="mt-1 text-xs text-stone-500">{{ is_english() ? 'We will send a confirmation summary if you leave an email.' : 'Nếu điền email, bạn sẽ nhận được tóm tắt đặt bàn thanh nhã từ Đàn Hương Chay.' }}</p>
+                                <label for="email" class="form-label">{{ __('site.reservation.email') }}</label>
+                                <input id="email" type="email" name="email" value="{{ old('email') }}" class="form-input" inputmode="email" autocomplete="email" placeholder="{{ __('site.reservation.email_placeholder') }}">
+                                <p class="mt-1 text-xs text-stone-500">{{ __('site.reservation.email_hint') }}</p>
                                 @error('email') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <div class="grid gap-4 sm:grid-cols-3">
                             <div>
-                                <label for="reservation_date" class="form-label">{{ is_english() ? 'Date' : 'Ngày đặt' }}</label>
+                                <label for="reservation_date" class="form-label">{{ __('site.reservation.date') }}</label>
                                 <input id="reservation_date" type="date" name="reservation_date" value="{{ old('reservation_date') }}" min="{{ now()->toDateString() }}" class="form-input" autocomplete="off" required>
                                 @error('reservation_date') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="reservation_time" class="form-label">{{ is_english() ? 'Time' : 'Giờ đặt' }}</label>
+                                <label for="reservation_time" class="form-label">{{ __('site.reservation.time') }}</label>
                                 <input id="reservation_time" type="time" list="reservation-time-options" name="reservation_time" value="{{ old('reservation_time') }}" min="{{ $openingHours->opensAt }}" max="{{ $openingHours->closesAt }}" step="900" class="form-input" required>
                                 <datalist id="reservation-time-options"></datalist>
                                 @error('reservation_time') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label for="guests" class="form-label">{{ is_english() ? 'Guests' : 'Số người' }}</label>
+                                <label for="guests" class="form-label">{{ __('site.reservation.guests') }}</label>
                                 <input id="guests" type="number" name="guests" value="{{ old('guests', 2) }}" min="1" max="40" class="form-input" inputmode="numeric" required>
                                 @error('guests') <p class="form-error">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
                         <div>
-                            <label for="note" class="form-label">{{ is_english() ? 'Note' : 'Ghi chú' }}</label>
-                            <textarea id="note" name="note" rows="4" class="form-input" placeholder="{{ is_english() ? 'Catering, birthday, family dinner...' : 'Đặt tiệc, mâm cúng, sinh nhật, bàn gia đình...' }}">{{ old('note') }}</textarea>
+                            <label for="note" class="form-label">{{ __('site.reservation.note') }}</label>
+                            <textarea id="note" name="note" rows="4" class="form-input" placeholder="{{ __('site.reservation.note_placeholder') }}">{{ old('note') }}</textarea>
                             @error('note') <p class="form-error">{{ $message }}</p> @enderror
                         </div>
                     </div>
 
                     <div class="reservation-actions">
-                        <button type="submit" class="btn-primary" data-loading-text="{{ is_english() ? 'Sending...' : 'Đang gửi yêu cầu...' }}">{{ is_english() ? 'Send request' : 'Gửi yêu cầu giữ bàn' }}</button>
-                        <a href="{{ localized_route('local.vegetarian-catering') }}" class="btn-secondary">{{ is_english() ? 'Catering options' : 'Đặt tiệc/mâm cúng' }}</a>
+                        <button type="submit" class="btn-primary" data-loading-text="{{ __('site.reservation.loading') }}">{{ __('site.reservation.submit') }}</button>
+                        <a href="{{ localized_route('local.vegetarian-catering') }}" class="btn-secondary">{{ __('site.reservation.catering_options') }}</a>
                     </div>
                 </form>
             </div>
