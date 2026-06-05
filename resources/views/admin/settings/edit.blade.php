@@ -44,17 +44,18 @@
             </div>
 
             <div class="admin-tab-panel" data-admin-tab-panel="en" hidden>
-                <div class="mb-5 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-900">
-                    Các trường này dùng cho bản tiếng Anh ở header, footer, trang liên hệ và các meta mặc định. Có thể để trống để hệ thống tự dùng bản tiếng Việt.
-                </div>
+                @include('admin.partials.setting-translation-actions')
                 <div class="grid gap-5 lg:grid-cols-2">
                     @foreach ($translationKeys as $key => $label)
+                        @php
+                            $sourceKey = \Illuminate\Support\Str::beforeLast($key, '_en');
+                        @endphp
                         <div @class(['lg:col-span-2' => in_array($key, ['short_description_en', 'address_en', 'footer_description_en'])])>
                             <label for="{{ $key }}" class="admin-label">{{ $label }}</label>
                             @if (in_array($key, ['short_description_en', 'address_en', 'footer_description_en']))
-                                <textarea id="{{ $key }}" name="{{ $key }}" rows="4" class="admin-input">{{ old($key, setting($key)) }}</textarea>
+                                <textarea id="{{ $key }}" name="{{ $key }}" rows="4" class="admin-input" data-copy-field="{{ $sourceKey }}" data-translation-field="{{ $sourceKey }}">{{ old($key, setting($key)) }}</textarea>
                             @else
-                                <input id="{{ $key }}" name="{{ $key }}" value="{{ old($key, setting($key)) }}" class="admin-input">
+                                <input id="{{ $key }}" name="{{ $key }}" value="{{ old($key, setting($key)) }}" class="admin-input" data-copy-field="{{ $sourceKey }}" data-translation-field="{{ $sourceKey }}">
                             @endif
                             @error($key) <p class="form-error">{{ $message }}</p> @enderror
                         </div>

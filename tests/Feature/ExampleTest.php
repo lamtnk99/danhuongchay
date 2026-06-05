@@ -8,6 +8,7 @@ use App\Mail\ReservationCustomerConfirmationMail;
 use App\Models\Branch;
 use App\Models\Contact;
 use App\Models\Dish;
+use App\Models\GalleryImage;
 use App\Models\Post;
 use App\Models\Reservation;
 use App\Models\SiteSetting;
@@ -443,6 +444,165 @@ class ExampleTest extends TestCase
         }
 
         $this->assertSame([], $violations);
+    }
+
+    public function test_admin_settings_and_seo_english_tabs_have_auto_translate_controls(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('admin.settings.edit'))
+            ->assertOk()
+            ->assertSee('data-deepl-translate', false)
+            ->assertSee('data-copy-translation', false)
+            ->assertSee('data-translation-field="restaurant_name"', false);
+
+        $this->actingAs($admin)
+            ->get(route('admin.seo.edit'))
+            ->assertOk()
+            ->assertSee('data-deepl-translate', false)
+            ->assertSee('data-copy-translation', false)
+            ->assertSee('data-translation-field="default_meta_title"', false);
+    }
+
+    public function test_admin_seo_submit_still_saves_vietnamese_and_english_settings(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->from(route('admin.seo.edit'))
+            ->put(route('admin.seo.update'), [
+                'default_meta_title' => 'Meta tiếng Việt',
+                'default_meta_description' => 'Mô tả SEO tiếng Việt',
+                'default_meta_keywords' => 'quán chay Hải Phòng',
+                'default_meta_title_en' => 'English meta title',
+                'default_meta_description_en' => 'English SEO description',
+                'default_meta_keywords_en' => 'vegetarian restaurant Hai Phong',
+                'google_analytics_code' => '<script>window.gaTest = true;</script>',
+                'google_search_console' => '<meta name="google-site-verification" content="test-token">',
+                'facebook_pixel_code' => '<script>window.fbTest = true;</script>',
+                'robots_txt_content' => "User-agent: *\nAllow: /\n",
+            ])
+            ->assertRedirect(route('admin.seo.edit'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame('Meta tiếng Việt', setting('default_meta_title'));
+        $this->assertSame('English meta title', setting('default_meta_title_en'));
+        $this->assertSame('<script>window.gaTest = true;</script>', setting('google_analytics_code'));
+    }
+
+    public function test_admin_gallery_form_saves_english_translation_and_frontend_uses_it(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $image = GalleryImage::query()->where('location', 'space')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get(route('admin.gallery.edit', $image))
+            ->assertOk()
+            ->assertSee('data-deepl-translate', false)
+            ->assertSee('Image title');
+
+        $this->actingAs($admin)
+            ->put(route('admin.gallery.update', $image), [
+                'title' => $image->title,
+                'slug' => $image->slug,
+                'description' => $image->description,
+                'alt_text' => $image->alt_text,
+                'location' => 'space',
+                'branch_id' => $image->branch_id,
+                'sort_order' => $image->sort_order,
+                'is_featured' => '1',
+                'is_active' => '1',
+                'meta_title' => $image->meta_title,
+                'meta_description' => $image->meta_description,
+                'translations' => [
+                    'en' => [
+                        'title' => 'Peaceful English Space',
+                        'slug' => 'peaceful-english-space',
+                        'description' => 'A calm vegetarian dining corner in English.',
+                        'alt_text' => 'Peaceful English alt',
+                        'meta_title' => 'Peaceful English meta',
+                        'meta_description' => 'Peaceful English meta description.',
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.gallery.index'))
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('gallery_image_translations', [
+            'gallery_image_id' => $image->id,
+            'locale' => 'en',
+            'title' => 'Peaceful English Space',
+            'slug' => 'peaceful-english-space',
+            'alt_text' => 'Peaceful English alt',
+        ]);
+
+        $this->get(route('localized.gallery.index'))
+            ->assertOk()
+            ->assertSee('Peaceful English Space')
+            ->assertSee('A calm vegetarian dining corner in English.')
+            ->assertSee('alt="Peaceful English alt"', false);
+    }
+
+    public function test_admin_gallery_english_slug_must_be_unique(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $images = GalleryImage::query()->where('location', 'space')->limit(2)->get();
+        $this->assertCount(2, $images);
+
+        [$first, $second] = [$images[0], $images[1]];
+
+        $first->translations()->updateOrCreate(['locale' => 'en'], [
+            'title' => 'First English Space',
+            'slug' => 'duplicate-english-space',
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('admin.gallery.update', $second), [
+                'title' => $second->title,
+                'slug' => $second->slug,
+                'description' => $second->description,
+                'alt_text' => $second->alt_text,
+                'location' => 'space',
+                'branch_id' => $second->branch_id,
+                'sort_order' => $second->sort_order,
+                'is_featured' => '1',
+                'is_active' => '1',
+                'meta_title' => $second->meta_title,
+                'meta_description' => $second->meta_description,
+                'translations' => [
+                    'en' => [
+                        'title' => 'Second English Space',
+                        'slug' => 'duplicate-english-space',
+                    ],
+                ],
+            ])
+            ->assertSessionHasErrors('translations.en.slug');
+    }
+
+    public function test_admin_english_tab_forms_have_auto_translate_controls_where_expected(): void
+    {
+        $root = resource_path('views/admin');
+        $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root));
+        $missing = [];
+
+        foreach ($files as $file) {
+            if (! $file->isFile() || ! str_ends_with($file->getFilename(), '.blade.php')) {
+                continue;
+            }
+
+            $contents = file_get_contents($file->getPathname());
+
+            if (! str_contains($contents, 'data-admin-tab="en"')) {
+                continue;
+            }
+
+            if (! str_contains($contents, 'translation-fields') && ! str_contains($contents, 'setting-translation-actions')) {
+                $missing[] = str_replace(str_replace('\\', '/', base_path()).'/', '', str_replace('\\', '/', $file->getPathname()));
+            }
+        }
+
+        $this->assertSame([], $missing);
     }
 
     public function test_public_pages_render_core_seo_meta_and_hreflang(): void

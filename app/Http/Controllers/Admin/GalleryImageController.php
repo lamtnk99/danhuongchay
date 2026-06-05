@@ -49,7 +49,8 @@ class GalleryImageController extends Controller
         $data = $this->normalizedData($request);
         $data['image'] = $this->uploads->uploadImage($request->file('image'), 'gallery');
 
-        GalleryImage::create($data);
+        $galleryImage = GalleryImage::create($data);
+        $this->syncEnglishTranslation($request, $galleryImage);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Đã thêm ảnh không gian quán.');
     }
@@ -73,6 +74,7 @@ class GalleryImageController extends Controller
         }
 
         $gallery->update($data);
+        $this->syncEnglishTranslation($request, $gallery);
 
         return redirect()->route('admin.gallery.index')->with('success', 'Đã cập nhật ảnh không gian quán.');
     }
@@ -88,10 +90,24 @@ class GalleryImageController extends Controller
     private function normalizedData(GalleryImageRequest $request): array
     {
         return $request->safe()
-            ->except(['image'])
+            ->except(['image', 'translations'])
             + [
                 'is_featured' => $request->boolean('is_featured'),
                 'is_active' => $request->boolean('is_active'),
             ];
+    }
+
+    private function syncEnglishTranslation(GalleryImageRequest $request, GalleryImage $galleryImage): void
+    {
+        $translation = data_get($request->validated(), 'translations.en', []);
+
+        if ($translation === []) {
+            return;
+        }
+
+        $galleryImage->translations()->updateOrCreate(
+            ['locale' => 'en'],
+            collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all()
+        );
     }
 }

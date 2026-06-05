@@ -16,6 +16,7 @@ class GalleryImageRequest extends FormRequest
     {
         $gallery = $this->route('gallery');
         $galleryId = is_object($gallery) ? $gallery->id : $gallery;
+        $englishTranslationId = is_object($gallery) ? $gallery->translation('en')?->id : null;
 
         return [
             'title' => ['required', 'string', 'max:180'],
@@ -30,6 +31,21 @@ class GalleryImageRequest extends FormRequest
             'is_active' => ['nullable', 'boolean'],
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
+            'translations' => ['nullable', 'array'],
+            'translations.en' => ['nullable', 'array'],
+            'translations.en.title' => ['nullable', 'string', 'max:180'],
+            'translations.en.slug' => [
+                'nullable',
+                'string',
+                'max:180',
+                Rule::unique('gallery_image_translations', 'slug')
+                    ->where('locale', 'en')
+                    ->ignore($englishTranslationId),
+            ],
+            'translations.en.description' => ['nullable', 'string', 'max:1200'],
+            'translations.en.alt_text' => ['nullable', 'string', 'max:255'],
+            'translations.en.meta_title' => ['nullable', 'string', 'max:255'],
+            'translations.en.meta_description' => ['nullable', 'string', 'max:500'],
         ];
     }
 }

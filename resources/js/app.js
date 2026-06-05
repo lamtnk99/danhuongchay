@@ -157,7 +157,7 @@ document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
         const fields = {};
 
         tabs?.querySelectorAll('[data-copy-field]').forEach((target) => {
-            const fieldName = target.name.match(/\[([^\]]+)\]$/)?.[1];
+            const fieldName = target.dataset.translationField || target.name.match(/\[([^\]]+)\]$/)?.[1];
 
             if (!fieldName || fieldName === 'slug') {
                 return;
@@ -183,7 +183,7 @@ document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
             const data = await postJson(url, { fields });
 
             Object.entries(data.translations || {}).forEach(([fieldName, value]) => {
-                const target = tabs.querySelector(`[name$="[${fieldName}]"][data-copy-field]`);
+                const target = tabs.querySelector(`[data-translation-field="${fieldName}"][data-copy-field], [name$="[${fieldName}]"][data-copy-field]`);
 
                 if (target) {
                     target.value = value || '';
