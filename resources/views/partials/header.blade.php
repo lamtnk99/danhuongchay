@@ -18,10 +18,13 @@
         ]);
     }
 
-    $languageLinks = [
+    $languageFallbackLinks = [
         'vi' => route('home'),
         'en' => route('localized.home'),
     ];
+
+    $routeLanguageLinks = ($seo['alternates'] ?? null) ?: \App\Services\SeoService::currentRouteAlternates();
+    $languageLinks = array_replace($languageFallbackLinks, $routeLanguageLinks ?: []);
 @endphp
 
 <header class="site-header sticky top-0 z-50 border-b border-[#667132]/10 bg-[#fbfaf5]/92 shadow-sm backdrop-blur">

@@ -639,6 +639,31 @@ class ExampleTest extends TestCase
             ->assertSee('"@type": "BreadcrumbList"', false);
     }
 
+    public function test_language_switcher_keeps_current_static_page(): void
+    {
+        $this->get(route('menu.index'))
+            ->assertOk()
+            ->assertSee('<a href="'.route('localized.menu.index'), false);
+
+        $this->get(route('localized.menu.index'))
+            ->assertOk()
+            ->assertSee('<a href="'.route('menu.index'), false);
+    }
+
+    public function test_language_switcher_keeps_current_detail_page_with_translated_slug(): void
+    {
+        $dish = Dish::with('translations')->firstOrFail();
+        $englishDishUrl = route('localized.menu.show', ['slug' => $dish->localizedSlug('en')]);
+
+        $this->get(route('menu.show', $dish))
+            ->assertOk()
+            ->assertSee('<a href="'.$englishDishUrl, false);
+
+        $this->get($englishDishUrl)
+            ->assertOk()
+            ->assertSee('<a href="'.route('menu.show', $dish), false);
+    }
+
     public function test_sitemap_contains_public_localized_urls_and_excludes_private_or_filter_urls(): void
     {
         $dish = Dish::with('translations')->firstOrFail();
