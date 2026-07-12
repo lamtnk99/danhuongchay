@@ -31,7 +31,12 @@ class PostRequest extends FormRequest
             'meta_keywords' => ['nullable', 'string', 'max:500'],
             'translations' => ['nullable', 'array'],
             'translations.en' => ['nullable', 'array'],
-            'translations.en.title' => ['nullable', 'string', 'max:220'],
+            'translations.en.title' => [
+                'nullable',
+                'required_with:translations.en.slug,translations.en.excerpt,translations.en.content,translations.en.meta_title,translations.en.meta_description,translations.en.meta_keywords',
+                'string',
+                'max:220',
+            ],
             'translations.en.slug' => ['nullable', 'string', 'max:240'],
             'translations.en.excerpt' => ['nullable', 'string', 'max:1000'],
             'translations.en.content' => ['nullable', 'string'],

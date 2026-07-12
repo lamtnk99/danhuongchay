@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
-use App\Models\ChatSession;
 use App\Mail\ReservationAdminNotificationMail;
 use App\Mail\ReservationCustomerConfirmationMail;
 use App\Models\Branch;
+use App\Models\ChatSession;
 use App\Models\Contact;
 use App\Models\Dish;
 use App\Models\GalleryImage;
@@ -578,6 +578,69 @@ class ExampleTest extends TestCase
                 ],
             ])
             ->assertSessionHasErrors('translations.en.slug');
+    }
+
+    public function test_admin_can_create_post_with_empty_english_translation_fields(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $categoryId = Post::query()->firstOrFail()->category_id;
+
+        $this->actingAs($admin)
+            ->post(route('admin.posts.store'), [
+                'title' => 'Bài viết không có bản dịch',
+                'slug' => 'bai-viet-khong-co-ban-dich',
+                'category_id' => $categoryId,
+                'excerpt' => 'Mô tả ngắn cho bài viết không có bản dịch.',
+                'content' => 'Nội dung bài viết bằng tiếng Việt.',
+                'is_active' => '1',
+                'translations' => [
+                    'en' => [
+                        'title' => '',
+                        'slug' => '',
+                        'excerpt' => '',
+                        'content' => '',
+                        'meta_title' => '',
+                        'meta_description' => '',
+                        'meta_keywords' => '',
+                    ],
+                ],
+            ])
+            ->assertRedirect(route('admin.posts.index'))
+            ->assertSessionHasNoErrors();
+
+        $post = Post::query()->where('slug', 'bai-viet-khong-co-ban-dich')->firstOrFail();
+
+        $this->assertDatabaseMissing('post_translations', [
+            'post_id' => $post->id,
+            'locale' => 'en',
+        ]);
+    }
+
+    public function test_admin_post_english_title_is_required_when_other_translation_content_is_filled(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $categoryId = Post::query()->firstOrFail()->category_id;
+
+        $this->actingAs($admin)
+            ->post(route('admin.posts.store'), [
+                'title' => 'Bài viết thiếu tiêu đề tiếng Anh',
+                'slug' => 'bai-viet-thieu-tieu-de-tieng-anh',
+                'category_id' => $categoryId,
+                'excerpt' => 'Mô tả ngắn bằng tiếng Việt.',
+                'content' => 'Nội dung bài viết bằng tiếng Việt.',
+                'is_active' => '1',
+                'translations' => [
+                    'en' => [
+                        'title' => '',
+                        'content' => 'English content without a title.',
+                    ],
+                ],
+            ])
+            ->assertSessionHasErrors('translations.en.title');
+
+        $this->assertDatabaseMissing('posts', [
+            'slug' => 'bai-viet-thieu-tieu-de-tieng-anh',
+        ]);
     }
 
     public function test_admin_english_tab_forms_have_auto_translate_controls_where_expected(): void
