@@ -95,12 +95,15 @@ class PostController extends Controller
 
     private function syncEnglishTranslation(PostRequest $request, Post $post): void
     {
-        $translation = data_get($request->validated(), 'translations.en', []);
+        $translation = collect(data_get($request->validated(), 'translations.en', []))
+            ->map(fn ($value) => $value === '' ? null : $value);
 
-        if ($translation === []) {
+        if ($translation->filter(fn ($value) => $value !== null)->isEmpty()) {
+            $post->translations()->where('locale', 'en')->delete();
+
             return;
         }
 
-        $post->translations()->updateOrCreate(['locale' => 'en'], collect($translation)->map(fn ($value) => $value === '' ? null : $value)->all());
+        $post->translations()->updateOrCreate(['locale' => 'en'], $translation->all());
     }
 }
