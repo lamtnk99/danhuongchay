@@ -21,6 +21,7 @@ class PostInternalLinkService
         $curated = $post->internalLinks()
             ->with($relations)
             ->published()
+            ->availableInLocale()
             ->limit($limit)
             ->get();
 
@@ -35,6 +36,7 @@ class PostInternalLinkService
         $automatic = Post::query()
             ->with($relations)
             ->published()
+            ->availableInLocale()
             ->whereKeyNot($excludedIds)
             ->latest('published_at')
             ->limit(50)
@@ -55,6 +57,7 @@ class PostInternalLinkService
         $previous = Post::query()
             ->with($relations)
             ->published()
+            ->availableInLocale()
             ->where(function ($query) use ($post): void {
                 $query->where('published_at', '<', $post->published_at)
                     ->orWhere(function ($query) use ($post): void {
@@ -70,6 +73,7 @@ class PostInternalLinkService
         $next = Post::query()
             ->with($relations)
             ->published()
+            ->availableInLocale()
             ->where(function ($query) use ($post): void {
                 $query->where('published_at', '>', $post->published_at)
                     ->orWhere(function ($query) use ($post): void {

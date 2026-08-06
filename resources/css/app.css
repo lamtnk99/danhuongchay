@@ -1222,7 +1222,7 @@
 }
 
 .home-gallery-card h3,
-.gallery-tile h2,
+.gallery-tile h3,
 .about-gallery-card span {
     font-weight: 800;
 }
@@ -1246,21 +1246,37 @@
 }
 
 .gallery-tile img {
+    display: block;
+    height: auto;
     aspect-ratio: 4 / 3;
 }
 
-.gallery-tile > div {
-    padding: 1rem;
+.gallery-tile {
+    outline: none;
 }
 
-.gallery-tile h2 {
+.gallery-tile:focus-visible {
+    box-shadow: 0 0 0 3px rgb(255 255 255 / 95%), 0 0 0 6px rgb(102 113 50 / 70%), 0 18px 42px rgb(28 25 23 / 16%);
+}
+
+.gallery-tile__caption {
+    position: relative;
+    z-index: 1;
+    padding: 1rem 1.05rem 1.1rem;
+    background: rgb(255 255 255 / 96%);
+}
+
+.gallery-tile h3 {
     color: #3d4226;
-    font-size: 1.05rem;
+    font-size: 1.06rem;
+    font-weight: 800;
+    line-height: 1.4;
 }
 
 .gallery-tile p {
     margin-top: 0.45rem;
     color: #57534e;
+    font-size: 0.92rem;
     line-height: 1.65;
 }
 
@@ -3738,6 +3754,55 @@ header.is-scrolled {
 
     .gallery-tile:nth-child(4n + 1) img {
         aspect-ratio: 4 / 5;
+    }
+
+    .gallery-tile img {
+        height: 100%;
+    }
+
+    .gallery-tile__caption {
+        position: absolute;
+        inset-inline: 0;
+        bottom: 0;
+        padding: 5rem 1.2rem 1.15rem;
+        background: linear-gradient(180deg, transparent 0%, rgb(26 31 15 / 32%) 28%, rgb(36 42 20 / 92%) 100%);
+        color: #fff;
+        backdrop-filter: blur(1.5px);
+    }
+
+    .gallery-tile h3 {
+        color: #fff;
+        font-size: 1.12rem;
+        text-shadow: 0 1px 12px rgb(0 0 0 / 30%);
+        transition: transform 260ms ease;
+    }
+
+    .gallery-tile p {
+        display: -webkit-box;
+        overflow: hidden;
+        max-height: 0;
+        margin-top: 0;
+        color: rgb(255 255 255 / 86%);
+        opacity: 0;
+        transform: translateY(0.55rem);
+        transition: max-height 300ms ease, margin-top 300ms ease, opacity 220ms ease, transform 300ms ease;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+    }
+
+    .gallery-tile:hover p,
+    .gallery-tile:focus p,
+    .gallery-tile:focus-within p {
+        max-height: 5.25rem;
+        margin-top: 0.45rem;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .gallery-tile:hover h3,
+    .gallery-tile:focus h3,
+    .gallery-tile:focus-within h3 {
+        transform: translateY(-0.08rem);
     }
 
     .about-gallery-strip {

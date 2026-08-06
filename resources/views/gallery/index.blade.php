@@ -26,21 +26,7 @@
                 @if ($branch->galleryImages->isNotEmpty())
                     <div class="gallery-masonry mt-8">
                         @foreach ($branch->galleryImages as $image)
-                            <article class="gallery-tile">
-                                <img
-                                    src="{{ media_variant_url($image->image, 'card') }}"
-                                    @if (media_srcset($image->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($image->image, ['thumb', 'card', 'large']) }}" @endif
-                                    alt="{{ $image->localized('alt_text', $image->localized('title')) }}"
-                                    loading="lazy"
-                                    sizes="(max-width: 768px) 100vw, 33vw"
-                                >
-                                <div>
-                                    <h3>{{ $image->localized('title') }}</h3>
-                                    @if ($image->localized('description'))
-                                        <p>{{ $image->localized('description') }}</p>
-                                    @endif
-                                </div>
-                            </article>
+                            @include('partials.gallery-tile', ['image' => $image])
                         @endforeach
                     </div>
                 @else
@@ -59,21 +45,7 @@
                 </div>
                 <div class="gallery-masonry">
                     @foreach ($sharedImages as $image)
-                        <article class="gallery-tile">
-                            <img
-                                src="{{ media_variant_url($image->image, 'card') }}"
-                                @if (media_srcset($image->image, ['thumb', 'card', 'large'])) srcset="{{ media_srcset($image->image, ['thumb', 'card', 'large']) }}" @endif
-                                alt="{{ $image->localized('alt_text', $image->localized('title')) }}"
-                                loading="lazy"
-                                sizes="(max-width: 768px) 100vw, 33vw"
-                            >
-                            <div>
-                                <h3>{{ $image->localized('title') }}</h3>
-                                @if ($image->localized('description'))
-                                    <p>{{ $image->localized('description') }}</p>
-                                @endif
-                            </div>
-                        </article>
+                        @include('partials.gallery-tile', ['image' => $image])
                     @endforeach
                 </div>
             </section>

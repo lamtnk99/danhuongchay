@@ -44,7 +44,7 @@ class SitemapController extends Controller
             ['name' => 'contact', 'priority' => '0.7', 'changefreq' => 'monthly'],
         ])->flatMap(fn (array $url): Collection => $this->localizedUrlEntries(
             SeoService::routeAlternates($url['name']),
-            now(),
+            null,
             $url['changefreq'],
             $url['priority']
         ));
@@ -96,7 +96,7 @@ class SitemapController extends Controller
             ));
     }
 
-    private function localizedUrlEntries(array $alternates, Carbon $lastmod, string $changefreq, string $priority): Collection
+    private function localizedUrlEntries(array $alternates, ?Carbon $lastmod, string $changefreq, string $priority): Collection
     {
         return collect($alternates)
             ->map(fn (string $loc): array => [

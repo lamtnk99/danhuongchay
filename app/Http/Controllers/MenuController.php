@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Dish;
 use App\Services\SeoService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -25,6 +26,7 @@ class MenuController extends Controller
         $dishes = Dish::query()
             ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->when($selectedCategory, function ($query) use ($selectedCategory): void {
                 $query->whereHas('category', function ($categoryQuery) use ($selectedCategory): void {
                     $categoryQuery->where('slug', $selectedCategory)
@@ -37,9 +39,15 @@ class MenuController extends Controller
             ->paginate(9)
             ->withQueryString();
 
+        abort_if($dishes->currentPage() > $dishes->lastPage(), 404);
+
         $schemaCategories = Category::dish()
             ->active()
-            ->with(['translations', 'dishes' => fn ($query) => $query->active()->with('translations')->orderBy('name')])
+            ->with(['translations', 'dishes' => fn ($query) => $query
+                ->active()
+                ->availableInLocale()
+                ->with('translations')
+                ->orderBy('name')])
             ->orderBy('id')
             ->get();
 
@@ -58,8 +66,10 @@ class MenuController extends Controller
         return view('menu.index', compact('categories', 'dishes', 'selectedCategory', 'search', 'seo', 'schemas'));
     }
 
-    public function show(Dish|string $dish): View
+    public function show(Dish|string $dish): RedirectResponse|View
     {
+        $requestedSlug = is_string($dish) ? $dish : $dish->slug;
+
         if (! $dish instanceof Dish) {
             $dish = Dish::query()
                 ->where('slug', $dish)
@@ -70,9 +80,14 @@ class MenuController extends Controller
         $dish->load(['category.translations', 'translations']);
         abort_unless($dish->is_active, 404);
 
+        if ($redirect = $this->localizedRedirect($dish, $requestedSlug)) {
+            return $redirect;
+        }
+
         $relatedDishes = Dish::query()
             ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->where('category_id', $dish->category_id)
             ->whereKeyNot($dish->getKey())
             ->orderByDesc('is_featured')
@@ -83,6 +98,7 @@ class MenuController extends Controller
         $pairingDishes = Dish::query()
             ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->whereKeyNot($dish->getKey())
             ->where('category_id', '!=', $dish->category_id)
@@ -114,5 +130,23 @@ class MenuController extends Controller
         ];
 
         return view('menu.show', compact('dish', 'relatedDishes', 'pairingDishes', 'breadcrumbs', 'seo', 'schemas'));
+    }
+
+    private function localizedRedirect(Dish $dish, string $requestedSlug): ?RedirectResponse
+    {
+        if (current_locale() === config('locales.default', 'vi')) {
+            return null;
+        }
+
+        $translation = $dish->translation(current_locale());
+        if (! $translation || blank($translation->slug) || blank($translation->name)) {
+            return redirect()->route('menu.show', $dish, 301);
+        }
+
+        if ($requestedSlug !== $translation->slug) {
+            return redirect()->route('localized.menu.show', ['slug' => $translation->slug], 301);
+        }
+
+        return null;
     }
 }

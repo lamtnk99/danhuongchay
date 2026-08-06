@@ -147,7 +147,7 @@ Route::get('/quan-chay-buon-ma-thuot', [LocalSeoController::class, 'vegetarianRe
 Route::get('/dat-tiec-chay', [LocalSeoController::class, 'cateringHub'])->name('local.vegetarian-catering');
 Route::get('/dat-tiec-chay-hai-phong', [LocalSeoController::class, 'vegetarianCateringHaiPhong'])->name('local.vegetarian-catering-hai-phong');
 Route::get('/dat-tiec-chay-buon-ma-thuot', [LocalSeoController::class, 'vegetarianCateringBuonMaThuot'])->name('local.vegetarian-catering-buon-ma-thuot');
-Route::redirect('/mam-cung-chay-hai-phong', '/dat-tiec-chay-hai-phong');
+Route::permanentRedirect('/mam-cung-chay-hai-phong', '/dat-tiec-chay-hai-phong');
 Route::get('/gioi-thieu', [PageController::class, 'about'])->name('about');
 Route::get('/khong-gian', GalleryController::class)->name('gallery.index');
 Route::get('/trang/{page:slug}', [PageController::class, 'show'])->name('pages.show');
@@ -170,7 +170,7 @@ Route::post('/chat/{chatSession}/messages', [ChatController::class, 'send'])->na
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', function () {
-    $content = setting('robots_txt_content') ?: "User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\nSitemap: ".route('sitemap')."\n";
+    $content = setting('robots_txt_content') ?: "User-agent: *\nAllow: /\nDisallow: /admin\nSitemap: ".route('sitemap')."\n";
 
     return response(
         $content,

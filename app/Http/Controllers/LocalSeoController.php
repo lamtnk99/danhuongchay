@@ -42,16 +42,21 @@ class LocalSeoController extends Controller
         $branch = Branch::query()->active()->where('slug', 'hai-phong')->first();
 
         $featuredDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->orderBy('sort_order')
             ->limit(6)
             ->get();
 
         $latestPosts = Post::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->published()
+            ->availableInLocale()
+            ->where(fn ($query) => $query
+                ->where('slug', 'like', '%hai-phong%')
+                ->orWhere('title', 'like', '%Hải Phòng%'))
             ->latest('published_at')
             ->limit(3)
             ->get();
@@ -62,7 +67,8 @@ class LocalSeoController extends Controller
             __('site.auto.auto_9b8af8176082'),
             __('site.auto.auto_e082cd986084'),
             __('site.auto.auto_b582e494753a'),
-            localized_route('local.vegetarian-restaurant-hai-phong')
+            localized_route('local.vegetarian-restaurant-hai-phong'),
+            $branch?->image
         );
 
         $breadcrumbs = [
@@ -84,8 +90,9 @@ class LocalSeoController extends Controller
         $branch = Branch::query()->active()->where('slug', 'hai-phong')->first();
 
         $suggestedDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->orderBy('sort_order')
             ->limit(6)
@@ -113,21 +120,27 @@ class LocalSeoController extends Controller
 
         return view('local.dat-tiec-chay-hai-phong', compact('branch', 'suggestedDishes', 'faqs', 'seo', 'schemas'));
     }
+
     public function vegetarianRestaurantBuonMaThuot(): View
     {
         $branch = Branch::query()->active()->where('slug', 'buon-ma-thuot')->first();
 
         $featuredDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->orderBy('sort_order')
             ->limit(6)
             ->get();
 
         $latestPosts = Post::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->published()
+            ->availableInLocale()
+            ->where(fn ($query) => $query
+                ->where('slug', 'like', '%buon-ma-thuot%')
+                ->orWhere('title', 'like', '%Buôn Ma Thuột%'))
             ->latest('published_at')
             ->limit(3)
             ->get();
@@ -161,8 +174,9 @@ class LocalSeoController extends Controller
         $branch = Branch::query()->active()->where('slug', 'buon-ma-thuot')->first();
 
         $suggestedDishes = Dish::query()
-            ->with('category')
+            ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->orderBy('sort_order')
             ->limit(6)

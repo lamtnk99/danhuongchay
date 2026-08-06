@@ -24,7 +24,7 @@
                     <a href="{{ localized_route('reservations.create') }}" class="btn-primary" data-track-event="click_reservation_cta" data-track-category="reservation" data-track-label="Local SEO hero reservation" data-facebook-event="ClickReservation">{{ __('site.auto.auto_64a2210d034c') }}</a>
                     <a href="{{ localized_route('menu.index') }}" class="btn-secondary">{{ __('site.auto.auto_c5f9d6d26af7') }}</a>
                     <a href="{{ localized_route('local.vegetarian-catering-hai-phong') }}" class="btn-ghost" data-track-event="click_catering_cta" data-track-category="catering" data-track-label="Local SEO hero catering" data-facebook-event="ClickCatering">{{ __('site.auto.auto_637bb8414ef9') }}</a>
-                    <a href="tel:{{ preg_replace('/\D+/', '', setting('hotline', '0947361515')) }}" class="btn-ghost" data-track-event="click_call" data-track-category="contact" data-track-label="Local SEO hero call" data-facebook-event="ClickCall">{{ __('site.auto.auto_5cab6ab48928') }}</a>
+                    <a href="tel:{{ preg_replace('/\D+/', '', $branch?->hotline ?: $branch?->phone ?: setting('hotline', '0947361515')) }}" class="btn-ghost" data-track-event="click_call" data-track-category="contact" data-track-label="Local SEO hero call" data-facebook-event="ClickCall">{{ __('site.auto.auto_5cab6ab48928') }}</a>
                 </div>
             </div>
 
@@ -32,15 +32,15 @@
                 <dl class="grid gap-4 text-sm text-[#f5f0e0] sm:grid-cols-2">
                     <div class="rounded-2xl bg-white/12 p-4">
                         <dt class="font-semibold text-amber-100">{{ __('site.auto.auto_1fdae2306b86') }}</dt>
-                        <dd class="mt-2 leading-6">{{ setting('address') }}</dd>
+                        <dd class="mt-2 leading-6">{{ $branch?->address ?: setting('address') }}</dd>
                     </div>
                     <div class="rounded-2xl bg-white/12 p-4">
                         <dt class="font-semibold text-amber-100">{{ __('site.auto.auto_bf551503266a') }}</dt>
-                        <dd class="mt-2 leading-6">{{ setting('hotline', setting('phone')) }}</dd>
+                        <dd class="mt-2 leading-6">{{ $branch?->hotline ?: $branch?->phone ?: setting('hotline', setting('phone')) }}</dd>
                     </div>
                     <div class="rounded-2xl bg-white/12 p-4">
                         <dt class="font-semibold text-amber-100">{{ __('site.auto.auto_1a8ba12780ee') }}</dt>
-                        <dd class="mt-2 leading-6">{{ setting('opening_hours') }}</dd>
+                        <dd class="mt-2 leading-6">{{ $branch?->opening_hours ?: setting('opening_hours') }}</dd>
                     </div>
                     <div class="rounded-2xl bg-white/12 p-4">
                         <dt class="font-semibold text-amber-100">{{ __('site.auto.auto_c954ff648890') }}</dt>
@@ -113,8 +113,8 @@
                 </div>
             </div>
             <div class="overflow-hidden rounded-3xl border border-white/15 bg-white/10 shadow-2xl">
-                @if (setting('google_map_iframe'))
-                    {!! setting('google_map_iframe') !!}
+                @if ($branch?->google_map_iframe ?: setting('google_map_iframe'))
+                    {!! $branch?->google_map_iframe ?: setting('google_map_iframe') !!}
                 @endif
             </div>
         </div>

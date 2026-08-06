@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Models\Branch;
 use App\Models\Category;
+use App\Models\Dish;
+use App\Models\Page;
 use App\Models\Post;
+use App\Support\OpeningHours;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
@@ -326,7 +329,35 @@ class SeoService
             return null;
         }
 
+        $model = collect($parameters)->first(fn ($value): bool => $value instanceof Dish || $value instanceof Page || $value instanceof Post);
+        if ($model && ! self::hasUsableTranslation($model, $locale)) {
+            return null;
+        }
+
         return route($routeName, self::parametersForLocale($locale, $name, $parameters));
+    }
+
+    private static function hasUsableTranslation(Dish|Page|Post $model, string $locale): bool
+    {
+        if ($locale === config('locales.default', 'vi')) {
+            return true;
+        }
+
+        $translation = $model->translation($locale);
+
+        return match (true) {
+            $model instanceof Post => $translation
+                && filled($translation->slug)
+                && filled($translation->title)
+                && filled($translation->content),
+            $model instanceof Page => $translation
+                && filled($translation->slug)
+                && filled($translation->title)
+                && filled($translation->content),
+            default => $translation
+                && filled($translation->slug)
+                && filled($translation->name),
+        };
     }
 
     private static function parametersForLocale(string $locale, string $name, array $parameters): array
@@ -349,6 +380,17 @@ class SeoService
 
     private static function branchSchemaNode(Branch $branch, string $organizationId): array
     {
+        $openingHours = OpeningHours::fromBranch($branch);
+        $days = [
+            'https://schema.org/Monday',
+            'https://schema.org/Tuesday',
+            'https://schema.org/Wednesday',
+            'https://schema.org/Thursday',
+            'https://schema.org/Friday',
+            'https://schema.org/Saturday',
+            'https://schema.org/Sunday',
+        ];
+
         return array_filter([
             '@type' => ['Restaurant', 'LocalBusiness'],
             '@id' => self::branchUrl($branch).'#local-business',
@@ -360,7 +402,17 @@ class SeoService
             'email' => $branch->email ?: setting('email'),
             'priceRange' => setting('schema_price_range', 'VND'),
             'servesCuisine' => ['Vietnamese', 'Vegetarian', 'Vegan'],
-            'openingHours' => $branch->opening_hours ?: setting('schema_opening_hours', setting('opening_hours')),
+            'menu' => localized_route('menu.index'),
+            'acceptsReservations' => localized_route('reservations.create').'?branch='.$branch->id,
+            'hasMap' => self::mapUrl($branch->google_map_iframe),
+            'openingHoursSpecification' => collect($openingHours->slots)
+                ->map(fn (array $slot): array => [
+                    '@type' => 'OpeningHoursSpecification',
+                    'dayOfWeek' => $days,
+                    'opens' => $slot['start'],
+                    'closes' => $slot['end'],
+                ])
+                ->all(),
             'address' => [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $branch->address ?: setting('schema_address', setting('address')),
@@ -368,8 +420,29 @@ class SeoService
                 'addressCountry' => 'VN',
             ],
             'parentOrganization' => ['@id' => $organizationId],
-            'sameAs' => array_values(array_filter([$branch->facebook_url, $branch->zalo_url])),
+            'sameAs' => array_values(array_unique(array_filter([
+                $branch->facebook_url,
+                $branch->zalo_url,
+                ...self::sameAs(),
+            ]))),
         ], fn ($value): bool => filled($value) || is_array($value));
+    }
+
+    private static function mapUrl(?string $map): ?string
+    {
+        if (blank($map)) {
+            return null;
+        }
+
+        if (filter_var($map, FILTER_VALIDATE_URL)) {
+            return $map;
+        }
+
+        if (preg_match('/\bsrc=["\']([^"\']+)["\']/i', $map, $matches)) {
+            return html_entity_decode($matches[1], ENT_QUOTES | ENT_HTML5);
+        }
+
+        return null;
     }
 
     private static function branchUrl(Branch $branch): string

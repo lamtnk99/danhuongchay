@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Services\PostInternalLinkService;
 use App\Services\SeoService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class BlogController extends Controller
@@ -16,8 +17,11 @@ class BlogController extends Controller
         $posts = Post::query()
             ->with(['category.translations', 'translations'])
             ->published()
+            ->availableInLocale()
             ->latest('published_at')
             ->paginate(6);
+
+        abort_if($posts->currentPage() > $posts->lastPage(), 404);
 
         $page = $posts->currentPage();
         $canonical = $page === 1 ? localized_route('blog.index') : $posts->url($page);
@@ -46,8 +50,10 @@ class BlogController extends Controller
         return view('blog.index', compact('posts', 'seo', 'schemas'));
     }
 
-    public function show(Post|string $post): View
+    public function show(Post|string $post): RedirectResponse|View
     {
+        $requestedSlug = is_string($post) ? $post : $post->slug;
+
         if (! $post instanceof Post) {
             $post = Post::query()
                 ->where('slug', $post)
@@ -58,6 +64,10 @@ class BlogController extends Controller
         abort_if(! $post->is_active || blank($post->published_at) || $post->published_at->isFuture(), 404);
 
         $post->load(['category.translations', 'translations']);
+
+        if ($redirect = $this->localizedRedirect($post, $requestedSlug)) {
+            return $redirect;
+        }
 
         $relatedPosts = $this->internalLinks->relatedPosts($post);
         $neighbors = $this->internalLinks->chronologicalNeighbors($post);
@@ -99,5 +109,23 @@ class BlogController extends Controller
             'seo',
             'schemas'
         ));
+    }
+
+    private function localizedRedirect(Post $post, string $requestedSlug): ?RedirectResponse
+    {
+        if (current_locale() === config('locales.default', 'vi')) {
+            return null;
+        }
+
+        $translation = $post->translation(current_locale());
+        if (! $translation || blank($translation->slug) || blank($translation->title) || blank($translation->content)) {
+            return redirect()->route('blog.show', $post, 301);
+        }
+
+        if ($requestedSlug !== $translation->slug) {
+            return redirect()->route('localized.blog.show', ['slug' => $translation->slug], 301);
+        }
+
+        return null;
     }
 }

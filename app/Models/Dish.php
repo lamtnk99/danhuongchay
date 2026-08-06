@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Support\GeneratesSlugs;
 use App\Models\Concerns\HasLocalizedContent;
+use App\Support\GeneratesSlugs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -70,6 +70,20 @@ class Dish extends Model
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    public function scopeAvailableInLocale(Builder $query, ?string $locale = null): Builder
+    {
+        $locale = $locale ?: current_locale();
+
+        if ($locale === config('locales.default', 'vi')) {
+            return $query;
+        }
+
+        return $query->whereHas('translations', fn (Builder $translationQuery) => $translationQuery
+            ->where('locale', $locale)
+            ->whereNotNull('slug')->where('slug', '!=', '')
+            ->whereNotNull('name')->where('name', '!=', ''));
     }
 
     public function scopeSearch(Builder $query, ?string $keyword): Builder

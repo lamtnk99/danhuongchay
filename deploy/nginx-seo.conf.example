@@ -1,0 +1,28 @@
+# Add these directives to the existing production Nginx configuration.
+# The Laravel middleware also redirects non-canonical HTML requests, but doing
+# it here covers static files before they reach PHP.
+
+# Add this return to every existing HTTP/HTTPS server block for
+# www.danhuongchay.com (keep the current listen/SSL certificate directives):
+# return 301 https://danhuongchay.com$request_uri;
+
+# Add the following locations and gzip directives inside the canonical
+# danhuongchay.com server block.
+location ~* \.(?:css|js|mjs|woff2?)$ {
+    expires 1y;
+    add_header Cache-Control "public, max-age=31536000, immutable" always;
+    access_log off;
+    try_files $uri =404;
+}
+
+location ~* \.(?:avif|webp|jpe?g|png|gif|svg|ico)$ {
+    expires 30d;
+    add_header Cache-Control "public, max-age=2592000" always;
+    access_log off;
+    try_files $uri =404;
+}
+
+gzip on;
+gzip_vary on;
+gzip_min_length 1024;
+gzip_types text/plain text/css application/javascript application/json application/xml image/svg+xml;

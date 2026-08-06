@@ -75,6 +75,21 @@ class Post extends Model
             ->where('published_at', '<=', now());
     }
 
+    public function scopeAvailableInLocale(Builder $query, ?string $locale = null): Builder
+    {
+        $locale = $locale ?: current_locale();
+
+        if ($locale === config('locales.default', 'vi')) {
+            return $query;
+        }
+
+        return $query->whereHas('translations', fn (Builder $translationQuery) => $translationQuery
+            ->where('locale', $locale)
+            ->whereNotNull('slug')->where('slug', '!=', '')
+            ->whereNotNull('title')->where('title', '!=', '')
+            ->whereNotNull('content')->where('content', '!=', ''));
+    }
+
     public function scopeFeatured(Builder $query): Builder
     {
         return $query->where('is_featured', true);

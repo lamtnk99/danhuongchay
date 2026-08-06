@@ -19,6 +19,7 @@ class HomeController extends Controller
         $featuredDishes = Dish::query()
             ->with(['category.translations', 'translations'])
             ->active()
+            ->availableInLocale()
             ->featured()
             ->orderBy('sort_order')
             ->latest()
@@ -28,6 +29,7 @@ class HomeController extends Controller
         $latestPosts = Post::query()
             ->with(['category.translations', 'translations'])
             ->published()
+            ->availableInLocale()
             ->latest('published_at')
             ->limit(3)
             ->get();

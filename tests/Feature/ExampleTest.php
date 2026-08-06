@@ -755,6 +755,44 @@ class ExampleTest extends TestCase
             ->assertSee('<link rel="canonical" href="'.route('blog.index', ['page' => 2]).'">', false)
             ->assertSee('"@type": "CollectionPage"', false)
             ->assertSee('"@type": "ItemList"', false);
+
+        $this->get(route('blog.index', ['page' => 99999]))->assertNotFound();
+        $this->get(route('localized.blog.index', ['page' => 99999]))->assertNotFound();
+    }
+
+    public function test_non_canonical_localized_detail_slugs_redirect_permanently(): void
+    {
+        $dish = Dish::with('translations')->whereHas('translations', fn ($query) => $query->where('locale', 'en'))->firstOrFail();
+        $post = Post::published()->with('translations')->whereHas('translations', fn ($query) => $query->where('locale', 'en'))->firstOrFail();
+
+        $this->get(route('localized.menu.show', ['slug' => $dish->slug]))
+            ->assertStatus(301)
+            ->assertRedirect(route('localized.menu.show', ['slug' => $dish->localizedSlug('en')]));
+
+        $this->get(route('localized.blog.show', ['slug' => $post->slug]))
+            ->assertStatus(301)
+            ->assertRedirect(route('localized.blog.show', ['slug' => $post->localizedSlug('en')]));
+    }
+
+    public function test_untranslated_posts_are_not_exposed_as_english_content(): void
+    {
+        $post = Post::published()->firstOrFail()->replicate();
+        $post->title = 'Bài chỉ có tiếng Việt';
+        $post->slug = 'bai-chi-co-tieng-viet';
+        $post->published_at = now();
+        $post->save();
+
+        $this->get(route('localized.home'))
+            ->assertOk()
+            ->assertDontSee($post->title);
+
+        $this->get(route('localized.blog.index'))
+            ->assertOk()
+            ->assertDontSee($post->title);
+
+        $this->get(route('localized.blog.show', ['slug' => $post->slug]))
+            ->assertStatus(301)
+            ->assertRedirect(route('blog.show', $post));
     }
 
     public function test_language_switcher_keeps_current_static_page(): void
@@ -799,6 +837,11 @@ class ExampleTest extends TestCase
             ->assertDontSee('/admin', false)
             ->assertDontSee('/login', false)
             ->assertDontSee('?category=', false);
+
+        $xml = $this->get(route('sitemap'))->assertOk()->getContent();
+        preg_match('/<url>\s*<loc>'.preg_quote(route('home'), '/').'<\/loc>(.*?)<\/url>/s', $xml, $homeEntry);
+        $this->assertNotEmpty($homeEntry);
+        $this->assertStringNotContainsString('<lastmod>', $homeEntry[1]);
     }
 
     public function test_robots_fallback_points_to_sitemap_and_blocks_private_paths(): void
@@ -810,8 +853,12 @@ class ExampleTest extends TestCase
             ->assertSee('User-agent: *')
             ->assertSee('Allow: /')
             ->assertSee('Disallow: /admin')
-            ->assertSee('Disallow: /login')
+            ->assertDontSee('Disallow: /login')
             ->assertSee('Sitemap: '.route('sitemap'));
+
+        $this->get(route('login'))
+            ->assertOk()
+            ->assertSee('<meta name="robots" content="noindex, follow">', false);
     }
 
     public function test_restaurant_schema_is_multi_branch_and_dish_schema_has_product_offer(): void
@@ -823,7 +870,10 @@ class ExampleTest extends TestCase
             ->assertOk()
             ->assertSee('"@graph"', false)
             ->assertSee('"LocalBusiness"', false)
-            ->assertSee($branch->name, false);
+            ->assertSee($branch->name, false)
+            ->assertSee('"openingHoursSpecification"', false)
+            ->assertSee('"hasMap"', false)
+            ->assertSee('"menu"', false);
 
         $this->get(route('menu.show', $dish))
             ->assertOk()
@@ -831,6 +881,42 @@ class ExampleTest extends TestCase
             ->assertSee('"@type": "Product"', false)
             ->assertSee('"@type": "Offer"', false)
             ->assertSee('"@type": "BreadcrumbList"', false);
+    }
+
+    public function test_hai_phong_landing_uses_branch_specific_local_signals(): void
+    {
+        $branch = Branch::where('slug', 'hai-phong')->firstOrFail();
+        $branch->update([
+            'address' => 'Địa chỉ riêng cơ sở Hải Phòng',
+            'hotline' => '0912 345 678',
+            'opening_hours' => '08:30 - 13:30 | 16:30 - 21:00 hằng ngày',
+        ]);
+        SiteSetting::set('address', 'Địa chỉ website mặc định', 'text', 'general');
+
+        $this->get(route('local.vegetarian-restaurant-hai-phong'))
+            ->assertOk()
+            ->assertSee('<title>Nhà hàng chay Hải Phòng | Đàn Hương Chay</title>', false)
+            ->assertSee('Địa chỉ riêng cơ sở Hải Phòng')
+            ->assertSee('0912 345 678')
+            ->assertSee('08:30 - 13:30 | 16:30 - 21:00 hằng ngày')
+            ->assertDontSee('Địa chỉ website mặc định');
+    }
+
+    public function test_legacy_and_non_canonical_hosts_redirect_permanently(): void
+    {
+        $this->get('/mam-cung-chay-hai-phong')
+            ->assertStatus(301)
+            ->assertRedirect('/dat-tiec-chay-hai-phong');
+
+        config([
+            'app.url' => 'https://danhuongchay.com',
+            'seo.enforce_canonical_host' => true,
+        ]);
+
+        $this->withHeader('Host', 'www.danhuongchay.com')
+            ->get('/blog?page=2')
+            ->assertStatus(301)
+            ->assertRedirect('https://danhuongchay.com/blog?page=2');
     }
 
     public function test_google_tracking_uses_admin_settings_before_env_fallback(): void
@@ -884,6 +970,25 @@ class ExampleTest extends TestCase
             preg_match_all('/<h1\b/i', $html, $matches);
 
             $this->assertCount(1, $matches[0], "Expected exactly one H1 on {$url}.");
+        }
+    }
+
+    public function test_gallery_cards_expose_titles_and_descriptions_responsively(): void
+    {
+        $image = GalleryImage::query()
+            ->with('translations')
+            ->active()
+            ->where('location', 'space')
+            ->firstOrFail();
+
+        $response = $this->get(route('gallery.index'))
+            ->assertOk()
+            ->assertSee('class="gallery-tile" tabindex="0"', false)
+            ->assertSee('class="gallery-tile__caption"', false)
+            ->assertSee($image->localized('title'));
+
+        if ($image->localized('description')) {
+            $response->assertSee($image->localized('description'));
         }
     }
 

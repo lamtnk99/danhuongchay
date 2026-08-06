@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GalleryImage;
 use App\Models\Branch;
+use App\Models\GalleryImage;
 use App\Models\Page;
 use App\Services\SeoService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -52,8 +53,10 @@ class PageController extends Controller
         return view('about', compact('seo', 'schemas', 'page', 'galleryImages', 'branches'));
     }
 
-    public function show(Page|string $page): View
+    public function show(Page|string $page): RedirectResponse|View
     {
+        $requestedSlug = is_string($page) ? $page : $page->slug;
+
         if (! $page instanceof Page) {
             $page = Page::query()
                 ->where('slug', $page)
@@ -63,6 +66,10 @@ class PageController extends Controller
 
         abort_unless($page->is_active, 404);
         $page->load('translations');
+
+        if ($redirect = $this->localizedRedirect($page, $requestedSlug)) {
+            return $redirect;
+        }
 
         $seo = SeoService::page(
             $page->localized('meta_title') ?: $page->localized('title'),
@@ -86,5 +93,23 @@ class PageController extends Controller
         ];
 
         return view('page', compact('page', 'seo', 'schemas'));
+    }
+
+    private function localizedRedirect(Page $page, string $requestedSlug): ?RedirectResponse
+    {
+        if (current_locale() === config('locales.default', 'vi')) {
+            return null;
+        }
+
+        $translation = $page->translation(current_locale());
+        if (! $translation || blank($translation->slug) || blank($translation->title) || blank($translation->content)) {
+            return redirect()->route('pages.show', $page, 301);
+        }
+
+        if ($requestedSlug !== $translation->slug) {
+            return redirect()->route('localized.pages.show', ['page' => $translation->slug], 301);
+        }
+
+        return null;
     }
 }
