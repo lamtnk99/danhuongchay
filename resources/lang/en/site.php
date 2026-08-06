@@ -39,6 +39,11 @@ return [
         'description' => 'Small notes from our vegetarian kitchen, from choosing dishes to caring for daily meals and living a little more gently.',
         'related_posts' => 'Related posts',
         'read_more' => 'Read more',
+        'related_description' => 'More guides on the same topic to help you explore your options in greater depth.',
+        'previous_post' => 'Previous post',
+        'next_post' => 'Next post',
+        'page_title' => 'Page :page',
+        'by' => 'By',
     ],
     'dish' => [
         'sale' => 'On promotion',

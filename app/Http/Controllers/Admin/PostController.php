@@ -33,8 +33,16 @@ class PostController extends Controller
     public function create(): View
     {
         $categories = Category::post()->active()->orderBy('name')->get();
+        $linkablePosts = Post::query()
+            ->with('category:id,name')
+            ->orderBy('title')
+            ->get(['id', 'category_id', 'title']);
 
-        return view('admin.posts.create', ['post' => new Post(['is_active' => true]), 'categories' => $categories]);
+        return view('admin.posts.create', [
+            'post' => new Post(['is_active' => true]),
+            'categories' => $categories,
+            'linkablePosts' => $linkablePosts,
+        ]);
     }
 
     public function store(PostRequest $request): RedirectResponse
@@ -47,6 +55,7 @@ class PostController extends Controller
 
         $post = Post::create($data);
         $this->syncEnglishTranslation($request, $post);
+        $this->syncInternalLinks($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã thêm bài viết.');
     }
@@ -54,8 +63,14 @@ class PostController extends Controller
     public function edit(Post $post): View
     {
         $categories = Category::post()->orderBy('name')->get();
+        $linkablePosts = Post::query()
+            ->with('category:id,name')
+            ->whereKeyNot($post->getKey())
+            ->orderBy('title')
+            ->get(['id', 'category_id', 'title']);
+        $post->load('internalLinks');
 
-        return view('admin.posts.edit', compact('post', 'categories'));
+        return view('admin.posts.edit', compact('post', 'categories', 'linkablePosts'));
     }
 
     public function update(PostRequest $request, Post $post): RedirectResponse
@@ -70,6 +85,7 @@ class PostController extends Controller
 
         $post->update($data);
         $this->syncEnglishTranslation($request, $post);
+        $this->syncInternalLinks($request, $post);
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã cập nhật bài viết.');
     }
@@ -85,7 +101,7 @@ class PostController extends Controller
     private function normalizedData(PostRequest $request): array
     {
         return collect($request->validated())
-            ->except(['thumbnail', 'translations'])
+            ->except(['thumbnail', 'translations', 'related_post_ids'])
             ->merge([
                 'is_featured' => $request->boolean('is_featured'),
                 'is_active' => $request->boolean('is_active'),
@@ -105,5 +121,18 @@ class PostController extends Controller
         }
 
         $post->translations()->updateOrCreate(['locale' => 'en'], $translation->all());
+    }
+
+    private function syncInternalLinks(PostRequest $request, Post $post): void
+    {
+        $links = collect($request->validated('related_post_ids', []))
+            ->reject(fn (int|string $id): bool => (int) $id === $post->getKey())
+            ->values()
+            ->mapWithKeys(fn (int|string $id, int $position): array => [
+                (int) $id => ['position' => $position],
+            ])
+            ->all();
+
+        $post->internalLinks()->sync($links);
     }
 }

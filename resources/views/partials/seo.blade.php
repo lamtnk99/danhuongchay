@@ -43,6 +43,17 @@
 <meta property="og:url" content="{{ $canonical }}">
 <meta property="og:image" content="{{ $image }}">
 <meta property="og:image:alt" content="{{ $imageAlt }}">
+@if ($type === 'article')
+    @if (filled($seo['published_time'] ?? null))
+        <meta property="article:published_time" content="{{ $seo['published_time'] }}">
+    @endif
+    @if (filled($seo['modified_time'] ?? null))
+        <meta property="article:modified_time" content="{{ $seo['modified_time'] }}">
+    @endif
+    @if (filled($seo['section'] ?? null))
+        <meta property="article:section" content="{{ $seo['section'] }}">
+    @endif
+@endif
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $title }}">

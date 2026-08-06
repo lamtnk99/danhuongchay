@@ -584,6 +584,7 @@ class ExampleTest extends TestCase
     {
         $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
         $categoryId = Post::query()->firstOrFail()->category_id;
+        $relatedPostIds = Post::query()->take(2)->pluck('id')->all();
 
         $this->actingAs($admin)
             ->post(route('admin.posts.store'), [
@@ -593,6 +594,7 @@ class ExampleTest extends TestCase
                 'excerpt' => 'Mô tả ngắn cho bài viết không có bản dịch.',
                 'content' => 'Nội dung bài viết bằng tiếng Việt.',
                 'is_active' => '1',
+                'related_post_ids' => $relatedPostIds,
                 'translations' => [
                     'en' => [
                         'title' => '',
@@ -614,6 +616,24 @@ class ExampleTest extends TestCase
             'post_id' => $post->id,
             'locale' => 'en',
         ]);
+        $this->assertDatabaseHas('post_internal_links', [
+            'source_post_id' => $post->id,
+            'target_post_id' => $relatedPostIds[0],
+            'position' => 0,
+        ]);
+        $this->assertDatabaseHas('post_internal_links', [
+            'source_post_id' => $post->id,
+            'target_post_id' => $relatedPostIds[1],
+            'position' => 1,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.posts.edit', $post))
+            ->assertOk()
+            ->assertSee('data-related-post-picker', false)
+            ->assertSee('data-related-post-search', false)
+            ->assertSee('Bài viết đã chọn')
+            ->assertSee('name="related_post_ids[]" value="'.$relatedPostIds[0].'"', false);
     }
 
     public function test_admin_post_english_title_is_required_when_other_translation_content_is_filled(): void
@@ -700,6 +720,41 @@ class ExampleTest extends TestCase
             ->assertOk()
             ->assertSee('<link rel="alternate" hreflang="en" href="'.route('localized.blog.show', ['slug' => $post->localizedSlug('en')]).'">', false)
             ->assertSee('"@type": "BreadcrumbList"', false);
+    }
+
+    public function test_blog_internal_links_and_paginated_seo_are_crawlable(): void
+    {
+        $posts = Post::published()->latest('published_at')->take(3)->get();
+        $source = $posts->shift();
+        $curated = $posts->values();
+
+        $source->internalLinks()->sync([
+            $curated[0]->id => ['position' => 0],
+            $curated[1]->id => ['position' => 1],
+        ]);
+
+        $this->get(route('blog.show', $source))
+            ->assertOk()
+            ->assertSee(route('blog.show', $curated[0]), false)
+            ->assertSee(route('blog.show', $curated[1]), false)
+            ->assertSee('rel="prev"', false)
+            ->assertSee('"@type": "BlogPosting"', false)
+            ->assertSee('<meta property="article:published_time"', false)
+            ->assertSee('<meta property="article:modified_time"', false);
+
+        while (Post::published()->count() < 7) {
+            $copy = $source->replicate();
+            $copy->title .= ' '.Post::count();
+            $copy->slug .= '-'.Post::count();
+            $copy->published_at = now()->subDays(Post::count() + 1);
+            $copy->save();
+        }
+
+        $this->get(route('blog.index', ['page' => 2]))
+            ->assertOk()
+            ->assertSee('<link rel="canonical" href="'.route('blog.index', ['page' => 2]).'">', false)
+            ->assertSee('"@type": "CollectionPage"', false)
+            ->assertSee('"@type": "ItemList"', false);
     }
 
     public function test_language_switcher_keeps_current_static_page(): void

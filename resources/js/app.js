@@ -99,6 +99,129 @@ document.querySelectorAll('[data-admin-tabs]').forEach((tabs) => {
     });
 });
 
+document.querySelectorAll('[data-related-post-picker]').forEach((picker) => {
+    const search = picker.querySelector('[data-related-post-search]');
+    const options = Array.from(picker.querySelectorAll('[data-related-post-option]'));
+    const selectedList = picker.querySelector('[data-related-post-selected]');
+    const emptyState = picker.querySelector('[data-related-post-empty]');
+    const noResults = picker.querySelector('[data-related-post-no-results]');
+    const count = picker.querySelector('[data-related-post-count]');
+    const status = picker.querySelector('[data-related-post-status]');
+    const maxItems = Number(picker.dataset.maxItems || 6);
+
+    const normalize = (value) => String(value || '')
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLocaleLowerCase('vi')
+        .replaceAll('đ', 'd')
+        .trim();
+
+    const selectedItems = () => Array.from(selectedList.querySelectorAll('[data-selected-related-post]'));
+    const selectedIds = () => new Set(selectedItems().map((item) => item.dataset.postId));
+
+    const refresh = () => {
+        const selected = selectedItems();
+        const ids = selectedIds();
+        const query = normalize(search.value);
+        const reachedLimit = selected.length >= maxItems;
+        let visibleOptions = 0;
+
+        selected.forEach((item, index) => {
+            const position = item.querySelector('[data-related-post-position]');
+            if (position) {
+                position.textContent = String(index + 1);
+            }
+        });
+
+        options.forEach((option) => {
+            const isSelected = ids.has(option.dataset.postId);
+            const haystack = normalize(`${option.dataset.postTitle} ${option.dataset.postCategory}`);
+            const matches = !query || haystack.includes(query);
+
+            option.hidden = isSelected || !matches;
+            option.disabled = !isSelected && reachedLimit;
+            if (!option.hidden) {
+                visibleOptions += 1;
+            }
+        });
+
+        emptyState.classList.toggle('hidden', selected.length > 0);
+        noResults.classList.toggle('hidden', visibleOptions > 0 || options.length === 0);
+        count.textContent = `${selected.length}/${maxItems}`;
+    };
+
+    const createSelectedItem = (option) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center gap-3 rounded-lg border border-[#667132]/15 bg-white px-3 py-3';
+        item.dataset.selectedRelatedPost = '';
+        item.dataset.postId = option.dataset.postId;
+
+        const position = document.createElement('span');
+        position.className = 'flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#667132]/10 text-xs font-bold text-[#667132]';
+        position.dataset.relatedPostPosition = '';
+
+        const text = document.createElement('span');
+        text.className = 'min-w-0 flex-1';
+
+        const title = document.createElement('span');
+        title.className = 'block truncate text-sm font-semibold text-slate-800';
+        title.textContent = option.dataset.postTitle;
+        text.appendChild(title);
+
+        if (option.dataset.postCategory) {
+            const category = document.createElement('span');
+            category.className = 'block text-xs text-slate-500';
+            category.textContent = option.dataset.postCategory;
+            text.appendChild(category);
+        }
+
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'related_post_ids[]';
+        input.value = option.dataset.postId;
+
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50';
+        remove.dataset.removeRelatedPost = '';
+        remove.textContent = 'Xóa';
+
+        item.append(position, text, input, remove);
+
+        return item;
+    };
+
+    options.forEach((option) => {
+        option.addEventListener('click', () => {
+            if (selectedItems().length >= maxItems || selectedIds().has(option.dataset.postId)) {
+                return;
+            }
+
+            selectedList.appendChild(createSelectedItem(option));
+            status.textContent = `Đã chọn bài viết: ${option.dataset.postTitle}`;
+            refresh();
+            search.focus();
+        });
+    });
+
+    selectedList.addEventListener('click', (event) => {
+        const remove = event.target.closest('[data-remove-related-post]');
+        if (!remove) {
+            return;
+        }
+
+        const item = remove.closest('[data-selected-related-post]');
+        const title = item.querySelector('.font-semibold')?.textContent || '';
+        item.remove();
+        status.textContent = `Đã bỏ bài viết: ${title}`;
+        refresh();
+        search.focus();
+    });
+
+    search.addEventListener('input', refresh);
+    refresh();
+});
+
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
 const setDeepLStatus = (element, message, type = 'info') => {

@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\PostInternalLinkService;
 use App\Services\SeoService;
 use Illuminate\View\View;
 
 class BlogController extends Controller
 {
+    public function __construct(private readonly PostInternalLinkService $internalLinks) {}
+
     public function index(): View
     {
         $posts = Post::query()
@@ -16,15 +19,28 @@ class BlogController extends Controller
             ->latest('published_at')
             ->paginate(6);
 
+        $page = $posts->currentPage();
+        $canonical = $page === 1 ? localized_route('blog.index') : $posts->url($page);
+        $alternates = collect(SeoService::routeAlternates('blog.index'))
+            ->map(fn (string $url): string => $page === 1 ? $url : $url.'?page='.$page)
+            ->all();
+        $title = __('site.auto.auto_48c9fe5895d3');
+
+        if ($page > 1) {
+            $title .= ' — '.__('site.blog.page_title', ['page' => $page]);
+        }
+
         $seo = SeoService::page(
-            __('site.auto.auto_48c9fe5895d3'),
+            $title,
             __('site.auto.auto_3a133bf698f5'),
             __('site.auto.auto_13855245ebf3'),
-            localized_route('blog.index')
+            $canonical,
+            alternates: $alternates
         );
 
         $schemas = [
             SeoService::restaurantSchema(),
+            SeoService::blogCollectionSchema($posts),
         ];
 
         return view('blog.index', compact('posts', 'seo', 'schemas'));
@@ -43,14 +59,10 @@ class BlogController extends Controller
 
         $post->load(['category.translations', 'translations']);
 
-        $relatedPosts = Post::query()
-            ->with(['category.translations', 'translations'])
-            ->published()
-            ->where('category_id', $post->category_id)
-            ->whereKeyNot($post->getKey())
-            ->latest('published_at')
-            ->limit(3)
-            ->get();
+        $relatedPosts = $this->internalLinks->relatedPosts($post);
+        $neighbors = $this->internalLinks->chronologicalNeighbors($post);
+        $previousPost = $neighbors['previous'];
+        $nextPost = $neighbors['next'];
 
         $breadcrumbs = [
             ['label' => __('site.nav.home'), 'url' => localized_route('home')],
@@ -68,6 +80,9 @@ class BlogController extends Controller
             $post->localized('title'),
             SeoService::routeAlternates('blog.show', ['post' => $post])
         );
+        $seo['published_time'] = $post->published_at->toAtomString();
+        $seo['modified_time'] = $post->updated_at->toAtomString();
+        $seo['section'] = $post->category->localized('name');
 
         $schemas = [
             SeoService::restaurantSchema(),
@@ -75,6 +90,14 @@ class BlogController extends Controller
             SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
-        return view('blog.show', compact('post', 'relatedPosts', 'breadcrumbs', 'seo', 'schemas'));
+        return view('blog.show', compact(
+            'post',
+            'relatedPosts',
+            'previousPost',
+            'nextPost',
+            'breadcrumbs',
+            'seo',
+            'schemas'
+        ));
     }
 }

@@ -77,6 +77,85 @@
                 <textarea id="meta_description" name="meta_description" rows="3" class="admin-input">{{ old('meta_description', $post->meta_description) }}</textarea>
                 @error('meta_description') <p class="form-error">{{ $message }}</p> @enderror
             </div>
+            <div class="lg:col-span-2">
+                @php
+                    $linkablePostsById = $linkablePosts->keyBy(fn ($item) => (string) $item->id);
+                    $selectedRelatedPostIds = collect(old(
+                        'related_post_ids',
+                        $post->exists ? $post->internalLinks->pluck('id')->all() : []
+                    ))->map(fn ($id) => (string) $id)
+                        ->filter(fn ($id) => $linkablePostsById->has($id))
+                        ->take(6)
+                        ->values();
+                @endphp
+                <div data-related-post-picker data-max-items="6">
+                    <label class="admin-label" for="related_post_search">Liên kết nội bộ đến bài viết</label>
+                    <div class="relative">
+                        <input
+                            id="related_post_search"
+                            type="search"
+                            class="admin-input pr-12"
+                            placeholder="Tìm theo tiêu đề hoặc danh mục bài viết..."
+                            autocomplete="off"
+                            data-related-post-search
+                        >
+                        <span class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-slate-400" aria-hidden="true">⌕</span>
+                    </div>
+
+                    <div class="mt-3 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white" data-related-post-options>
+                        @forelse ($linkablePosts as $linkablePost)
+                            <button
+                                type="button"
+                                class="flex w-full items-center justify-between gap-4 border-b border-slate-100 px-4 py-3 text-left transition last:border-b-0 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-45"
+                                data-related-post-option
+                                data-post-id="{{ $linkablePost->id }}"
+                                data-post-title="{{ $linkablePost->title }}"
+                                data-post-category="{{ $linkablePost->category?->name }}"
+                            >
+                                <span class="min-w-0">
+                                    <span class="block font-semibold text-slate-800">{{ $linkablePost->title }}</span>
+                                    @if ($linkablePost->category)
+                                        <span class="mt-1 block text-xs font-medium text-slate-500">{{ $linkablePost->category->name }}</span>
+                                    @endif
+                                </span>
+                                <span class="shrink-0 rounded-lg bg-[#667132]/10 px-3 py-1.5 text-xs font-bold text-[#667132]">Chọn</span>
+                            </button>
+                        @empty
+                            <p class="px-4 py-5 text-sm text-slate-500">Chưa có bài viết khác để liên kết.</p>
+                        @endforelse
+                        <p class="hidden px-4 py-5 text-sm text-slate-500" data-related-post-no-results>Không tìm thấy bài viết phù hợp.</p>
+                    </div>
+
+                    <div class="mt-5 rounded-xl border border-[#667132]/15 bg-[#667132]/5 p-4">
+                        <div class="flex items-center justify-between gap-4">
+                            <p class="font-bold text-slate-800">Bài viết đã chọn</p>
+                            <span class="rounded-full bg-white px-2.5 py-1 text-xs font-bold text-[#667132]" data-related-post-count>{{ $selectedRelatedPostIds->count() }}/6</span>
+                        </div>
+                        <div class="mt-3 space-y-2" data-related-post-selected>
+                            @foreach ($selectedRelatedPostIds as $selectedId)
+                                @if ($selectedPost = $linkablePostsById->get($selectedId))
+                                    <div class="flex items-center gap-3 rounded-lg border border-[#667132]/15 bg-white px-3 py-3" data-selected-related-post data-post-id="{{ $selectedPost->id }}">
+                                        <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#667132]/10 text-xs font-bold text-[#667132]" data-related-post-position>{{ $loop->iteration }}</span>
+                                        <span class="min-w-0 flex-1">
+                                            <span class="block truncate text-sm font-semibold text-slate-800">{{ $selectedPost->title }}</span>
+                                            @if ($selectedPost->category)
+                                                <span class="block text-xs text-slate-500">{{ $selectedPost->category->name }}</span>
+                                            @endif
+                                        </span>
+                                        <input type="hidden" name="related_post_ids[]" value="{{ $selectedPost->id }}">
+                                        <button type="button" class="shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-bold text-red-600 transition hover:bg-red-50" data-remove-related-post>Xóa</button>
+                                    </div>
+                                @endif
+                            @endforeach
+                            <p @class(['text-sm text-slate-500', 'hidden' => $selectedRelatedPostIds->isNotEmpty()]) data-related-post-empty>Chưa chọn bài viết nào.</p>
+                        </div>
+                    </div>
+                    <p class="sr-only" aria-live="polite" data-related-post-status></p>
+                </div>
+                <p class="mt-2 text-sm text-slate-500">Chọn tối đa 6 bài thật sự liên quan. Thứ tự chọn cũng là thứ tự ưu tiên hiển thị; hệ thống tự bổ sung bài cùng chủ đề nếu còn thiếu.</p>
+                @error('related_post_ids') <p class="form-error">{{ $message }}</p> @enderror
+                @error('related_post_ids.*') <p class="form-error">{{ $message }}</p> @enderror
+            </div>
             <label class="flex items-center gap-2 font-semibold text-slate-700">
                 <input type="checkbox" name="is_featured" value="1" @checked(old('is_featured', $post->is_featured))>
                 Bài nổi bật

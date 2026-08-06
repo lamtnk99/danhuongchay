@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Models\Post;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 
@@ -207,14 +208,25 @@ class SeoService
 
     public static function articleSchema(Post $post): array
     {
+        $url = localized_route('blog.show', ['slug' => $post->localizedSlug()]);
+        $organizationId = localized_route('home').'#organization';
+        $content = trim(strip_tags($post->localized('content')));
+        $wordCount = count(preg_split('/\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY) ?: []);
+
         return [
             '@context' => 'https://schema.org',
-            '@type' => 'Article',
+            '@type' => 'BlogPosting',
+            '@id' => $url.'#article',
+            'url' => $url,
             'headline' => $post->localized('title'),
             'description' => $post->localized('meta_description') ?: $post->localized('excerpt'),
-            'image' => media_url($post->thumbnail, self::DEFAULT_IMAGE),
+            'image' => media_url($post->thumbnail, self::defaultImage()),
             'datePublished' => optional($post->published_at)->toAtomString(),
             'dateModified' => $post->updated_at->toAtomString(),
+            'articleSection' => $post->category?->localized('name'),
+            'keywords' => $post->localized('meta_keywords'),
+            'inLanguage' => current_locale(),
+            'wordCount' => $wordCount,
             'author' => [
                 '@type' => 'Organization',
                 'name' => __('site.email.customer_reservation.brand'),
@@ -222,18 +234,53 @@ class SeoService
             ],
             'publisher' => [
                 '@type' => 'Organization',
+                '@id' => $organizationId,
                 'name' => __('site.email.customer_reservation.brand'),
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => self::defaultImage(),
+                    'url' => media_url(setting('logo_header'), self::defaultImage()),
                 ],
             ],
-            'mainEntityOfPage' => localized_route('blog.show', ['slug' => $post->localizedSlug()]),
+            'isPartOf' => [
+                '@type' => 'Blog',
+                '@id' => localized_route('blog.index').'#blog',
+                'url' => localized_route('blog.index'),
+            ],
+            'mainEntityOfPage' => $url,
+        ];
+    }
+
+    public static function blogCollectionSchema(LengthAwarePaginator $posts): array
+    {
+        $blogUrl = localized_route('blog.index');
+        $startPosition = (($posts->currentPage() - 1) * $posts->perPage()) + 1;
+
+        return [
+            '@context' => 'https://schema.org',
+            '@type' => 'CollectionPage',
+            '@id' => $blogUrl.'#blog',
+            'url' => $posts->currentPage() === 1 ? $blogUrl : $posts->url($posts->currentPage()),
+            'name' => __('site.blog.title'),
+            'description' => __('site.blog.description'),
+            'inLanguage' => current_locale(),
+            'mainEntity' => [
+                '@type' => 'ItemList',
+                'numberOfItems' => $posts->count(),
+                'itemListElement' => collect($posts->items())
+                    ->values()
+                    ->map(fn (Post $post, int $index): array => [
+                        '@type' => 'ListItem',
+                        'position' => $startPosition + $index,
+                        'url' => localized_route('blog.show', ['slug' => $post->localizedSlug()]),
+                        'name' => $post->localized('title'),
+                    ])
+                    ->all(),
+            ],
         ];
     }
 
     /**
-     * @param array<int, array{question: string, answer: string}> $faqs
+     * @param  array<int, array{question: string, answer: string}>  $faqs
      */
     public static function faqSchema(array $faqs): array
     {

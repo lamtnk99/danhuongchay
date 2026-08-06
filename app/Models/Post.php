@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Support\GeneratesSlugs;
 use App\Models\Concerns\HasLocalizedContent;
+use App\Support\GeneratesSlugs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Post extends Model
@@ -55,6 +56,16 @@ class Post extends Model
     public function translations(): HasMany
     {
         return $this->hasMany(PostTranslation::class);
+    }
+
+    public function internalLinks(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            self::class,
+            'post_internal_links',
+            'source_post_id',
+            'target_post_id'
+        )->withPivot('position')->orderByPivot('position');
     }
 
     public function scopePublished(Builder $query): Builder

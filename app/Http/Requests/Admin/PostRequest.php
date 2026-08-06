@@ -29,6 +29,13 @@ class PostRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'related_post_ids' => ['nullable', 'array', 'max:6'],
+            'related_post_ids.*' => [
+                'integer',
+                'distinct',
+                Rule::exists('posts', 'id'),
+                Rule::notIn(array_filter([$postId])),
+            ],
             'translations' => ['nullable', 'array'],
             'translations.en' => ['nullable', 'array'],
             'translations.en.title' => [

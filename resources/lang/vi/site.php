@@ -39,6 +39,11 @@ return [
         'description' => 'Những ghi chép nhỏ từ căn bếp chay: cách chọn món, chăm sóc bữa ăn và giữ nhịp sống nhẹ nhàng hơn mỗi ngày.',
         'related_posts' => 'Bài viết liên quan',
         'read_more' => 'Đọc thêm',
+        'related_description' => 'Các hướng dẫn cùng chủ đề giúp bạn tìm hiểu sâu hơn và chọn trải nghiệm phù hợp.',
+        'previous_post' => 'Bài trước',
+        'next_post' => 'Bài tiếp theo',
+        'page_title' => 'Trang :page',
+        'by' => 'Bởi',
     ],
     'dish' => [
         'sale' => 'Đang ưu đãi',
