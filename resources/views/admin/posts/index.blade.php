@@ -32,6 +32,7 @@
                     <th>Ngày đăng</th>
                     <th>Nổi bật</th>
                     <th>Trạng thái</th>
+                    <th>SEO</th>
                     <th class="text-right">Thao tác</th>
                 </tr>
             </thead>
@@ -52,6 +53,15 @@
                         <td>{{ $post->is_featured ? 'Có' : 'Không' }}</td>
                         <td><span class="status-badge {{ $post->is_active ? 'status-active' : 'status-inactive' }}">{{ $post->is_active ? 'active' : 'inactive' }}</span></td>
                         <td>
+                            @php($seoAnalysis = $post->getAttribute('seo_analysis'))
+                            <span @class([
+                                'seo-index-badge',
+                                'is-good' => $seoAnalysis['status'] === 'good',
+                                'is-okay' => $seoAnalysis['status'] === 'okay',
+                                'is-poor' => $seoAnalysis['status'] === 'poor',
+                            ])>{{ $seoAnalysis['score'] }}/100</span>
+                        </td>
+                        <td>
                             <div class="flex justify-end gap-2">
                                 <a href="{{ route('blog.show', $post) }}" target="_blank" class="admin-btn-mini">Preview</a>
                                 <a href="{{ route('admin.posts.edit', $post) }}" class="admin-btn-mini">Sửa</a>
@@ -64,7 +74,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center text-slate-500">Chưa có bài viết.</td></tr>
+                    <tr><td colspan="8" class="text-center text-slate-500">Chưa có bài viết.</td></tr>
                 @endforelse
             </tbody>
         </table>

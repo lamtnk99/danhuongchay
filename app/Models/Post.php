@@ -31,6 +31,7 @@ class Post extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'focus_keyword',
         'published_at',
     ];
 

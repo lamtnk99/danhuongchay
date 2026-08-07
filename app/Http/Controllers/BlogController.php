@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Services\ArticlePresentationService;
 use App\Services\PostInternalLinkService;
 use App\Services\SeoService;
 use Illuminate\Http\RedirectResponse;
@@ -10,7 +11,10 @@ use Illuminate\View\View;
 
 class BlogController extends Controller
 {
-    public function __construct(private readonly PostInternalLinkService $internalLinks) {}
+    public function __construct(
+        private readonly PostInternalLinkService $internalLinks,
+        private readonly ArticlePresentationService $articles,
+    ) {}
 
     public function index(): View
     {
@@ -73,6 +77,7 @@ class BlogController extends Controller
         $neighbors = $this->internalLinks->chronologicalNeighbors($post);
         $previousPost = $neighbors['previous'];
         $nextPost = $neighbors['next'];
+        $article = $this->articles->present($post->localized('content'), current_locale());
 
         $breadcrumbs = [
             ['label' => __('site.nav.home'), 'url' => localized_route('home')],
@@ -96,7 +101,7 @@ class BlogController extends Controller
 
         $schemas = [
             SeoService::restaurantSchema(),
-            SeoService::articleSchema($post),
+            SeoService::articleSchema($post, $article),
             SeoService::breadcrumbSchema($breadcrumbs),
         ];
 
@@ -107,7 +112,8 @@ class BlogController extends Controller
             'nextPost',
             'breadcrumbs',
             'seo',
-            'schemas'
+            'schemas',
+            'article'
         ));
     }
 

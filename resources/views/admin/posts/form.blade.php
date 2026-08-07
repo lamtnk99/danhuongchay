@@ -3,9 +3,9 @@
         ['name' => 'title', 'label' => 'Post title'],
         ['name' => 'slug', 'label' => 'English slug'],
         ['name' => 'excerpt', 'label' => 'Excerpt', 'type' => 'textarea', 'rows' => 4, 'wide' => true],
-        ['name' => 'content', 'label' => 'Content', 'type' => 'textarea', 'rows' => 12, 'wide' => true],
+        ['name' => 'content', 'label' => 'Content', 'type' => 'textarea', 'rows' => 12, 'wide' => true, 'editor' => true],
         ['name' => 'meta_title', 'label' => 'Meta title'],
-        ['name' => 'meta_keywords', 'label' => 'Meta keywords'],
+        ['name' => 'focus_keyword', 'label' => 'Translated focus keyword'],
         ['name' => 'meta_description', 'label' => 'Meta description', 'type' => 'textarea', 'rows' => 3, 'wide' => true],
     ];
 @endphp
@@ -17,6 +17,7 @@
     </div>
 
     <div class="admin-tab-panel is-active" data-admin-tab-panel="vi">
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div class="grid gap-5 lg:grid-cols-2">
             <div>
                 <label class="admin-label" for="title">Tiêu đề</label>
@@ -50,7 +51,7 @@
             </div>
             <div class="lg:col-span-2">
                 <label class="admin-label" for="content">Nội dung</label>
-                <textarea id="content" name="content" rows="12" class="admin-input" required>{{ old('content', $post->content) }}</textarea>
+                <textarea id="content" name="content" rows="12" class="admin-input" data-rich-text data-editor-locale="vi" required>{{ old('content', $post->content) }}</textarea>
                 @error('content') <p class="form-error">{{ $message }}</p> @enderror
             </div>
             <div class="lg:col-span-2">
@@ -68,9 +69,10 @@
                 @error('meta_title') <p class="form-error">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="admin-label" for="meta_keywords">Meta keywords</label>
-                <input id="meta_keywords" name="meta_keywords" value="{{ old('meta_keywords', $post->meta_keywords) }}" class="admin-input">
-                @error('meta_keywords') <p class="form-error">{{ $message }}</p> @enderror
+                <label class="admin-label" for="focus_keyword">Từ khóa chính</label>
+                <input id="focus_keyword" name="focus_keyword" value="{{ old('focus_keyword', $post->focus_keyword) }}" class="admin-input" placeholder="Ví dụ: nhà hàng chay Hải Phòng" data-focus-keyword>
+                <p class="mt-2 text-xs text-slate-500">Hệ thống gợi ý từ tiêu đề; bạn có thể sửa bất cứ lúc nào.</p>
+                @error('focus_keyword') <p class="form-error">{{ $message }}</p> @enderror
             </div>
             <div class="lg:col-span-2">
                 <label class="admin-label" for="meta_description">Meta description</label>
@@ -165,12 +167,53 @@
                 Hiển thị
             </label>
         </div>
+
+        <aside class="seo-panel" data-seo-panel data-seo-url="{{ route('admin.posts.seo-analysis') }}" data-post-id="{{ $post->getKey() }}" data-thumbnail-present="{{ $post->thumbnail ? '1' : '0' }}">
+            <div class="seo-panel-head">
+                <div>
+                    <p class="text-sm font-black uppercase tracking-wider text-[#667132]">Phân tích SEO</p>
+                    <p class="mt-1 text-xs text-slate-500">Chỉ cảnh báo, không chặn lưu bài.</p>
+                </div>
+                <div class="seo-score is-poor" data-seo-score>0</div>
+            </div>
+            <div class="seo-snippet">
+                <p class="seo-snippet-url" data-seo-preview-url>{{ url('/blog') }}/...</p>
+                <p class="seo-snippet-title" data-seo-preview-title>Tiêu đề bài viết</p>
+                <p class="seo-snippet-description" data-seo-preview-description>Mô tả bài viết sẽ hiển thị tại đây.</p>
+            </div>
+            <div class="mt-4 grid grid-cols-2 gap-2 text-xs font-semibold text-slate-600">
+                <span><strong data-seo-word-count>0</strong> từ</span>
+                <span><strong data-seo-read-time>1</strong> phút đọc</span>
+                <span><strong data-seo-title-length>0</strong> ký tự tiêu đề</span>
+                <span><strong data-seo-description-length>0</strong> ký tự mô tả</span>
+            </div>
+            <details class="mt-5" open>
+                <summary class="cursor-pointer font-bold text-slate-800">Các tiêu chí SEO</summary>
+                <div class="seo-check-list" data-seo-checks><p class="text-sm text-slate-500">Đang phân tích...</p></div>
+            </details>
+            <details class="mt-4">
+                <summary class="cursor-pointer font-bold text-slate-800">Gợi ý dễ đọc</summary>
+                <div class="seo-check-list" data-seo-warnings><p class="text-sm text-slate-500">Chưa có cảnh báo.</p></div>
+            </details>
+            <p class="mt-4 hidden rounded-lg bg-red-50 p-3 text-sm font-semibold text-red-700" data-seo-error></p>
+        </aside>
+        </div>
     </div>
 
     <div class="admin-tab-panel" data-admin-tab-panel="en" hidden>
-        @include('admin.partials.translation-fields', ['model' => $post, 'locale' => 'en', 'fields' => $translationFields])
+        @include('admin.partials.translation-fields', [
+            'model' => $post,
+            'locale' => 'en',
+            'fields' => $translationFields,
+            'translationUrl' => route('admin.posts.translate'),
+            'translationState' => $translationState,
+            'englishChecks' => $englishChecks,
+        ])
     </div>
 </div>
+
+<input type="hidden" name="translation_source_hash" value="{{ old('translation_source_hash') }}" data-translation-source-hash>
+<input type="hidden" name="translation_provider" value="{{ old('translation_provider') }}" data-translation-provider-value>
 
 <div class="mt-6 flex flex-wrap gap-3">
     <button type="submit" class="admin-btn-primary">{{ $post->exists ? 'Cập nhật' : 'Lưu' }}</button>

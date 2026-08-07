@@ -209,12 +209,13 @@ class SeoService
         ];
     }
 
-    public static function articleSchema(Post $post): array
+    public static function articleSchema(Post $post, ?array $article = null): array
     {
         $url = localized_route('blog.show', ['slug' => $post->localizedSlug()]);
         $organizationId = localized_route('home').'#organization';
         $content = trim(strip_tags($post->localized('content')));
-        $wordCount = count(preg_split('/\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $wordCount = $article['word_count'] ?? count(preg_split('/\s+/u', $content, -1, PREG_SPLIT_NO_EMPTY) ?: []);
+        $readingMinutes = $article['reading_minutes'] ?? max(1, (int) ceil($wordCount / (current_locale() === 'en' ? 200 : 220)));
 
         return [
             '@context' => 'https://schema.org',
@@ -230,6 +231,7 @@ class SeoService
             'keywords' => $post->localized('meta_keywords'),
             'inLanguage' => current_locale(),
             'wordCount' => $wordCount,
+            'timeRequired' => 'PT'.$readingMinutes.'M',
             'author' => [
                 '@type' => 'Organization',
                 'name' => __('site.email.customer_reservation.brand'),

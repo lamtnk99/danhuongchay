@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
+use App\Services\BlogTranslationService;
+use App\Services\PostSeoAnalyzer;
 use App\Services\UploadService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,19 +15,38 @@ use Illuminate\View\View;
 
 class PostController extends Controller
 {
-    public function __construct(private readonly UploadService $uploads) {}
+    public function __construct(
+        private readonly UploadService $uploads,
+        private readonly PostSeoAnalyzer $seoAnalyzer,
+        private readonly BlogTranslationService $blogTranslator,
+    ) {}
 
     public function index(Request $request): View
     {
         $categories = Category::post()->orderBy('name')->get();
         $posts = Post::query()
             ->with('category')
+            ->withCount('internalLinks')
             ->when($request->filled('q'), fn ($query) => $query->where('title', 'like', '%'.$request->q.'%'))
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
             ->when($request->filled('status'), fn ($query) => $query->where('is_active', $request->status === 'active'))
             ->latest('published_at')
             ->paginate(10)
             ->withQueryString();
+
+        $posts->getCollection()->each(function (Post $post): void {
+            $post->setAttribute('seo_analysis', $this->seoAnalyzer->analyze([
+                'title' => $post->title,
+                'slug' => $post->slug,
+                'excerpt' => $post->excerpt,
+                'content' => $post->content,
+                'meta_title' => $post->meta_title,
+                'meta_description' => $post->meta_description,
+                'focus_keyword' => $post->focus_keyword,
+                'thumbnail_present' => filled($post->thumbnail),
+                'related_post_ids' => array_fill(0, $post->internal_links_count, 1),
+            ], $post->getKey()));
+        });
 
         return view('admin.posts.index', compact('posts', 'categories'));
     }
@@ -42,6 +63,8 @@ class PostController extends Controller
             'post' => new Post(['is_active' => true]),
             'categories' => $categories,
             'linkablePosts' => $linkablePosts,
+            'translationState' => 'missing',
+            'englishChecks' => [],
         ]);
     }
 
@@ -68,9 +91,16 @@ class PostController extends Controller
             ->whereKeyNot($post->getKey())
             ->orderBy('title')
             ->get(['id', 'category_id', 'title']);
-        $post->load('internalLinks');
+        $post->load(['internalLinks', 'translations']);
 
-        return view('admin.posts.edit', compact('post', 'categories', 'linkablePosts'));
+        $translation = $post->translation('en');
+        $currentHash = $this->blogTranslator->sourceHash($this->sourceFields($post->toArray()));
+        $translationState = ! $translation
+            ? 'missing'
+            : (! $translation->source_hash ? 'unknown' : ($translation->source_hash === $currentHash ? 'synced' : 'stale'));
+        $englishChecks = $this->englishChecks($post, $translation);
+
+        return view('admin.posts.edit', compact('post', 'categories', 'linkablePosts', 'translationState', 'englishChecks'));
     }
 
     public function update(PostRequest $request, Post $post): RedirectResponse
@@ -101,7 +131,7 @@ class PostController extends Controller
     private function normalizedData(PostRequest $request): array
     {
         return collect($request->validated())
-            ->except(['thumbnail', 'translations', 'related_post_ids'])
+            ->except(['thumbnail', 'translations', 'related_post_ids', 'translation_source_hash', 'translation_provider'])
             ->merge([
                 'is_featured' => $request->boolean('is_featured'),
                 'is_active' => $request->boolean('is_active'),
@@ -120,7 +150,18 @@ class PostController extends Controller
             return;
         }
 
-        $post->translations()->updateOrCreate(['locale' => 'en'], $translation->all());
+        $metadata = [];
+        $submittedHash = $request->validated('translation_source_hash');
+        $currentHash = $this->blogTranslator->sourceHash($this->sourceFields($request->validated()));
+        if ($submittedHash && hash_equals($currentHash, $submittedHash)) {
+            $metadata = [
+                'source_hash' => $submittedHash,
+                'translated_at' => now(),
+                'translation_provider' => $request->validated('translation_provider'),
+            ];
+        }
+
+        $post->translations()->updateOrCreate(['locale' => 'en'], $translation->all() + $metadata);
     }
 
     private function syncInternalLinks(PostRequest $request, Post $post): void
@@ -134,5 +175,37 @@ class PostController extends Controller
             ->all();
 
         $post->internalLinks()->sync($links);
+    }
+
+    private function sourceFields(array $data): array
+    {
+        return collect(['title', 'excerpt', 'content', 'meta_title', 'meta_description', 'focus_keyword'])
+            ->mapWithKeys(fn (string $field): array => [$field => $data[$field] ?? null])
+            ->all();
+    }
+
+    private function englishChecks(Post $post, mixed $translation): array
+    {
+        if (! $translation) {
+            return [];
+        }
+
+        $required = ['title', 'slug', 'excerpt', 'content', 'meta_title', 'meta_description'];
+        $checks = collect($required)->mapWithKeys(fn (string $field): array => [
+            $field => filled($translation->{$field}),
+        ])->all();
+        $checks['different_content'] = trim(strip_tags((string) $translation->content)) !== trim(strip_tags((string) $post->content));
+        $checks['matching_structure'] = $this->htmlStructure($translation->content) === $this->htmlStructure($post->content);
+
+        return $checks;
+    }
+
+    private function htmlStructure(?string $html): array
+    {
+        return [
+            'h2' => preg_match_all('/<h2\b/i', (string) $html),
+            'h3' => preg_match_all('/<h3\b/i', (string) $html),
+            'a' => preg_match_all('/<a\b/i', (string) $html),
+        ];
     }
 }

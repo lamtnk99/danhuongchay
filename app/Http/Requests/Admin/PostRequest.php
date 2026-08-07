@@ -29,6 +29,9 @@ class PostRequest extends FormRequest
             'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:500'],
             'meta_keywords' => ['nullable', 'string', 'max:500'],
+            'focus_keyword' => ['nullable', 'string', 'max:255'],
+            'translation_source_hash' => ['nullable', 'string', 'size:64'],
+            'translation_provider' => ['nullable', 'in:deepl,microsoft'],
             'related_post_ids' => ['nullable', 'array', 'max:6'],
             'related_post_ids.*' => [
                 'integer',
@@ -40,7 +43,7 @@ class PostRequest extends FormRequest
             'translations.en' => ['nullable', 'array'],
             'translations.en.title' => [
                 'nullable',
-                'required_with:translations.en.slug,translations.en.excerpt,translations.en.content,translations.en.meta_title,translations.en.meta_description,translations.en.meta_keywords',
+                'required_with:translations.en.slug,translations.en.excerpt,translations.en.content,translations.en.meta_title,translations.en.meta_description,translations.en.meta_keywords,translations.en.focus_keyword',
                 'string',
                 'max:220',
             ],
@@ -50,6 +53,7 @@ class PostRequest extends FormRequest
             'translations.en.meta_title' => ['nullable', 'string', 'max:255'],
             'translations.en.meta_description' => ['nullable', 'string', 'max:500'],
             'translations.en.meta_keywords' => ['nullable', 'string', 'max:500'],
+            'translations.en.focus_keyword' => ['nullable', 'string', 'max:255'],
         ];
     }
 }

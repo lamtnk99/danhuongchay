@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\NavigationMenuController as AdminNavigationMenuCo
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\PostSeoController as AdminPostSeoController;
+use App\Http\Controllers\Admin\PostTranslationController as AdminPostTranslationController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
 use App\Http\Controllers\Admin\ReservationController as AdminReservationController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
@@ -60,6 +62,13 @@ Route::prefix('admin')
         Route::get('/translations/deepl/usage', [AdminTranslationController::class, 'usage'])->middleware('throttle:20,1')->name('translations.deepl.usage');
         Route::post('/translations/deepl/test', [AdminTranslationController::class, 'test'])->middleware('throttle:10,1')->name('translations.deepl.test');
         Route::post('/translations/deepl', [AdminTranslationController::class, 'translate'])->middleware(['throttle:20,1', 'permission:translations.auto_translate'])->name('translations.deepl.translate');
+
+        Route::post('/posts/seo-analysis', AdminPostSeoController::class)
+            ->middleware(['throttle:60,1', 'permission:posts.view'])
+            ->name('posts.seo-analysis');
+        Route::post('/posts/translate', AdminPostTranslationController::class)
+            ->middleware(['throttle:20,1', 'permission:translations.auto_translate'])
+            ->name('posts.translate');
 
         Route::patch('/banners/{banner}/toggle', [AdminBannerController::class, 'toggle'])->middleware('permission:banners.update')->name('banners.toggle');
         Route::resource('branches', AdminBranchController::class)->except('show')

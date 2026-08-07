@@ -1,3 +1,7 @@
+import { Editor } from '@tiptap/core';
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+
 const i18n = window.danHuongI18n || {};
 const i18nMessage = (key, replacements = {}, fallback = '') => {
     let message = i18n[key] || fallback;
@@ -97,6 +101,158 @@ document.querySelectorAll('[data-admin-tabs]').forEach((tabs) => {
             });
         });
     });
+});
+
+const countEditorWords = (html) => {
+    const temporary = document.createElement('div');
+    temporary.innerHTML = html || '';
+    return (temporary.textContent || '').trim().split(/\s+/u).filter(Boolean).length;
+};
+
+document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
+    const shell = document.createElement('div');
+    shell.className = 'rich-text-editor';
+    shell.innerHTML = `
+        <div class="rich-text-toolbar" role="toolbar" aria-label="Công cụ soạn thảo">
+            <button type="button" data-editor-action="paragraph" title="Đoạn văn">P</button>
+            <button type="button" data-editor-action="h2" title="Đầu mục lớn">H2</button>
+            <button type="button" data-editor-action="h3" title="Đầu mục nhỏ">H3</button>
+            <span aria-hidden="true"></span>
+            <button type="button" data-editor-action="bold" title="In đậm"><strong>B</strong></button>
+            <button type="button" data-editor-action="italic" title="In nghiêng"><em>I</em></button>
+            <button type="button" data-editor-action="bullet" title="Danh sách chấm">• List</button>
+            <button type="button" data-editor-action="ordered" title="Danh sách số">1. List</button>
+            <button type="button" data-editor-action="quote" title="Trích dẫn">“ ”</button>
+            <button type="button" data-editor-action="link" title="Chèn liên kết">Link</button>
+            <button type="button" data-editor-action="unlink" title="Xóa liên kết">Unlink</button>
+            <span aria-hidden="true"></span>
+            <button type="button" data-editor-action="undo" title="Hoàn tác">↶</button>
+            <button type="button" data-editor-action="redo" title="Làm lại">↷</button>
+        </div>
+        <div class="rich-text-surface"></div>
+        <div class="rich-text-metrics" aria-live="polite"></div>
+        <details class="rich-text-source">
+            <summary>Chỉnh sửa HTML nâng cao</summary>
+            <textarea rows="10" spellcheck="false" aria-label="Mã HTML nâng cao"></textarea>
+        </details>
+    `;
+
+    textarea.insertAdjacentElement('beforebegin', shell);
+    textarea.classList.add('rich-text-source-field');
+    const wasRequired = textarea.required;
+    textarea.required = false;
+    const surface = shell.querySelector('.rich-text-surface');
+    const source = shell.querySelector('.rich-text-source textarea');
+    const metrics = shell.querySelector('.rich-text-metrics');
+    let syncing = false;
+
+    const editor = new Editor({
+        element: surface,
+        extensions: [
+            StarterKit.configure({ heading: { levels: [2, 3] }, link: false }),
+            Link.configure({ openOnClick: false, autolink: true, defaultProtocol: 'https' }),
+        ],
+        content: textarea.value || '',
+        editorProps: {
+            attributes: {
+                class: 'rich-text-prosemirror',
+                'aria-label': textarea.dataset.editorLocale === 'en' ? 'English article content' : 'Nội dung bài viết',
+            },
+        },
+        onUpdate: ({ editor: currentEditor }) => {
+            if (syncing) return;
+            const html = currentEditor.getHTML();
+            textarea.value = html === '<p></p>' ? '' : html;
+            source.value = textarea.value;
+            textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            refreshMetrics();
+        },
+        onSelectionUpdate: refreshToolbar,
+        onTransaction: refreshToolbar,
+    });
+
+    const refreshMetrics = () => {
+        const words = countEditorWords(textarea.value);
+        const headings = (textarea.value.match(/<h[23]\b/gi) || []).length;
+        const speed = textarea.dataset.editorLocale === 'en' ? 200 : 220;
+        metrics.textContent = `${words.toLocaleString('vi-VN')} từ · ${headings} đầu mục · ${Math.max(1, Math.ceil(words / speed))} phút đọc`;
+    };
+
+    function refreshToolbar() {
+        shell.querySelectorAll('[data-editor-action]').forEach((button) => {
+            const action = button.dataset.editorAction;
+            const active = (action === 'paragraph' && editor.isActive('paragraph'))
+                || (action === 'h2' && editor.isActive('heading', { level: 2 }))
+                || (action === 'h3' && editor.isActive('heading', { level: 3 }))
+                || (action === 'bold' && editor.isActive('bold'))
+                || (action === 'italic' && editor.isActive('italic'))
+                || (action === 'bullet' && editor.isActive('bulletList'))
+                || (action === 'ordered' && editor.isActive('orderedList'))
+                || (action === 'quote' && editor.isActive('blockquote'))
+                || (action === 'link' && editor.isActive('link'));
+            button.classList.toggle('is-active', active);
+        });
+    }
+
+    const actions = {
+        paragraph: () => editor.chain().focus().setParagraph().run(),
+        h2: () => editor.chain().focus().toggleHeading({ level: 2 }).run(),
+        h3: () => editor.chain().focus().toggleHeading({ level: 3 }).run(),
+        bold: () => editor.chain().focus().toggleBold().run(),
+        italic: () => editor.chain().focus().toggleItalic().run(),
+        bullet: () => editor.chain().focus().toggleBulletList().run(),
+        ordered: () => editor.chain().focus().toggleOrderedList().run(),
+        quote: () => editor.chain().focus().toggleBlockquote().run(),
+        unlink: () => editor.chain().focus().unsetLink().run(),
+        undo: () => editor.chain().focus().undo().run(),
+        redo: () => editor.chain().focus().redo().run(),
+        link: () => {
+            const previousUrl = editor.getAttributes('link').href || '';
+            const url = window.prompt('Nhập đường dẫn liên kết:', previousUrl);
+            if (url === null) return;
+            if (!url.trim()) {
+                editor.chain().focus().unsetLink().run();
+                return;
+            }
+            editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
+        },
+    };
+
+    shell.querySelector('.rich-text-toolbar').addEventListener('click', (event) => {
+        const button = event.target.closest('[data-editor-action]');
+        if (button) actions[button.dataset.editorAction]?.();
+    });
+
+    source.value = textarea.value;
+    source.addEventListener('input', () => {
+        syncing = true;
+        textarea.value = source.value;
+        editor.commands.setContent(source.value || '', { emitUpdate: false });
+        syncing = false;
+        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+        refreshMetrics();
+    });
+
+    textarea.addEventListener('input', () => {
+        if (syncing || editor.getHTML() === textarea.value) return;
+        syncing = true;
+        editor.commands.setContent(textarea.value || '', { emitUpdate: false });
+        source.value = textarea.value;
+        syncing = false;
+        refreshMetrics();
+    });
+
+    textarea.closest('form')?.addEventListener('submit', (event) => {
+        if (wasRequired && !textarea.value.trim()) {
+            event.preventDefault();
+            shell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            editor.commands.focus();
+            shell.classList.add('has-error');
+        }
+    });
+
+    refreshMetrics();
+    refreshToolbar();
 });
 
 document.querySelectorAll('[data-related-post-picker]').forEach((picker) => {
@@ -314,11 +470,26 @@ document.querySelectorAll('[data-deepl-translate]').forEach((button) => {
                 }
             });
 
+            if (data.source_hash) {
+                const form = tabs?.closest('form');
+                const hashInput = form?.querySelector('[data-translation-source-hash]');
+                const providerInput = form?.querySelector('[data-translation-provider-value]');
+                const state = tabs?.querySelector('[data-translation-state]');
+                if (hashInput) hashInput.value = data.source_hash;
+                if (providerInput) providerInput.value = data.provider || '';
+                if (state) {
+                    state.textContent = 'Bản dịch mới, chưa lưu';
+                    state.className = 'translation-state translation-state-pending';
+                    state.dataset.translationStateValue = 'pending';
+                }
+            }
+
             const usageText = data.usage?.character_limit
                 ? ` Đã dùng ${Number(data.usage.character_count).toLocaleString('vi-VN')} / ${Number(data.usage.character_limit).toLocaleString('vi-VN')} ký tự.`
                 : '';
 
-            setDeepLStatus(status, `Đã dịch xong và đổ vào form English.${usageText}`, 'success');
+            const saveReminder = data.source_hash ? ' Bản dịch mới chỉ nằm trong form; bấm Lưu/Cập nhật để ghi nhận.' : '';
+            setDeepLStatus(status, `Đã dịch xong và điền vào form English.${saveReminder}${usageText}`, 'success');
         } catch (error) {
             setDeepLStatus(status, error.message, 'error');
         } finally {
@@ -374,6 +545,217 @@ if (translationProviderSelect) {
     translationProviderSelect.addEventListener('change', updateProviderPanels);
     updateProviderPanels();
 }
+
+document.querySelectorAll('[data-seo-panel]').forEach((panel) => {
+    const form = panel.closest('form');
+    if (!form) return;
+
+    const field = (name) => form.querySelector(`[name="${name}"]`);
+    const title = field('title');
+    const focusKeyword = field('focus_keyword');
+    const error = panel.querySelector('[data-seo-error]');
+    let focusWasEdited = Boolean(focusKeyword?.value);
+    let debounceTimer = null;
+    let controller = null;
+
+    focusKeyword?.addEventListener('input', (event) => {
+        if (event.isTrusted) focusWasEdited = true;
+    });
+
+    const suggestFocusKeyword = () => {
+        if (!focusKeyword || focusWasEdited) return;
+        const suggestion = title.value
+            .split(/[|–—:]/u)[0]
+            .trim()
+            .split(/\s+/u)
+            .filter(Boolean)
+            .slice(0, 7)
+            .join(' ');
+        focusKeyword.value = suggestion;
+        focusKeyword.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    title?.addEventListener('input', suggestFocusKeyword);
+    suggestFocusKeyword();
+
+    const renderItems = (container, items, emptyMessage, warning = false) => {
+        container.replaceChildren();
+        if (!items?.length) {
+            const empty = document.createElement('p');
+            empty.className = 'text-sm text-slate-500';
+            empty.textContent = emptyMessage;
+            container.appendChild(empty);
+            return;
+        }
+        items.forEach((item) => {
+            const row = document.createElement('div');
+            row.className = `seo-check ${warning ? 'is-warning' : (item.state === 'pass' ? 'is-pass' : 'is-improve')}`;
+            const mark = document.createElement('span');
+            mark.textContent = warning ? '!' : (item.state === 'pass' ? '✓' : '•');
+            const text = document.createElement('span');
+            const label = document.createElement('strong');
+            label.textContent = item.label || item.message;
+            text.appendChild(label);
+            if (item.label && item.message && item.message !== 'Đạt') {
+                const message = document.createElement('small');
+                message.textContent = item.message;
+                text.appendChild(message);
+            }
+            row.append(mark, text);
+            container.appendChild(row);
+        });
+    };
+
+    const analyze = async () => {
+        controller?.abort();
+        controller = new AbortController();
+        const relatedIds = Array.from(form.querySelectorAll('[name="related_post_ids[]"]')).map((input) => input.value);
+        const thumbnail = field('thumbnail');
+        const payload = {
+            post_id: panel.dataset.postId || null,
+            title: title?.value || '',
+            slug: field('slug')?.value || '',
+            excerpt: field('excerpt')?.value || '',
+            content: field('content')?.value || '',
+            meta_title: field('meta_title')?.value || '',
+            meta_description: field('meta_description')?.value || '',
+            focus_keyword: focusKeyword?.value || '',
+            thumbnail_present: panel.dataset.thumbnailPresent === '1' || Boolean(thumbnail?.files?.length),
+            related_post_ids: relatedIds,
+        };
+
+        panel.querySelector('[data-seo-preview-title]').textContent = payload.meta_title || payload.title || 'Tiêu đề bài viết';
+        panel.querySelector('[data-seo-preview-description]').textContent = payload.meta_description || payload.excerpt || 'Mô tả bài viết sẽ hiển thị tại đây.';
+        panel.querySelector('[data-seo-preview-url]').textContent = `${window.location.origin}/blog/${payload.slug || 'duong-dan-bai-viet'}`;
+
+        try {
+            const response = await fetch(panel.dataset.seoUrl, {
+                method: 'POST',
+                headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+                body: JSON.stringify(payload),
+                signal: controller.signal,
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.ok === false) throw new Error(data.message || 'Không phân tích được SEO.');
+
+            const score = panel.querySelector('[data-seo-score]');
+            score.textContent = data.score;
+            score.className = `seo-score is-${data.status}`;
+            panel.querySelector('[data-seo-word-count]').textContent = data.metrics.word_count;
+            panel.querySelector('[data-seo-read-time]').textContent = data.metrics.reading_minutes;
+            panel.querySelector('[data-seo-title-length]').textContent = data.metrics.title_length;
+            panel.querySelector('[data-seo-description-length]').textContent = data.metrics.description_length;
+            renderItems(panel.querySelector('[data-seo-checks]'), data.checks, 'Chưa có tiêu chí để phân tích.');
+            renderItems(panel.querySelector('[data-seo-warnings]'), data.warnings, 'Không có cảnh báo thêm.', true);
+            error.classList.add('hidden');
+        } catch (requestError) {
+            if (requestError.name === 'AbortError') return;
+            error.textContent = requestError.message;
+            error.classList.remove('hidden');
+        }
+    };
+
+    const scheduleAnalysis = () => {
+        window.clearTimeout(debounceTimer);
+        debounceTimer = window.setTimeout(analyze, 700);
+    };
+
+    form.addEventListener('input', scheduleAnalysis);
+    form.addEventListener('change', scheduleAnalysis);
+    form.addEventListener('click', (event) => {
+        if (event.target.closest('[data-related-post-option], [data-remove-related-post]')) {
+            window.setTimeout(scheduleAnalysis, 0);
+        }
+    });
+
+    const translationHash = form.querySelector('[data-translation-source-hash]');
+    ['title', 'excerpt', 'content', 'meta_title', 'meta_description', 'focus_keyword'].forEach((name) => {
+        field(name)?.addEventListener('input', () => {
+            const state = form.querySelector('[data-translation-state]');
+            if (!translationHash?.value && state?.dataset.translationStateValue !== 'synced' && state?.dataset.translationStateValue !== 'pending') return;
+            if (translationHash) translationHash.value = '';
+            if (state) {
+                state.textContent = 'Bản Anh cần cập nhật';
+                state.className = 'translation-state translation-state-stale';
+                state.dataset.translationStateValue = 'stale';
+            }
+        });
+    });
+
+    scheduleAnalysis();
+});
+
+const articleBody = document.querySelector('[data-article-body]');
+const readingProgress = document.querySelector('[data-reading-progress] span');
+
+if (articleBody && readingProgress) {
+    const updateReadingProgress = () => {
+        const top = articleBody.getBoundingClientRect().top + window.scrollY;
+        const available = Math.max(1, articleBody.offsetHeight - window.innerHeight * 0.55);
+        const progress = Math.min(1, Math.max(0, (window.scrollY - top + window.innerHeight * 0.25) / available));
+        readingProgress.style.transform = `scaleX(${progress})`;
+    };
+    updateReadingProgress();
+    window.addEventListener('scroll', updateReadingProgress, { passive: true });
+    window.addEventListener('resize', updateReadingProgress);
+}
+
+const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
+if (tocLinks.length && 'IntersectionObserver' in window) {
+    const headings = tocLinks
+        .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
+        .filter(Boolean);
+    const activateHeading = (id) => {
+        tocLinks.forEach((link) => {
+            const active = decodeURIComponent(link.hash.slice(1)) === id;
+            link.classList.toggle('is-active', active);
+            if (active) link.setAttribute('aria-current', 'location');
+            else link.removeAttribute('aria-current');
+        });
+    };
+    const visible = new Map();
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => visible.set(entry.target.id, entry));
+        const active = headings.find((heading) => visible.get(heading.id)?.isIntersecting)
+            || [...headings].reverse().find((heading) => heading.getBoundingClientRect().top < 160)
+            || headings[0];
+        if (active) activateHeading(active.id);
+    }, { rootMargin: '-18% 0px -68% 0px' });
+    headings.forEach((heading) => observer.observe(heading));
+}
+
+document.querySelectorAll('[data-share-article]').forEach((button) => {
+    button.addEventListener('click', async () => {
+        const status = button.parentElement.querySelector('[data-share-status]');
+        try {
+            if (navigator.share) {
+                await navigator.share({ title: button.dataset.shareTitle, url: button.dataset.shareUrl });
+                if (status) status.textContent = document.documentElement.lang === 'en' ? 'Shared' : 'Đã chia sẻ';
+            } else {
+                if (navigator.clipboard?.writeText) {
+                    await navigator.clipboard.writeText(button.dataset.shareUrl);
+                } else {
+                    const copyField = document.createElement('textarea');
+                    copyField.value = button.dataset.shareUrl;
+                    copyField.style.position = 'fixed';
+                    copyField.style.opacity = '0';
+                    document.body.appendChild(copyField);
+                    copyField.select();
+                    document.execCommand('copy');
+                    copyField.remove();
+                }
+                if (status) status.textContent = document.documentElement.lang === 'en' ? 'Link copied' : 'Đã sao chép link';
+            }
+            status?.classList.remove('hidden');
+            window.setTimeout(() => status?.classList.add('hidden'), 3000);
+        } catch (error) {
+            if (error.name !== 'AbortError' && status) {
+                status.textContent = 'Không thể chia sẻ lúc này';
+                status.classList.remove('hidden');
+            }
+        }
+    });
+});
 
 const trackConversion = (eventName, params = {}) => {
     const payload = {
