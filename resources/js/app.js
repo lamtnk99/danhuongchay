@@ -1,4 +1,4 @@
-import { Editor } from '@tiptap/core';
+import { Editor, Node } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import Link from '@tiptap/extension-link';
 
@@ -109,6 +109,83 @@ const countEditorWords = (html) => {
     return (temporary.textContent || '').trim().split(/\s+/u).filter(Boolean).length;
 };
 
+const imageElementFor = (element) => element.tagName === 'IMG' ? element : element.querySelector('img');
+
+const BlogImage = Node.create({
+    name: 'blogImage',
+    group: 'block',
+    atom: true,
+    draggable: true,
+    selectable: true,
+
+    addAttributes() {
+        return {
+            src: { default: null },
+            srcset: { default: null },
+            alt: { default: '' },
+            caption: { default: '' },
+            mediaId: { default: null },
+            layout: { default: 'normal' },
+            width: { default: null },
+            height: { default: null },
+        };
+    },
+
+    parseHTML() {
+        const getAttrs = (element) => {
+            const image = imageElementFor(element);
+            const figure = element.tagName === 'FIGURE' ? element : null;
+            if (!image?.getAttribute('src')) return false;
+
+            return {
+                src: image.getAttribute('src'),
+                srcset: image.getAttribute('srcset') || null,
+                alt: image.getAttribute('alt') || '',
+                caption: figure?.querySelector('figcaption')?.textContent?.trim() || '',
+                mediaId: figure?.getAttribute('data-media-id') || image.getAttribute('data-media-id') || null,
+                layout: figure?.getAttribute('data-layout') === 'wide' ? 'wide' : 'normal',
+                width: Number(image.getAttribute('width')) || null,
+                height: Number(image.getAttribute('height')) || null,
+            };
+        };
+
+        return [
+            { tag: 'figure[data-blog-image]', getAttrs },
+            { tag: 'img[src]', getAttrs },
+        ];
+    },
+
+    renderHTML({ node }) {
+        const layout = node.attrs.layout === 'wide' ? 'wide' : 'normal';
+        const imageAttributes = {
+            src: node.attrs.src,
+            alt: node.attrs.alt || '',
+            loading: 'lazy',
+            decoding: 'async',
+        };
+        if (node.attrs.width) imageAttributes.width = node.attrs.width;
+        if (node.attrs.height) imageAttributes.height = node.attrs.height;
+        if (node.attrs.srcset) {
+            imageAttributes.srcset = node.attrs.srcset;
+            imageAttributes.sizes = layout === 'wide'
+                ? '(max-width: 768px) calc(100vw - 2rem), 58rem'
+                : '(max-width: 768px) calc(100vw - 2rem), 52rem';
+        }
+
+        const figureAttributes = {
+            'data-blog-image': '',
+            'data-layout': layout,
+            class: `blog-content-image blog-content-image--${layout}`,
+        };
+        if (node.attrs.mediaId) figureAttributes['data-media-id'] = node.attrs.mediaId;
+
+        const output = ['figure', figureAttributes, ['img', imageAttributes]];
+        if (node.attrs.caption) output.push(['figcaption', {}, node.attrs.caption]);
+
+        return output;
+    },
+});
+
 document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
     const shell = document.createElement('div');
     shell.className = 'rich-text-editor';
@@ -125,16 +202,61 @@ document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
             <button type="button" data-editor-action="quote" title="Trích dẫn">“ ”</button>
             <button type="button" data-editor-action="link" title="Chèn liên kết">Link</button>
             <button type="button" data-editor-action="unlink" title="Xóa liên kết">Unlink</button>
+            <button type="button" data-editor-action="image" title="Chèn hoặc sửa ảnh">▧ Ảnh</button>
             <span aria-hidden="true"></span>
             <button type="button" data-editor-action="undo" title="Hoàn tác">↶</button>
             <button type="button" data-editor-action="redo" title="Làm lại">↷</button>
         </div>
+        <p class="rich-text-image-hint">Có thể kéo-thả hoặc dán ảnh trực tiếp vào vị trí con trỏ.</p>
         <div class="rich-text-surface"></div>
         <div class="rich-text-metrics" aria-live="polite"></div>
         <details class="rich-text-source">
             <summary>Chỉnh sửa HTML nâng cao</summary>
             <textarea rows="10" spellcheck="false" aria-label="Mã HTML nâng cao"></textarea>
         </details>
+        <div class="rich-text-image-dialog" role="dialog" aria-modal="true" aria-label="Chèn ảnh vào bài viết" hidden>
+            <button type="button" class="rich-text-image-backdrop" data-image-dialog-close aria-label="Đóng"></button>
+            <div class="rich-text-image-card" data-image-form>
+                <div class="rich-text-image-head">
+                    <div>
+                        <span>Ảnh trong bài</span>
+                        <h3 data-image-dialog-title>Chèn ảnh minh họa</h3>
+                    </div>
+                    <button type="button" data-image-dialog-close aria-label="Đóng">×</button>
+                </div>
+                <div class="rich-text-image-preview" data-image-preview>
+                    <span>Chọn ảnh để xem trước</span>
+                    <img alt="" hidden>
+                </div>
+                <label class="rich-text-image-file">
+                    <span>Chọn ảnh</span>
+                    <input type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" data-image-file>
+                </label>
+                <label>
+                    <span>Văn bản thay thế (alt) <strong>*</strong></span>
+                    <input type="text" maxlength="255" required data-image-alt placeholder="Mô tả ngắn gọn nội dung của ảnh">
+                    <small>Giúp Google và người dùng trình đọc màn hình hiểu ảnh.</small>
+                </label>
+                <label>
+                    <span>Chú thích ảnh</span>
+                    <input type="text" maxlength="500" data-image-caption placeholder="Không bắt buộc">
+                </label>
+                <label>
+                    <span>Kiểu hiển thị</span>
+                    <select data-image-layout>
+                        <option value="normal">Vừa khổ bài viết</option>
+                        <option value="wide">Rộng nổi bật</option>
+                    </select>
+                </label>
+                <p class="rich-text-image-error" data-image-error hidden></p>
+                <div class="rich-text-image-actions">
+                    <button type="button" class="is-danger" data-image-remove hidden>Xóa khỏi bài</button>
+                    <span></span>
+                    <button type="button" data-image-dialog-close>Hủy</button>
+                    <button type="button" class="is-primary" data-image-submit>Chèn ảnh</button>
+                </div>
+            </div>
+        </div>
     `;
 
     textarea.insertAdjacentElement('beforebegin', shell);
@@ -144,19 +266,56 @@ document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
     const surface = shell.querySelector('.rich-text-surface');
     const source = shell.querySelector('.rich-text-source textarea');
     const metrics = shell.querySelector('.rich-text-metrics');
+    const imageDialog = shell.querySelector('.rich-text-image-dialog');
+    const imageForm = shell.querySelector('[data-image-form]');
+    const imageFile = shell.querySelector('[data-image-file]');
+    const imageAlt = shell.querySelector('[data-image-alt]');
+    const imageCaption = shell.querySelector('[data-image-caption]');
+    const imageLayout = shell.querySelector('[data-image-layout]');
+    const imagePreview = shell.querySelector('[data-image-preview]');
+    const imagePreviewElement = imagePreview.querySelector('img');
+    const imageError = shell.querySelector('[data-image-error]');
+    const imageSubmit = shell.querySelector('[data-image-submit]');
+    const imageRemove = shell.querySelector('[data-image-remove]');
     let syncing = false;
+    let pendingImageFile = null;
+    let imagePreviewUrl = null;
+    let editingImage = false;
+    let openImageDialog = () => {};
 
     const editor = new Editor({
         element: surface,
         extensions: [
             StarterKit.configure({ heading: { levels: [2, 3] }, link: false }),
             Link.configure({ openOnClick: false, autolink: true, defaultProtocol: 'https' }),
+            BlogImage,
         ],
         content: textarea.value || '',
         editorProps: {
             attributes: {
                 class: 'rich-text-prosemirror',
                 'aria-label': textarea.dataset.editorLocale === 'en' ? 'English article content' : 'Nội dung bài viết',
+            },
+            handlePaste: (_view, event) => {
+                const file = Array.from(event.clipboardData?.files || []).find((item) => item.type.startsWith('image/'));
+                if (!file) return false;
+                event.preventDefault();
+                openImageDialog(file);
+                return true;
+            },
+            handleDrop: (_view, event, _slice, moved) => {
+                if (moved) return false;
+                const file = Array.from(event.dataTransfer?.files || []).find((item) => item.type.startsWith('image/'));
+                if (!file) return false;
+                event.preventDefault();
+                openImageDialog(file);
+                return true;
+            },
+            handleDoubleClickOn: (_view, _pos, node, nodePos) => {
+                if (node.type.name !== 'blogImage') return false;
+                editor.commands.setNodeSelection(nodePos);
+                openImageDialog();
+                return true;
             },
         },
         onUpdate: ({ editor: currentEditor }) => {
@@ -189,7 +348,8 @@ document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
                 || (action === 'bullet' && editor.isActive('bulletList'))
                 || (action === 'ordered' && editor.isActive('orderedList'))
                 || (action === 'quote' && editor.isActive('blockquote'))
-                || (action === 'link' && editor.isActive('link'));
+                || (action === 'link' && editor.isActive('link'))
+                || (action === 'image' && editor.isActive('blogImage'));
             button.classList.toggle('is-active', active);
         });
     }
@@ -216,7 +376,186 @@ document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
             }
             editor.chain().focus().extendMarkRange('link').setLink({ href: url.trim() }).run();
         },
+        image: () => openImageDialog(),
     };
+
+    const clearImagePreviewUrl = () => {
+        if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+        imagePreviewUrl = null;
+    };
+
+    const showImageError = (message = '') => {
+        imageError.textContent = message;
+        imageError.hidden = !message;
+    };
+
+    const setImagePreview = (src = '') => {
+        if (!src) {
+            imagePreviewElement.hidden = true;
+            imagePreview.querySelector('span').hidden = false;
+            imagePreviewElement.removeAttribute('src');
+            return;
+        }
+        imagePreviewElement.src = src;
+        imagePreviewElement.hidden = false;
+        imagePreview.querySelector('span').hidden = true;
+    };
+
+    const defaultAltFromFile = (file) => file.name
+        .replace(/\.[^.]+$/, '')
+        .replace(/[-_]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const acceptImageFile = (file) => {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        const maxBytes = Number(document.documentElement.dataset.uploadMaxKb || 10240) * 1024;
+        if (!allowedTypes.includes(file.type)) {
+            showImageError('Chỉ chấp nhận ảnh JPG, PNG hoặc WebP.');
+            return false;
+        }
+        if (file.size > maxBytes) {
+            showImageError(`Ảnh vượt quá giới hạn ${Math.round(maxBytes / 1024 / 1024)} MB.`);
+            return false;
+        }
+
+        clearImagePreviewUrl();
+        pendingImageFile = file;
+        imagePreviewUrl = URL.createObjectURL(file);
+        setImagePreview(imagePreviewUrl);
+        if (!imageAlt.value.trim()) imageAlt.value = defaultAltFromFile(file);
+        showImageError();
+        return true;
+    };
+
+    const closeImageDialog = () => {
+        imageDialog.hidden = true;
+        pendingImageFile = null;
+        imageFile.value = '';
+        clearImagePreviewUrl();
+        showImageError();
+        imageSubmit.disabled = false;
+    };
+
+    openImageDialog = (file = null) => {
+        const attributes = editor.isActive('blogImage') && !file ? editor.getAttributes('blogImage') : {};
+        editingImage = Boolean(attributes.src);
+        pendingImageFile = null;
+        imageFile.value = '';
+        imageAlt.value = attributes.alt || '';
+        imageCaption.value = attributes.caption || '';
+        imageLayout.value = attributes.layout === 'wide' ? 'wide' : 'normal';
+        imageRemove.hidden = !editingImage;
+        imageSubmit.textContent = editingImage ? 'Cập nhật ảnh' : 'Chèn ảnh';
+        shell.querySelector('[data-image-dialog-title]').textContent = editingImage ? 'Sửa ảnh trong bài' : 'Chèn ảnh minh họa';
+        setImagePreview(attributes.src || '');
+        showImageError();
+        imageDialog.hidden = false;
+        if (file) acceptImageFile(file);
+        window.setTimeout(() => (file ? imageAlt : imageFile).focus(), 20);
+    };
+
+    imageFile.addEventListener('change', () => {
+        const file = imageFile.files?.[0];
+        if (file) acceptImageFile(file);
+    });
+
+    imageSubmit.addEventListener('click', async (event) => {
+        event.preventDefault();
+        showImageError();
+
+        if (!imageAlt.value.trim()) {
+            showImageError('Hãy mô tả ngắn gọn nội dung ảnh.');
+            imageAlt.focus();
+            return;
+        }
+
+        let attributes = editingImage ? editor.getAttributes('blogImage') : null;
+        if (pendingImageFile) {
+            if (!textarea.dataset.imageUploadUrl) {
+                showImageError('Chưa cấu hình đường dẫn upload ảnh.');
+                return;
+            }
+
+            imageSubmit.disabled = true;
+            imageSubmit.textContent = 'Đang tối ưu ảnh...';
+            const payload = new FormData();
+            payload.append('image', pendingImageFile);
+            payload.append('alt_text', imageAlt.value.trim());
+            payload.append('caption', imageCaption.value.trim());
+            payload.append('layout', imageLayout.value);
+            if (textarea.dataset.postId) payload.append('post_id', textarea.dataset.postId);
+
+            try {
+                const response = await fetch(textarea.dataset.imageUploadUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+                    },
+                    body: payload,
+                });
+                const data = await response.json();
+                if (!response.ok || !data.media) {
+                    const validationMessage = Object.values(data.errors || {}).flat()[0];
+                    throw new Error(validationMessage || data.message || 'Không thể upload ảnh.');
+                }
+                attributes = {
+                    src: data.media.url,
+                    srcset: data.media.srcset || null,
+                    alt: data.media.alt_text || imageAlt.value.trim(),
+                    caption: data.media.caption || '',
+                    mediaId: data.media.id,
+                    layout: data.media.layout || 'normal',
+                    width: data.media.width || null,
+                    height: data.media.height || null,
+                };
+            } catch (error) {
+                showImageError(error.message || 'Không thể upload ảnh. Vui lòng thử lại.');
+                imageSubmit.disabled = false;
+                imageSubmit.textContent = editingImage ? 'Cập nhật ảnh' : 'Chèn ảnh';
+                return;
+            }
+        }
+
+        if (!attributes?.src) {
+            showImageError('Hãy chọn một ảnh để chèn.');
+            return;
+        }
+
+        attributes = {
+            ...attributes,
+            alt: imageAlt.value.trim(),
+            caption: imageCaption.value.trim(),
+            layout: imageLayout.value,
+        };
+
+        if (editingImage) {
+            editor.chain().focus().updateAttributes('blogImage', attributes).run();
+        } else {
+            editor.chain().focus().insertContent([
+                { type: 'blogImage', attrs: attributes },
+                { type: 'paragraph' },
+            ]).run();
+        }
+        closeImageDialog();
+    });
+
+    imageForm.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && event.target.tagName !== 'TEXTAREA') {
+            event.preventDefault();
+            imageSubmit.click();
+        }
+    });
+
+    imageRemove.addEventListener('click', () => {
+        if (editingImage) editor.chain().focus().deleteSelection().run();
+        closeImageDialog();
+    });
+    shell.querySelectorAll('[data-image-dialog-close]').forEach((button) => button.addEventListener('click', closeImageDialog));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !imageDialog.hidden) closeImageDialog();
+    });
 
     shell.querySelector('.rich-text-toolbar').addEventListener('click', (event) => {
         const button = event.target.closest('[data-editor-action]');

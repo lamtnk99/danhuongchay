@@ -61,6 +61,7 @@ class PostSeoAnalyzer
                 'title_length' => mb_strlen($metaTitle),
                 'description_length' => mb_strlen($description),
                 'heading_count' => count($dom['headings']),
+                'image_count' => count($dom['images']),
             ],
         ];
     }
@@ -95,10 +96,10 @@ class PostSeoAnalyzer
             ->contains(fn (Post $post): bool => $this->normalize((string) $post->focus_keyword) === $this->normalize($keyword));
     }
 
-    /** @return array{paragraphs: array<int, string>, headings: array<int, string>, links: array<int, array{href: string, text: string}>, h1_count: int, empty_headings: int} */
+    /** @return array{paragraphs: array<int, string>, headings: array<int, string>, links: array<int, array{href: string, text: string}>, images: array<int, array{src: string, alt: string, width: int}>, h1_count: int, empty_headings: int} */
     private function inspectHtml(string $html): array
     {
-        $result = ['paragraphs' => [], 'headings' => [], 'links' => [], 'h1_count' => 0, 'empty_headings' => 0];
+        $result = ['paragraphs' => [], 'headings' => [], 'links' => [], 'images' => [], 'h1_count' => 0, 'empty_headings' => 0];
         if (trim($html) === '') {
             return $result;
         }
@@ -120,6 +121,13 @@ class PostSeoAnalyzer
             $result['h1_count'] = $document->getElementsByTagName('h1')->length;
             foreach ($document->getElementsByTagName('a') as $node) {
                 $result['links'][] = ['href' => $node->getAttribute('href'), 'text' => trim($node->textContent)];
+            }
+            foreach ($document->getElementsByTagName('img') as $node) {
+                $result['images'][] = [
+                    'src' => $node->getAttribute('src'),
+                    'alt' => trim($node->getAttribute('alt')),
+                    'width' => (int) $node->getAttribute('width'),
+                ];
             }
         } catch (\Throwable) {
             // Invalid legacy HTML is reported through the structural checks without breaking the form.
@@ -155,6 +163,18 @@ class PostSeoAnalyzer
         }
         if ($wordCount > 350 && count($dom['headings']) < 2) {
             $warnings[] = ['key' => 'long_section', 'message' => 'Nội dung dài nhưng ít đầu mục; nên chia thêm H2/H3.'];
+        }
+        if ($wordCount >= 600 && count($dom['images']) === 0) {
+            $warnings[] = ['key' => 'missing_content_image', 'message' => 'Bài khá dài nhưng chưa có ảnh minh họa trong nội dung.'];
+        }
+        if (collect($dom['images'])->contains(fn (array $image): bool => $image['alt'] === '')) {
+            $warnings[] = ['key' => 'missing_image_alt', 'message' => 'Có ảnh chưa có văn bản thay thế (alt).'];
+        }
+        if (collect($dom['images'])->contains(fn (array $image): bool => in_array($this->normalize($image['alt']), ['anh', 'anh 1', 'hinh anh', 'image', 'photo'], true))) {
+            $warnings[] = ['key' => 'generic_image_alt', 'message' => 'Có alt ảnh quá chung chung; hãy mô tả đúng nội dung ảnh.'];
+        }
+        if (collect($dom['images'])->contains(fn (array $image): bool => $image['width'] > 1800)) {
+            $warnings[] = ['key' => 'oversized_content_image', 'message' => 'Có ảnh rộng trên 1.800 px; nên tối ưu lại để trang tải nhanh hơn.'];
         }
         if ($dom['empty_headings'] > 0) {
             $warnings[] = ['key' => 'empty_heading', 'message' => 'Có đầu mục đang để trống.'];

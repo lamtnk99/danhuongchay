@@ -65,7 +65,7 @@
                     class="admin-input"
                     data-copy-field="{{ $copyFrom }}"
                     data-translation-field="{{ $name }}"
-                    @if ($field['editor'] ?? false) data-rich-text data-editor-locale="{{ $locale }}" @endif
+                    @if ($field['editor'] ?? false) data-rich-text data-editor-locale="{{ $locale }}" data-image-upload-url="{{ route('admin.posts.media.store') }}" data-post-id="{{ $model->getKey() }}" @endif
                 >{{ $value }}</textarea>
             @else
                 <input

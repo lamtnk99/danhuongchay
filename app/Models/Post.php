@@ -59,6 +59,11 @@ class Post extends Model
         return $this->hasMany(PostTranslation::class);
     }
 
+    public function media(): HasMany
+    {
+        return $this->hasMany(PostMedia::class);
+    }
+
     public function internalLinks(): BelongsToMany
     {
         return $this->belongsToMany(

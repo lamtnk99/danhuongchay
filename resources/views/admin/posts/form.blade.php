@@ -51,7 +51,7 @@
             </div>
             <div class="lg:col-span-2">
                 <label class="admin-label" for="content">Nội dung</label>
-                <textarea id="content" name="content" rows="12" class="admin-input" data-rich-text data-editor-locale="vi" required>{{ old('content', $post->content) }}</textarea>
+                <textarea id="content" name="content" rows="12" class="admin-input" data-rich-text data-editor-locale="vi" data-image-upload-url="{{ route('admin.posts.media.store') }}" data-post-id="{{ $post->getKey() }}" required>{{ old('content', $post->content) }}</textarea>
                 @error('content') <p class="form-error">{{ $message }}</p> @enderror
             </div>
             <div class="lg:col-span-2">

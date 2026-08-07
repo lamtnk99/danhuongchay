@@ -68,4 +68,15 @@ class PostSeoAnalyzerTest extends TestCase
         $this->assertSame($editResult['score'], $listResult['score']);
         $this->assertSame($editResult['checks'], $listResult['checks']);
     }
+
+    public function test_it_warns_when_an_article_image_has_no_alt_text(): void
+    {
+        $result = app(PostSeoAnalyzer::class)->analyze([
+            'title' => 'Bài viết có ảnh minh họa',
+            'content' => '<p>Mở đầu.</p><figure data-blog-image><img src="/storage/posts/content/example.webp" alt="" width="1200"></figure>',
+        ]);
+
+        $this->assertSame(1, $result['metrics']['image_count']);
+        $this->assertNotNull(collect($result['warnings'])->firstWhere('key', 'missing_image_alt'));
+    }
 }

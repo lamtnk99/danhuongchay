@@ -36,4 +36,18 @@ class ArticlePresentationServiceTest extends TestCase
         $this->assertSame(401, $result['word_count']);
         $this->assertSame(3, $result['reading_minutes']);
     }
+
+    public function test_it_preserves_article_image_structure_and_metadata(): void
+    {
+        $html = '<p>Mở đầu.</p><figure data-blog-image data-media-id="7" data-layout="wide">'
+            .'<img src="/storage/posts/content/example.webp" alt="Mâm cơm chay" width="1200" height="800" loading="lazy">'
+            .'<figcaption>Bữa ăn thanh nhẹ.</figcaption></figure>';
+
+        $result = (new ArticlePresentationService)->present($html);
+
+        $this->assertStringContainsString('data-media-id="7"', $result['html']);
+        $this->assertStringContainsString('src="/storage/posts/content/example.webp"', $result['html']);
+        $this->assertStringContainsString('alt="Mâm cơm chay"', $result['html']);
+        $this->assertStringContainsString('<figcaption>Bữa ăn thanh nhẹ.</figcaption>', $result['html']);
+    }
 }

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\NavigationMenuController as AdminNavigationMenuCo
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\PostMediaController as AdminPostMediaController;
 use App\Http\Controllers\Admin\PostSeoController as AdminPostSeoController;
 use App\Http\Controllers\Admin\PostTranslationController as AdminPostTranslationController;
 use App\Http\Controllers\Admin\PromotionController as AdminPromotionController;
@@ -69,6 +70,9 @@ Route::prefix('admin')
         Route::post('/posts/translate', AdminPostTranslationController::class)
             ->middleware(['throttle:20,1', 'permission:translations.auto_translate'])
             ->name('posts.translate');
+        Route::post('/posts/media', AdminPostMediaController::class)
+            ->middleware(['throttle:30,1', 'permission:posts.create,posts.update'])
+            ->name('posts.media.store');
 
         Route::patch('/banners/{banner}/toggle', [AdminBannerController::class, 'toggle'])->middleware('permission:banners.update')->name('banners.toggle');
         Route::resource('branches', AdminBranchController::class)->except('show')

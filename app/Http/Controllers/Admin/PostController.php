@@ -7,6 +7,7 @@ use App\Http\Requests\Admin\PostRequest;
 use App\Models\Category;
 use App\Models\Post;
 use App\Services\BlogTranslationService;
+use App\Services\PostMediaService;
 use App\Services\PostSeoAnalyzer;
 use App\Services\UploadService;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +20,7 @@ class PostController extends Controller
         private readonly UploadService $uploads,
         private readonly PostSeoAnalyzer $seoAnalyzer,
         private readonly BlogTranslationService $blogTranslator,
+        private readonly PostMediaService $postMedia,
     ) {}
 
     public function index(Request $request): View
@@ -79,6 +81,7 @@ class PostController extends Controller
         $post = Post::create($data);
         $this->syncEnglishTranslation($request, $post);
         $this->syncInternalLinks($request, $post);
+        $this->postMedia->syncForPost($post, $post->content, data_get($request->validated(), 'translations.en.content'));
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã thêm bài viết.');
     }
@@ -116,6 +119,7 @@ class PostController extends Controller
         $post->update($data);
         $this->syncEnglishTranslation($request, $post);
         $this->syncInternalLinks($request, $post);
+        $this->postMedia->syncForPost($post, $post->content, data_get($request->validated(), 'translations.en.content'));
 
         return redirect()->route('admin.posts.index')->with('success', 'Đã cập nhật bài viết.');
     }
@@ -123,6 +127,7 @@ class PostController extends Controller
     public function destroy(Post $post): RedirectResponse
     {
         $this->uploads->deleteImage($post->thumbnail);
+        $post->media()->pluck('path')->each(fn (string $path) => $this->uploads->deleteImage($path));
         $post->delete();
 
         return back()->with('success', 'Đã xóa bài viết.');
@@ -206,6 +211,7 @@ class PostController extends Controller
             'h2' => preg_match_all('/<h2\b/i', (string) $html),
             'h3' => preg_match_all('/<h3\b/i', (string) $html),
             'a' => preg_match_all('/<a\b/i', (string) $html),
+            'img' => preg_match_all('/<img\b/i', (string) $html),
         ];
     }
 }
