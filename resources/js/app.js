@@ -234,7 +234,7 @@ document.querySelectorAll('textarea[data-rich-text]').forEach((textarea) => {
                 </label>
                 <label>
                     <span>Văn bản thay thế (alt) <strong>*</strong></span>
-                    <input type="text" maxlength="255" required data-image-alt placeholder="Mô tả ngắn gọn nội dung của ảnh">
+                    <input type="text" maxlength="255" aria-required="true" data-image-alt placeholder="Mô tả ngắn gọn nội dung của ảnh">
                     <small>Giúp Google và người dùng trình đọc màn hình hiểu ảnh.</small>
                 </label>
                 <label>
