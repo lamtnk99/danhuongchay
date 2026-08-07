@@ -701,17 +701,58 @@ if (articleBody && readingProgress) {
 }
 
 const tocLinks = Array.from(document.querySelectorAll('[data-toc-link]'));
+
+document.querySelectorAll('[data-toc-toggle]').forEach((toggleButton) => {
+    const popup = document.querySelector('[data-toc-popup]');
+    const overlay = document.querySelector('[data-toc-overlay]');
+    const closeButton = popup?.querySelector('[data-toc-close]');
+
+    if (!popup || !overlay || !closeButton) return;
+
+    const openToc = () => {
+        popup.hidden = false;
+        overlay.hidden = false;
+        toggleButton.setAttribute('aria-expanded', 'true');
+        closeButton.focus();
+    };
+
+    const closeToc = (restoreFocus = true) => {
+        popup.hidden = true;
+        overlay.hidden = true;
+        toggleButton.setAttribute('aria-expanded', 'false');
+        if (restoreFocus) toggleButton.focus({ preventScroll: true });
+    };
+
+    toggleButton.addEventListener('click', () => {
+        if (popup.hidden) openToc();
+        else closeToc();
+    });
+    closeButton.addEventListener('click', () => closeToc());
+    overlay.addEventListener('click', () => closeToc());
+    popup.querySelectorAll('[data-toc-link]').forEach((link) => link.addEventListener('click', () => closeToc(false)));
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && !popup.hidden) closeToc();
+    });
+});
+
 if (tocLinks.length && 'IntersectionObserver' in window) {
     const headings = tocLinks
         .map((link) => document.getElementById(decodeURIComponent(link.hash.slice(1))))
         .filter(Boolean);
     const activateHeading = (id) => {
+        let activeLink = null;
         tocLinks.forEach((link) => {
             const active = decodeURIComponent(link.hash.slice(1)) === id;
             link.classList.toggle('is-active', active);
-            if (active) link.setAttribute('aria-current', 'location');
+            if (active) {
+                link.setAttribute('aria-current', 'location');
+                activeLink = link;
+            }
             else link.removeAttribute('aria-current');
         });
+        if (activeLink && !activeLink.closest('[data-toc-popup]')?.hidden) {
+            activeLink.scrollIntoView({ block: 'nearest' });
+        }
     };
     const visible = new Map();
     const observer = new IntersectionObserver((entries) => {

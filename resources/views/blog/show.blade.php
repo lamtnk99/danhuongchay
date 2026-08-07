@@ -31,18 +31,7 @@
             sizes="(max-width: 1024px) 100vw, 1024px"
         >
 
-        @if ($article['toc'])
-            <details class="blog-toc-mobile mt-8 lg:hidden">
-                <summary>{{ current_locale() === 'en' ? 'In this article' : 'Nội dung bài viết' }}</summary>
-                <nav aria-label="{{ current_locale() === 'en' ? 'Table of contents' : 'Mục lục bài viết' }}">
-                    @foreach ($article['toc'] as $item)
-                        <a href="#{{ $item['id'] }}" @class(['is-subheading' => $item['level'] === 3]) data-toc-link>{{ $item['text'] }}</a>
-                    @endforeach
-                </nav>
-            </details>
-        @endif
-
-        <div @class(['blog-reader-grid mt-10', 'has-toc' => $article['toc']])>
+        <div class="blog-reader-grid mt-10">
             <div class="min-w-0">
                 <div class="article-content" data-article-body>
                     {!! $article['html'] !!}
@@ -78,19 +67,43 @@
                 @endif
             </div>
 
-            @if ($article['toc'])
-                <aside class="hidden lg:block">
-                    <div class="blog-toc-sticky">
-                        <p>{{ current_locale() === 'en' ? 'In this article' : 'Nội dung bài viết' }}</p>
-                        <nav aria-label="{{ current_locale() === 'en' ? 'Table of contents' : 'Mục lục bài viết' }}">
-                            @foreach ($article['toc'] as $item)
-                                <a href="#{{ $item['id'] }}" @class(['is-subheading' => $item['level'] === 3]) data-toc-link>{{ $item['text'] }}</a>
-                            @endforeach
-                        </nav>
-                    </div>
-                </aside>
-            @endif
         </div>
+
+        @if ($article['toc'])
+            <button
+                type="button"
+                class="blog-toc-trigger"
+                data-toc-toggle
+                aria-controls="blog-toc-popup"
+                aria-expanded="false"
+            >
+                <span aria-hidden="true">☰</span>
+                <span>{{ current_locale() === 'en' ? 'Contents' : 'Mục lục' }}</span>
+            </button>
+
+            <div class="blog-toc-backdrop" data-toc-overlay hidden></div>
+            <aside
+                id="blog-toc-popup"
+                class="blog-toc-popup"
+                data-toc-popup
+                role="dialog"
+                aria-labelledby="blog-toc-title"
+                hidden
+            >
+                <div class="blog-toc-popup-head">
+                    <div>
+                        <p id="blog-toc-title">{{ current_locale() === 'en' ? 'In this article' : 'Nội dung bài viết' }}</p>
+                        <span>{{ $article['reading_minutes'] }} {{ current_locale() === 'en' ? 'min read' : 'phút đọc' }}</span>
+                    </div>
+                    <button type="button" data-toc-close aria-label="{{ current_locale() === 'en' ? 'Close table of contents' : 'Đóng mục lục' }}">×</button>
+                </div>
+                <nav aria-label="{{ current_locale() === 'en' ? 'Table of contents' : 'Mục lục bài viết' }}">
+                    @foreach ($article['toc'] as $item)
+                        <a href="#{{ $item['id'] }}" @class(['is-subheading' => $item['level'] === 3]) data-toc-link>{{ $item['text'] }}</a>
+                    @endforeach
+                </nav>
+            </aside>
+        @endif
     </article>
 
     @if ($relatedPosts->isNotEmpty())
