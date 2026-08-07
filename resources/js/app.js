@@ -687,13 +687,21 @@ document.querySelectorAll('[data-seo-panel]').forEach((panel) => {
 
 const articleBody = document.querySelector('[data-article-body]');
 const readingProgress = document.querySelector('[data-reading-progress] span');
+const readingPercentElements = document.querySelectorAll('[data-reading-percent]');
+const readingRingProgress = document.querySelectorAll('.blog-toc-trigger-progress');
+const tocProgressBars = document.querySelectorAll('[data-toc-progress-bar]');
 
 if (articleBody && readingProgress) {
     const updateReadingProgress = () => {
         const top = articleBody.getBoundingClientRect().top + window.scrollY;
         const available = Math.max(1, articleBody.offsetHeight - window.innerHeight * 0.55);
         const progress = Math.min(1, Math.max(0, (window.scrollY - top + window.innerHeight * 0.25) / available));
+        const percentage = Math.round(progress * 100);
         readingProgress.style.transform = `scaleX(${progress})`;
+        document.documentElement.style.setProperty('--article-read-progress', percentage);
+        readingPercentElements.forEach((element) => { element.textContent = `${percentage}%`; });
+        readingRingProgress.forEach((circle) => { circle.style.strokeDashoffset = String(100 - percentage); });
+        tocProgressBars.forEach((bar) => { bar.style.transform = `scaleX(${progress})`; });
     };
     updateReadingProgress();
     window.addEventListener('scroll', updateReadingProgress, { passive: true });
@@ -712,6 +720,7 @@ document.querySelectorAll('[data-toc-toggle]').forEach((toggleButton) => {
     const openToc = () => {
         popup.hidden = false;
         overlay.hidden = false;
+        document.body.classList.add('blog-toc-open');
         toggleButton.setAttribute('aria-expanded', 'true');
         closeButton.focus();
     };
@@ -719,6 +728,7 @@ document.querySelectorAll('[data-toc-toggle]').forEach((toggleButton) => {
     const closeToc = (restoreFocus = true) => {
         popup.hidden = true;
         overlay.hidden = true;
+        document.body.classList.remove('blog-toc-open');
         toggleButton.setAttribute('aria-expanded', 'false');
         if (restoreFocus) toggleButton.focus({ preventScroll: true });
     };
@@ -752,6 +762,10 @@ if (tocLinks.length && 'IntersectionObserver' in window) {
         });
         if (activeLink && !activeLink.closest('[data-toc-popup]')?.hidden) {
             activeLink.scrollIntoView({ block: 'nearest' });
+        }
+        const currentSection = document.querySelector('[data-toc-current]');
+        if (activeLink && currentSection) {
+            currentSection.textContent = activeLink.querySelector('span:last-child')?.textContent?.trim() || activeLink.textContent.trim();
         }
     };
     const visible = new Map();

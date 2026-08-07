@@ -77,8 +77,20 @@
                 aria-controls="blog-toc-popup"
                 aria-expanded="false"
             >
-                <span aria-hidden="true">☰</span>
-                <span>{{ current_locale() === 'en' ? 'Contents' : 'Mục lục' }}</span>
+                <span class="blog-toc-trigger-ring" aria-hidden="true">
+                    <svg viewBox="0 0 44 44">
+                        <circle class="blog-toc-trigger-track" cx="22" cy="22" r="19"></circle>
+                        <circle class="blog-toc-trigger-progress" cx="22" cy="22" r="19" pathLength="100"></circle>
+                    </svg>
+                    <span data-reading-percent>0%</span>
+                </span>
+                <span class="blog-toc-trigger-copy">
+                    <small>{{ current_locale() === 'en' ? 'Reading map' : 'Hành trình đọc' }}</small>
+                    <strong data-toc-current>{{ current_locale() === 'en' ? 'Article contents' : 'Mục lục bài viết' }}</strong>
+                </span>
+                <svg class="blog-toc-trigger-arrow" viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M7 4l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
             </button>
 
             <div class="blog-toc-backdrop" data-toc-overlay hidden></div>
@@ -92,16 +104,24 @@
             >
                 <div class="blog-toc-popup-head">
                     <div>
-                        <p id="blog-toc-title">{{ current_locale() === 'en' ? 'In this article' : 'Nội dung bài viết' }}</p>
-                        <span>{{ $article['reading_minutes'] }} {{ current_locale() === 'en' ? 'min read' : 'phút đọc' }}</span>
+                        <span class="blog-toc-popup-kicker">{{ current_locale() === 'en' ? 'Reading map' : 'Bản đồ bài viết' }}</span>
+                        <p id="blog-toc-title">{{ current_locale() === 'en' ? 'Your reading journey' : 'Hành trình khám phá' }}</p>
+                        <span>{{ $article['reading_minutes'] }} {{ current_locale() === 'en' ? 'min read' : 'phút đọc' }} · {{ count($article['toc']) }} {{ current_locale() === 'en' ? 'sections' : 'đầu mục' }}</span>
                     </div>
                     <button type="button" data-toc-close aria-label="{{ current_locale() === 'en' ? 'Close table of contents' : 'Đóng mục lục' }}">×</button>
                 </div>
                 <nav aria-label="{{ current_locale() === 'en' ? 'Table of contents' : 'Mục lục bài viết' }}">
                     @foreach ($article['toc'] as $item)
-                        <a href="#{{ $item['id'] }}" @class(['is-subheading' => $item['level'] === 3]) data-toc-link>{{ $item['text'] }}</a>
+                        <a href="#{{ $item['id'] }}" @class(['is-subheading' => $item['level'] === 3]) data-toc-link>
+                            <span class="blog-toc-index">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span>{{ $item['text'] }}</span>
+                        </a>
                     @endforeach
                 </nav>
+                <div class="blog-toc-popup-foot">
+                    <div><span data-toc-progress-bar></span></div>
+                    <p><strong data-reading-percent>0%</strong> {{ current_locale() === 'en' ? 'completed' : 'đã đọc' }}</p>
+                </div>
             </aside>
         @endif
     </article>
