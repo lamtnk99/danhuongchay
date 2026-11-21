@@ -63,7 +63,7 @@
                         </td>
                         <td>
                             <div class="flex justify-end gap-2">
-                                <a href="{{ route('blog.show', $post) }}" target="_blank" class="admin-btn-mini">Preview</a>
+                                <a href="{{ route('admin.posts.preview', $post) }}" target="_blank" class="admin-btn-mini">Preview</a>
                                 <a href="{{ route('admin.posts.edit', $post) }}" class="admin-btn-mini">Sửa</a>
                                 <form method="POST" action="{{ route('admin.posts.destroy', $post) }}" data-confirm="Xóa bài viết này?">
                                     @csrf

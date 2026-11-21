@@ -65,7 +65,9 @@ class BlogController extends Controller
                 ->firstOrFail();
         }
 
-        abort_if(! $post->is_active || blank($post->published_at) || $post->published_at->isFuture(), 404);
+        $isAdminPreview = request()->attributes->getBoolean('admin_blog_preview');
+
+        abort_if(! $isAdminPreview && (! $post->is_active || blank($post->published_at) || $post->published_at->isFuture()), 404);
 
         $post->load(['category.translations', 'translations']);
 
@@ -98,6 +100,9 @@ class BlogController extends Controller
         $seo['published_time'] = $post->published_at->toAtomString();
         $seo['modified_time'] = $post->updated_at->toAtomString();
         $seo['section'] = $post->category->localized('name');
+        if ($isAdminPreview) {
+            $seo['robots'] = 'noindex, nofollow';
+        }
 
         $schemas = [
             SeoService::restaurantSchema(),
@@ -115,6 +120,13 @@ class BlogController extends Controller
             'schemas',
             'article'
         ));
+    }
+
+    public function preview(Post $post): RedirectResponse|View
+    {
+        request()->attributes->set('admin_blog_preview', true);
+
+        return $this->show($post);
     }
 
     private function localizedRedirect(Post $post, string $requestedSlug): ?RedirectResponse

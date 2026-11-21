@@ -13,6 +13,7 @@ use App\Models\Post;
 use App\Models\Reservation;
 use App\Models\SiteSetting;
 use App\Models\User;
+use App\Services\SeoService;
 use App\Services\UploadService;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -132,6 +133,30 @@ class ExampleTest extends TestCase
         $this->get(route('blog.show', $post))
             ->assertOk()
             ->assertSee($post->title);
+    }
+
+    public function test_admin_can_preview_a_scheduled_post_without_exposing_it_publicly(): void
+    {
+        $admin = User::where('email', 'admin@danhuongchay.vn')->firstOrFail();
+        $post = Post::query()->firstOrFail()->replicate();
+        $post->title = 'Bài viết hẹn giờ cần xem trước';
+        $post->slug = 'bai-viet-hen-gio-can-xem-truoc';
+        $post->published_at = now()->addDays(3);
+        $post->is_active = true;
+        $post->save();
+
+        $this->get(route('blog.show', $post))->assertNotFound();
+
+        $this->actingAs($admin)
+            ->get(route('admin.posts.preview', $post))
+            ->assertOk()
+            ->assertSee($post->title)
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false);
+    }
+
+    public function test_incomplete_alternate_route_parameters_do_not_break_seo_rendering(): void
+    {
+        $this->assertSame([], SeoService::routeAlternates('blog.show'));
     }
 
     public function test_contact_form_stores_message(): void

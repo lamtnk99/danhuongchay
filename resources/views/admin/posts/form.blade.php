@@ -219,6 +219,6 @@
     <button type="submit" class="admin-btn-primary">{{ $post->exists ? 'Cập nhật' : 'Lưu' }}</button>
     <a href="{{ route('admin.posts.index') }}" class="admin-btn-secondary">Quay lại</a>
     @if ($post->exists)
-        <a href="{{ route('blog.show', $post) }}" target="_blank" class="admin-btn-secondary">Preview</a>
+        <a href="{{ route('admin.posts.preview', $post) }}" target="_blank" class="admin-btn-secondary">Preview</a>
     @endif
 </div>

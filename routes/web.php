@@ -73,6 +73,9 @@ Route::prefix('admin')
         Route::post('/posts/media', AdminPostMediaController::class)
             ->middleware(['throttle:30,1', 'permission:posts.create,posts.update'])
             ->name('posts.media.store');
+        Route::get('/posts/{post}/preview', [BlogController::class, 'preview'])
+            ->middleware('permission:posts.view')
+            ->name('posts.preview');
 
         Route::patch('/banners/{banner}/toggle', [AdminBannerController::class, 'toggle'])->middleware('permission:banners.update')->name('banners.toggle');
         Route::resource('branches', AdminBranchController::class)->except('show')

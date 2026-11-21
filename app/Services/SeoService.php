@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Support\OpeningHours;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Routing\Exceptions\UrlGenerationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 
@@ -336,7 +337,12 @@ class SeoService
             return null;
         }
 
-        return route($routeName, self::parametersForLocale($locale, $name, $parameters));
+        try {
+            return route($routeName, self::parametersForLocale($locale, $name, $parameters));
+        } catch (UrlGenerationException) {
+            // Incomplete legacy translations must not make the primary page fail.
+            return null;
+        }
     }
 
     private static function hasUsableTranslation(Dish|Page|Post $model, string $locale): bool
