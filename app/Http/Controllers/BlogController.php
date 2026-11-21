@@ -7,6 +7,7 @@ use App\Services\ArticlePresentationService;
 use App\Services\PostInternalLinkService;
 use App\Services\SeoService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\App;
 use Illuminate\View\View;
 
 class BlogController extends Controller
@@ -71,7 +72,7 @@ class BlogController extends Controller
 
         $post->load(['category.translations', 'translations']);
 
-        if ($redirect = $this->localizedRedirect($post, $requestedSlug)) {
+        if (! $isAdminPreview && ($redirect = $this->localizedRedirect($post, $requestedSlug))) {
             return $redirect;
         }
 
@@ -102,6 +103,11 @@ class BlogController extends Controller
         $seo['section'] = $post->category->localized('name');
         if ($isAdminPreview) {
             $seo['robots'] = 'noindex, nofollow';
+            $seo['language_links'] = collect(array_keys(config('locales.supported', [])))
+                ->mapWithKeys(fn (string $locale): array => [
+                    $locale => route('admin.posts.preview', ['post' => $post, 'locale' => $locale]),
+                ])
+                ->all();
         }
 
         $schemas = [
@@ -124,6 +130,20 @@ class BlogController extends Controller
 
     public function preview(Post $post): RedirectResponse|View
     {
+        $locale = (string) request()->query('locale', config('locales.default', 'vi'));
+        if (! array_key_exists($locale, config('locales.supported', []))) {
+            $locale = config('locales.default', 'vi');
+        }
+
+        if ($locale !== config('locales.default', 'vi')) {
+            $translation = $post->translation($locale);
+            if (! $translation || blank($translation->slug) || blank($translation->title) || blank($translation->content)) {
+                $locale = config('locales.default', 'vi');
+            }
+        }
+
+        App::setLocale($locale);
+        request()->attributes->set('locale', $locale);
         request()->attributes->set('admin_blog_preview', true);
 
         return $this->show($post);

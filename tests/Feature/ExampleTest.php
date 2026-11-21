@@ -144,6 +144,15 @@ class ExampleTest extends TestCase
         $post->published_at = now()->addDays(3);
         $post->is_active = true;
         $post->save();
+        $post->translations()->create([
+            'locale' => 'en',
+            'title' => 'Scheduled article preview',
+            'slug' => 'scheduled-article-preview',
+            'excerpt' => 'English preview excerpt.',
+            'content' => '<p>English preview content.</p>',
+            'meta_title' => 'Scheduled article preview',
+            'meta_description' => 'English preview description for a scheduled article.',
+        ]);
 
         $this->get(route('blog.show', $post))->assertNotFound();
 
@@ -151,6 +160,14 @@ class ExampleTest extends TestCase
             ->get(route('admin.posts.preview', $post))
             ->assertOk()
             ->assertSee($post->title)
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+            ->assertSee(route('admin.posts.preview', ['post' => $post, 'locale' => 'en']), false);
+
+        $this->actingAs($admin)
+            ->get(route('admin.posts.preview', ['post' => $post, 'locale' => 'en']))
+            ->assertOk()
+            ->assertSee('Scheduled article preview')
+            ->assertSee('<html lang="en"', false)
             ->assertSee('<meta name="robots" content="noindex, nofollow">', false);
     }
 

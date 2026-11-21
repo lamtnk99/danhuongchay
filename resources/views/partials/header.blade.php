@@ -23,7 +23,8 @@
         'en' => route('localized.home'),
     ];
 
-    $routeLanguageLinks = ($seo['alternates'] ?? null) ?: \App\Services\SeoService::currentRouteAlternates();
+    $routeLanguageLinks = ($seo['language_links'] ?? null)
+        ?: (($seo['alternates'] ?? null) ?: \App\Services\SeoService::currentRouteAlternates());
     $languageLinks = array_replace($languageFallbackLinks, $routeLanguageLinks ?: []);
 @endphp
 
